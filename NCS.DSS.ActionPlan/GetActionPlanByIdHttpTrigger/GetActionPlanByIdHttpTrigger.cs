@@ -1,4 +1,5 @@
 using System;
+using System.ComponentModel.DataAnnotations;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Azure.WebJobs.Host;
@@ -6,13 +7,16 @@ using Newtonsoft.Json;
 using System.Net.Http;
 using System.Net;
 using System.Threading.Tasks;
+using System.Web.Http.Description;
 
 namespace NCS.DSS.ActionPlan.GetActionPlanByIdHttpTrigger
 {
     public static class GetActionPlanByIdHttpTrigger
     {
         [FunctionName("GetById")]
-        public static async Task<HttpResponseMessage> Run([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "Customers/{customerId:guid}/Interactions/{interactionId:guid}/ActionPlans/{actionPlanId:guid}")]HttpRequestMessage req, TraceWriter log, string actionPlanId)
+        [ResponseType(typeof(Models.ActionPlan))]
+        [Display(Name = "Get", Description = "Ability to retrieve an individual action plan for the given customer")]
+        public static async Task<HttpResponseMessage> Run([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "Customers/{customerId}/Interactions/{interactionId}/ActionPlans/{actionPlanId}")]HttpRequestMessage req, TraceWriter log, string customerId, string interactionId, string actionPlanId)
         {
             log.Info("Get Action Plan By Id C# HTTP trigger function  processed a request.");
 

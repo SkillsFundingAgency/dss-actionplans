@@ -10,8 +10,9 @@ namespace NCS.DSS.ActionPlan.PutActionPlanHttpTrigger
 {
     public static class PutActionPlanHttpTrigger
     {
+        [Disable]
         [FunctionName("Put")]
-        public static HttpResponseMessage Run([HttpTrigger(AuthorizationLevel.Anonymous, "put", Route = "Customers/{customerId:guid}/Interactions/{interactionId:guid}/ActionPlans/{actionPlanId:guid}")]HttpRequestMessage req, TraceWriter log, string actionPlanId)
+        public static HttpResponseMessage Run([HttpTrigger(AuthorizationLevel.Anonymous, "put", Route = "Customers/{customerId}/Interactions/{interactionId}/ActionPlans/{actionPlanId}")]HttpRequestMessage req, TraceWriter log, string actionPlanId)
         {
             log.Info("Put Action Plan C# HTTP trigger function processed a request.");
 

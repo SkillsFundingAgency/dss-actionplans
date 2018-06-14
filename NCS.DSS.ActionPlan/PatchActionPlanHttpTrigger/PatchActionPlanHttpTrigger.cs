@@ -1,6 +1,8 @@
 using System;
+using System.ComponentModel.DataAnnotations;
 using System.Net;
 using System.Net.Http;
+using System.Web.Http.Description;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Azure.WebJobs.Host;
@@ -11,7 +13,9 @@ namespace NCS.DSS.ActionPlan.PatchActionPlanHttpTrigger
     public static class PatchActionPlanHttpTrigger
     {
         [FunctionName("Patch")]
-        public static HttpResponseMessage Run([HttpTrigger(AuthorizationLevel.Anonymous, "patch", Route = "Customers/{customerId:guid}/Interactions/{interactionId:guid}/ActionPlans/{actionPlanId:guid}")]HttpRequestMessage req, TraceWriter log, string actionPlanId)
+        [ResponseType(typeof(Models.ActionPlan))]
+        [Display(Name = "Patch", Description = "Ability to modify/update a customers action plan record.")]
+        public static HttpResponseMessage Run([HttpTrigger(AuthorizationLevel.Anonymous, "patch", Route = "Customers/{customerId}/Interactions/{interactionId}/ActionPlans/{actionPlanId}")]HttpRequestMessage req, TraceWriter log, string customerId, string interactionId, string actionPlanId)
         {
             log.Info("Patch Action Plan C# HTTP trigger function processed a request.");
 

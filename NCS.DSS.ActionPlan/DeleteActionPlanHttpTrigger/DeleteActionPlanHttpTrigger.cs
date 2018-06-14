@@ -10,8 +10,9 @@ namespace NCS.DSS.ActionPlan.DeleteActionPlanHttpTrigger
 {
     public static class DeleteActionPlanHttpTrigger
     {
+        [Disable]
         [FunctionName("Delete")]
-        public static HttpResponseMessage Run([HttpTrigger(AuthorizationLevel.Anonymous, "delete", Route = "Customers/{customerId:guid}/Interactions/{interactionId:guid}/ActionPlans/{actionPlanId:guid}")]HttpRequestMessage req, TraceWriter log, string actionPlanId)
+        public static HttpResponseMessage Run([HttpTrigger(AuthorizationLevel.Anonymous, "delete", Route = "Customers/{customerId}/Interactions/{interactionId}/ActionPlans/{actionPlanId}")]HttpRequestMessage req, TraceWriter log, string actionPlanId)
         {
             log.Info("Delete Action Plan C# HTTP trigger function processed a request.");
 
