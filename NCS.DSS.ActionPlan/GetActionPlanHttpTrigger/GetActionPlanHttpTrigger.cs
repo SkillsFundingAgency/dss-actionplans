@@ -7,6 +7,7 @@ using System.Net.Http;
 using System.Net;
 using System.Threading.Tasks;
 using System.Web.Http.Description;
+using NCS.DSS.ActionPlan.Annotations;
 
 namespace NCS.DSS.ActionPlan.GetActionPlanHttpTrigger
 {
@@ -14,6 +15,7 @@ namespace NCS.DSS.ActionPlan.GetActionPlanHttpTrigger
     {
         [FunctionName("Get")]
         [ResponseType(typeof(Models.ActionPlan))]
+        [ActionPlanResponse(HttpStatusCode = (int)HttpStatusCode.OK, Description = "Action Plans found", ShowSchema = true)]
         [Display(Name = "Get", Description = "Ability to return all action plans for the given customer.")]
         public static async Task<HttpResponseMessage> Run([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "Customers/{customerId}/Interactions/{interactionId}/ActionPlans")]HttpRequestMessage req, TraceWriter log, string customerId, string interactionId)
         {

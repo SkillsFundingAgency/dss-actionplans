@@ -8,6 +8,7 @@ using System.Net.Http;
 using System.Net;
 using System.Threading.Tasks;
 using System.Web.Http.Description;
+using NCS.DSS.ActionPlan.Annotations;
 
 namespace NCS.DSS.ActionPlan.GetActionPlanByIdHttpTrigger
 {
@@ -15,6 +16,8 @@ namespace NCS.DSS.ActionPlan.GetActionPlanByIdHttpTrigger
     {
         [FunctionName("GetById")]
         [ResponseType(typeof(Models.ActionPlan))]
+        [ActionPlanResponse(HttpStatusCode = (int)HttpStatusCode.OK, Description = "Action Plan found", ShowSchema = true)]
+        [ActionPlanResponse(HttpStatusCode = (int)HttpStatusCode.NotFound, Description = "Supplied Action Plan Id does not exist", ShowSchema = false)]
         [Display(Name = "Get", Description = "Ability to retrieve an individual action plan for the given customer")]
         public static async Task<HttpResponseMessage> Run([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "Customers/{customerId}/Interactions/{interactionId}/ActionPlans/{actionPlanId}")]HttpRequestMessage req, TraceWriter log, string customerId, string interactionId, string actionPlanId)
         {
