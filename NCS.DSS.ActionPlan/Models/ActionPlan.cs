@@ -1,5 +1,6 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
+using NCS.DSS.ActionPlan.ReferenceData;
 
 namespace NCS.DSS.ActionPlan.Models
 {
@@ -27,7 +28,7 @@ namespace NCS.DSS.ActionPlan.Models
 
         [Required]
         [Display(Description = "Priority Customer reference data.")]
-        public int PriorityCustomerId { get; set; }
+        public PriorityCustomer PriorityCustomer { get; set; }
 
         [Display(Description = "Summary of a customer current situation and how it affects their career.")]
         public string CurrentSituation { get; set; }

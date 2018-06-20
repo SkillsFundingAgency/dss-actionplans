@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using NCS.DSS.ActionPlan.ReferenceData;
 
 namespace NCS.DSS.ActionPlan.GetActionPlanHttpTrigger
 {
@@ -23,7 +24,7 @@ namespace NCS.DSS.ActionPlan.GetActionPlanHttpTrigger
                     DateActionPlanCreated = DateTime.UtcNow,
                     DateActionPlanSentToCustomer = DateTime.UtcNow,
                     DateActionPlanAcknowledged = DateTime.UtcNow,
-                    PriorityCustomerId = 1,
+                    PriorityCustomer = PriorityCustomer.NotAPriorityCustomer,
                     CurrentSituation = "Unknown",
                     LastModifiedDate = DateTime.Today.AddYears(-1),
                     LastModifiedTouchpointId = Guid.NewGuid()
@@ -35,7 +36,7 @@ namespace NCS.DSS.ActionPlan.GetActionPlanHttpTrigger
                     DateActionPlanCreated = DateTime.UtcNow,
                     DateActionPlanSentToCustomer = DateTime.UtcNow,
                     DateActionPlanAcknowledged = DateTime.UtcNow,
-                    PriorityCustomerId = 2,
+                    PriorityCustomer = PriorityCustomer.AdultsAged50YearsOrOverWhoAreUnemployedOrAtDemonstrableRiskOfUnemployment,
                     CurrentSituation = "Pending",
                     LastModifiedDate = DateTime.Today.AddYears(-2),
                     LastModifiedTouchpointId = Guid.NewGuid()
@@ -47,7 +48,7 @@ namespace NCS.DSS.ActionPlan.GetActionPlanHttpTrigger
                     DateActionPlanCreated = DateTime.UtcNow,
                     DateActionPlanSentToCustomer = DateTime.UtcNow,
                     DateActionPlanAcknowledged = DateTime.UtcNow,
-                    PriorityCustomerId = 3,
+                    PriorityCustomer = PriorityCustomer.EighteenToTwentyfourNotInEducationEmploymentOrTraining,
                     CurrentSituation = "Started",
                     LastModifiedDate = DateTime.Today.AddYears(-3),
                     LastModifiedTouchpointId = Guid.NewGuid()
