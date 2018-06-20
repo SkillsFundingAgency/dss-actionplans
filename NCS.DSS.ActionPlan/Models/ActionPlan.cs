@@ -30,6 +30,7 @@ namespace NCS.DSS.ActionPlan.Models
         [Display(Description = "Priority Customer reference data.")]
         public PriorityCustomer PriorityCustomer { get; set; }
 
+        [StringLength(4000)]
         [Display(Description = "Summary of a customer current situation and how it affects their career.")]
         public string CurrentSituation { get; set; }
 
