@@ -3,7 +3,7 @@
 namespace NCS.DSS.ActionPlan.Annotations
 {
     [AttributeUsage(AttributeTargets.Class | AttributeTargets.Method, AllowMultiple = true)]
-    public class ActionPlanResponse : Attribute
+    public class Response : Attribute
     {
         public int HttpStatusCode { get; set; }
         public string Description { get; set; }
