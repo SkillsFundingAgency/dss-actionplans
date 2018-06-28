@@ -22,6 +22,16 @@ namespace NCS.DSS.ActionPlan.Models
         [Example(Description = "2018-06-20T21:45:00")]
         public DateTime DateActionPlanCreated { get; set; }
 
+        [Required]
+        [Display(Description = "Customer has seen the customer charter.")]
+        [Example(Description = "true")]
+        public bool CustomerCharterShownToCustomer { get; set; }
+
+        [DataType(DataType.DateTime)]
+        [Display(Description = "Date and time the customer was shown the customer charter.")]
+        [Example(Description = "2018-06-20T21:45:00")]
+        public DateTime DateAndTimeCharterShown { get; set; }
+
         [DataType(DataType.DateTime)]
         [Display(Description = "Date and time the action plan was sent (or made available) to the customer.")]
         [Example(Description = "2018-06-21T13:32:00")]
