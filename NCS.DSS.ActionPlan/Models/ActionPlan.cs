@@ -37,6 +37,10 @@ namespace NCS.DSS.ActionPlan.Models
         [Example(Description = "2018-06-21T13:32:00")]
         public DateTime DateActionPlanSentToCustomer { get; set; }
 
+        [Display(Description = "Action Plan Delivery Method reference data.")]
+        [Example(Description = "1")]
+        public ActionPlanDeliveryMethod ActionPlanDeliveryMethod { get; set; }
+
         [DataType(DataType.DateTime)]
         [Display(Description = "Date and time the customer acknowledged receipt of the action plan.")]
         [Example(Description = "2018-06-22T07:55:00")]
