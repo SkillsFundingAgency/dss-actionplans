@@ -9,7 +9,7 @@ using Microsoft.Azure.WebJobs.Host;
 using NCS.DSS.ActionPlan.Annotations;
 using Newtonsoft.Json;
 
-namespace NCS.DSS.ActionPlan.PatchActionPlanHttpTrigger
+namespace NCS.DSS.ActionPlan.PatchActionPlanHttpTrigger.Function
 {
     public static class PatchActionPlanHttpTrigger
     {

@@ -7,8 +7,9 @@ using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Azure.WebJobs.Host;
 using NCS.DSS.ActionPlan.Annotations;
+using NCS.DSS.ActionPlan.PostActionPlanHttpTrigger.Service;
 
-namespace NCS.DSS.ActionPlan.PostActionPlanHttpTrigger
+namespace NCS.DSS.ActionPlan.PostActionPlanHttpTrigger.Function
 {
     public static class PostActionPlanHttpTrigger
     {

@@ -1,17 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using NCS.DSS.ActionPlan.ReferenceData;
 
-namespace NCS.DSS.ActionPlan.GetActionPlanByIdHttpTrigger
+namespace NCS.DSS.ActionPlan.GetActionPlanHttpTrigger.Service
 {
-    public class GetActionPlanByIdHttpTriggerService
+    public class GetActionPlanHttpTriggerService : IGetActionPlanHttpTriggerService
     {
-        public async Task<Models.ActionPlan> GetActionPlan(Guid actionPlanId)
+        public async Task<List<Models.ActionPlan>> GetActionPlans()
         {
-            var actionPlans = CreateTempActionPlans();
-            var result = actionPlans.FirstOrDefault(a => a.ActionPlanId == actionPlanId);
+            var result = CreateTempActionPlans();
             return await Task.FromResult(result);
         }
 
@@ -62,5 +60,6 @@ namespace NCS.DSS.ActionPlan.GetActionPlanByIdHttpTrigger
 
             return actionPlanList;
         }
+
     }
 }

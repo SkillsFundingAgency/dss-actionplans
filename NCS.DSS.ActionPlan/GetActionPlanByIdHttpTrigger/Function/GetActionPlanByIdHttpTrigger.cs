@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 using System.Web.Http.Description;
 using NCS.DSS.ActionPlan.Annotations;
 
-namespace NCS.DSS.ActionPlan.GetActionPlanByIdHttpTrigger
+namespace NCS.DSS.ActionPlan.GetActionPlanByIdHttpTrigger.Function
 {
     public static class GetActionPlanByIdHttpTrigger
     {

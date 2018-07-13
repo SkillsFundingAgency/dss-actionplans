@@ -1,8 +1,8 @@
 ﻿using System;
 
-namespace NCS.DSS.ActionPlan.PostActionPlanHttpTrigger
+namespace NCS.DSS.ActionPlan.PostActionPlanHttpTrigger.Service
 {
-    public class PostActionPlanHttpTriggerService
+    public class PostActionPlanHttpTriggerService : IPostActionPlanHttpTriggerService
     {
         public Guid? Create(Models.ActionPlan actionPlan)
         {
