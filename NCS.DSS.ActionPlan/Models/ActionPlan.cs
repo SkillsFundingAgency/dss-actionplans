@@ -9,28 +9,29 @@ namespace NCS.DSS.ActionPlan.Models
     {
         [Display(Description = "Unique identifier of the action plan record.")]
         [Example(Description = "b8592ff8-af97-49ad-9fb2-e5c3c717fd85")]
-        public Guid ActionPlanId { get; set; }
+        [Newtonsoft.Json.JsonProperty(PropertyName = "id")]
+        public Guid? ActionPlanId { get; set; }
 
         [Required]
         [Display(Description = "Unique identifier of a customer.")]
         [Example(Description = "2730af9c-fc34-4c2b-a905-c4b584b0f379")]
-        public Guid CustomerId { get; set; }
+        public Guid? CustomerId { get; set; }
 
         [Required]
         [Display(Description = "Unique identifier to the related interaction resource.")]
         [Example(Description = "2730af9c-fc34-4c2b-a905-c4b584b0f379")]
-        public Guid InteractionId { get; set; }
+        public Guid? InteractionId { get; set; }
 
         [Required]
         [DataType(DataType.DateTime)]
         [Display(Description = "Date and time action plan was created.")]
         [Example(Description = "2018-06-20T21:45:00")]
-        public DateTime DateActionPlanCreated { get; set; }
+        public DateTime? DateActionPlanCreated { get; set; }
 
         [Required]
         [Display(Description = "Customer has seen the customer charter.")]
         [Example(Description = "true")]
-        public bool CustomerCharterShownToCustomer { get; set; }
+        public bool? CustomerCharterShownToCustomer { get; set; }
 
         [DataType(DataType.DateTime)]
         [Display(Description = "Date and time the customer was shown the customer charter.")]
