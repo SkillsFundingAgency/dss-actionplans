@@ -1,3 +1,4 @@
+using System;
 using System.ComponentModel.DataAnnotations;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
@@ -8,6 +9,10 @@ using System.Net;
 using System.Threading.Tasks;
 using System.Web.Http.Description;
 using NCS.DSS.ActionPlan.Annotations;
+using NCS.DSS.ActionPlan.Cosmos.Helper;
+using NCS.DSS.ActionPlan.GetActionPlanHttpTrigger.Service;
+using NCS.DSS.ActionPlan.Helpers;
+using NCS.DSS.ActionPlan.Ioc;
 
 namespace NCS.DSS.ActionPlan.GetActionPlanHttpTrigger.Function
 {
@@ -21,18 +26,26 @@ namespace NCS.DSS.ActionPlan.GetActionPlanHttpTrigger.Function
         [Response(HttpStatusCode = (int)HttpStatusCode.Unauthorized, Description = "API key is unknown or invalid", ShowSchema = false)]
         [Response(HttpStatusCode = (int)HttpStatusCode.Forbidden, Description = "Insufficient access", ShowSchema = false)]
         [Display(Name = "Get", Description = "Ability to return all action plans for the given customer.")]
-        public static async Task<HttpResponseMessage> Run([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "Customers/{customerId}/ActionPlans")]HttpRequestMessage req, TraceWriter log, string customerId)
+        public static async Task<HttpResponseMessage> Run([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "Customers/{customerId}/ActionPlans")]HttpRequestMessage req, TraceWriter log, string customerId,
+            [Inject]IResourceHelper resourceHelper,
+            [Inject]IGetActionPlanHttpTriggerService actionPlanGetService)
         {
             log.Info("Get Action Plan C# HTTP trigger function processed a request.");
 
-            var actionPlanService = new GetActionPlanHttpTriggerService();
-            var actionPlans = await actionPlanService.GetActionPlans();
+            if (!Guid.TryParse(customerId, out var customerGuid))
+                return HttpResponseMessageHelper.BadRequest(customerGuid);
 
-            return new HttpResponseMessage(HttpStatusCode.OK)
-            {
-                Content = new StringContent(JsonConvert.SerializeObject(actionPlans),
-                    System.Text.Encoding.UTF8, "application/json")
-            };
+            var doesCustomerExist = resourceHelper.DoesCustomerExist(customerGuid);
+
+            if (!doesCustomerExist)
+                return HttpResponseMessageHelper.NoContent(customerGuid);
+
+            var actionPlans = await actionPlanGetService.GetActionPlansAsync(customerGuid);
+
+            return actionPlans == null ?
+                HttpResponseMessageHelper.NoContent(customerGuid) :
+                HttpResponseMessageHelper.Ok(actionPlans);
+
         }
     }
 }

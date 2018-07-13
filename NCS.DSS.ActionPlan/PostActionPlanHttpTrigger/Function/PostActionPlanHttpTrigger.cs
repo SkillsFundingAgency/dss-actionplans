@@ -1,4 +1,6 @@
+using System;
 using System.ComponentModel.DataAnnotations;
+using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -7,7 +9,12 @@ using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Azure.WebJobs.Host;
 using NCS.DSS.ActionPlan.Annotations;
+using NCS.DSS.ActionPlan.Cosmos.Helper;
+using NCS.DSS.ActionPlan.Helpers;
+using NCS.DSS.ActionPlan.Ioc;
 using NCS.DSS.ActionPlan.PostActionPlanHttpTrigger.Service;
+using NCS.DSS.ActionPlan.Validation;
+using Newtonsoft.Json;
 
 namespace NCS.DSS.ActionPlan.PostActionPlanHttpTrigger.Function
 {
@@ -22,22 +29,55 @@ namespace NCS.DSS.ActionPlan.PostActionPlanHttpTrigger.Function
         [Response(HttpStatusCode = (int)HttpStatusCode.Forbidden, Description = "Insufficient access", ShowSchema = false)]
         [Response(HttpStatusCode = 422, Description = "Action Plan validation error(s)", ShowSchema = false)]
         [Display(Name = "Post", Description = "Ability to create a new action plan for a customer.")]
-        public static async Task<HttpResponseMessage> Run([HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "Customers/{customerId}/Interactions/{interactionId}/ActionPlans")]HttpRequestMessage req, TraceWriter log, string customerId, string interactionId)
+        public static async Task<HttpResponseMessage> Run([HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "Customers/{customerId}/Interactions/{interactionId}/ActionPlans")]HttpRequestMessage req, TraceWriter log, string customerId, string interactionId,
+            [Inject]IResourceHelper resourceHelper,
+            [Inject]IHttpRequestMessageHelper httpRequestMessageHelper,
+            [Inject]IValidate validate,
+            [Inject]IPostActionPlanHttpTriggerService actionPlanPostService)
         {
             log.Info("Post Action Plan C# HTTP trigger function processed a request.");
 
-            // Get request body
-            var actionPlan = await req.Content.ReadAsAsync<Models.ActionPlan>();
+            if (!Guid.TryParse(customerId, out var customerGuid))
+                return HttpResponseMessageHelper.BadRequest(customerGuid);
 
-            var actionPlanService = new PostActionPlanHttpTriggerService();
-            var actionPlanId = actionPlanService.Create(actionPlan);
+            if (!Guid.TryParse(interactionId, out var interactionGuid))
+                return HttpResponseMessageHelper.BadRequest(interactionGuid);
 
-            return actionPlanId == null
-                ? new HttpResponseMessage(HttpStatusCode.BadRequest)
-                : new HttpResponseMessage(HttpStatusCode.Created)
-                {
-                    Content = new StringContent("Created Action Plan record with Id of : " + actionPlanId)
-                };
+            Models.ActionPlan actionPlanRequest;
+
+            try
+            {
+                actionPlanRequest = await httpRequestMessageHelper.GetActionPlanFromRequest<Models.ActionPlan>(req);
+            }
+            catch (JsonSerializationException ex)
+            {
+                return HttpResponseMessageHelper.UnprocessableEntity(ex);
+            }
+
+            if (actionPlanRequest == null)
+                return HttpResponseMessageHelper.UnprocessableEntity(req);
+
+            var errors = validate.ValidateResource(actionPlanRequest);
+
+            if (errors != null && errors.Any())
+                return HttpResponseMessageHelper.UnprocessableEntity(errors);
+
+            var doesCustomerExist = resourceHelper.DoesCustomerExist(customerGuid);
+
+            if (!doesCustomerExist)
+                return HttpResponseMessageHelper.NoContent(customerGuid);
+
+            var doesInteractionExist = resourceHelper.DoesInteractionExist(interactionGuid);
+
+            if (!doesInteractionExist)
+                return HttpResponseMessageHelper.NoContent(interactionGuid);
+
+            var actionPlan = await actionPlanPostService.CreateAsync(actionPlanRequest);
+
+            return actionPlan == null
+                ? HttpResponseMessageHelper.BadRequest(customerGuid)
+                : HttpResponseMessageHelper.Created(actionPlan);
+
         }
     }
 }

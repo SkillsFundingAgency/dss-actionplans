@@ -9,6 +9,10 @@ using System.Net;
 using System.Threading.Tasks;
 using System.Web.Http.Description;
 using NCS.DSS.ActionPlan.Annotations;
+using NCS.DSS.ActionPlan.Cosmos.Helper;
+using NCS.DSS.ActionPlan.GetActionPlanByIdHttpTrigger.Service;
+using NCS.DSS.ActionPlan.Helpers;
+using NCS.DSS.ActionPlan.Ioc;
 
 namespace NCS.DSS.ActionPlan.GetActionPlanByIdHttpTrigger.Function
 {
@@ -22,34 +26,37 @@ namespace NCS.DSS.ActionPlan.GetActionPlanByIdHttpTrigger.Function
         [Response(HttpStatusCode = (int)HttpStatusCode.Unauthorized, Description = "API key is unknown or invalid", ShowSchema = false)]
         [Response(HttpStatusCode = (int)HttpStatusCode.Forbidden, Description = "Insufficient access", ShowSchema = false)]
         [Display(Name = "Get", Description = "Ability to retrieve an individual action plan for the given customer")]
-        public static async Task<HttpResponseMessage> Run([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "Customers/{customerId}/Interactions/{interactionId}/ActionPlans/{actionPlanId}")]HttpRequestMessage req, TraceWriter log, string customerId, string interactionId, string actionPlanId)
+        public static async Task<HttpResponseMessage> Run([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "Customers/{customerId}/Interactions/{interactionId}/ActionPlans/{actionPlanId}")]HttpRequestMessage req, TraceWriter log, string customerId, string interactionId, string actionPlanId,
+            [Inject]IResourceHelper resourceHelper,
+            [Inject]IGetActionPlanByIdHttpTriggerService actionPlanGetService)
         {
             log.Info("Get Action Plan By Id C# HTTP trigger function  processed a request.");
 
+            if (!Guid.TryParse(customerId, out var customerGuid))
+                return HttpResponseMessageHelper.BadRequest(customerGuid);
+
+            if (!Guid.TryParse(interactionId, out var interactionGuid))
+                return HttpResponseMessageHelper.BadRequest(interactionGuid);
+
             if (!Guid.TryParse(actionPlanId, out var actionPlanGuid))
-            {
-                return new HttpResponseMessage(HttpStatusCode.BadRequest)
-                {
-                    Content = new StringContent(JsonConvert.SerializeObject(actionPlanId),
-                        System.Text.Encoding.UTF8, "application/json")
-                };
-            }
+                return HttpResponseMessageHelper.BadRequest(actionPlanGuid);
 
-            var actionPlanService = new GetActionPlanByIdHttpTriggerService();
-            var actionPlan = await actionPlanService.GetActionPlan(actionPlanGuid);
+            var doesCustomerExist = resourceHelper.DoesCustomerExist(customerGuid);
 
-            if (actionPlan == null)
-                return new HttpResponseMessage(HttpStatusCode.NotFound)
-                {
-                    Content = new StringContent(
-                        "Unable to find Action Plan record with Id of : " + actionPlanGuid)
-                };
+            if (!doesCustomerExist)
+                return HttpResponseMessageHelper.NoContent(customerGuid);
 
-            return new HttpResponseMessage(HttpStatusCode.OK)
-            {
-                Content = new StringContent(JsonConvert.SerializeObject(actionPlan),
-                    System.Text.Encoding.UTF8, "application/json")
-            };
+            var doesInteractionExist = resourceHelper.DoesInteractionExist(interactionGuid);
+
+            if (!doesInteractionExist)
+                return HttpResponseMessageHelper.NoContent(interactionGuid);
+
+            var actionPlan = await actionPlanGetService.GetActionPlanForCustomerAsync(customerGuid, actionPlanGuid);
+
+            return actionPlan == null ?
+                HttpResponseMessageHelper.NoContent(actionPlanGuid) :
+                HttpResponseMessageHelper.Ok(actionPlan);
+
         }
     }
 }

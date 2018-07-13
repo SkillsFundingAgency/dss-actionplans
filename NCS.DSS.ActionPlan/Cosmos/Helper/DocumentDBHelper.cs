@@ -33,12 +33,12 @@ namespace NCS.DSS.ActionPlan.Cosmos.Helper
             return _documentCollectionUri;
         }
         
-        public Uri CreateDocumentUri(Guid sessionId)
+        public Uri CreateDocumentUri(Guid actionPlanId)
         {
             if (_documentUri != null)
                 return _documentUri;
 
-            _documentUri = UriFactory.CreateDocumentUri(_databaseId, _collectionId, sessionId.ToString());
+            _documentUri = UriFactory.CreateDocumentUri(_databaseId, _collectionId, actionPlanId.ToString());
 
             return _documentUri;
 

@@ -7,7 +7,6 @@ using Microsoft.Azure.Documents.Client;
 using Microsoft.Azure.Documents.Linq;
 using NCS.DSS.ActionPlan.Cosmos.Client;
 using NCS.DSS.ActionPlan.Cosmos.Helper;
-using NCS.DSS.ActionPlan.Models;
 
 namespace NCS.DSS.ActionPlan.Cosmos.Provider
 {
@@ -89,7 +88,6 @@ namespace NCS.DSS.ActionPlan.Cosmos.Provider
 
             return actionPlans?.FirstOrDefault();
         }
-
 
         public async Task<ResourceResponse<Document>> CreateActionPlanAsync(Models.ActionPlan actionPlan)
         {
