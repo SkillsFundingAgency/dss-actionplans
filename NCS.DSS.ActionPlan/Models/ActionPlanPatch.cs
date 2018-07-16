@@ -28,7 +28,7 @@ namespace NCS.DSS.ActionPlan.Models
 
         [Display(Description = "Action Plan Delivery Method reference data.")]
         [Example(Description = "1")]
-        public ActionPlanDeliveryMethod ActionPlanDeliveryMethod { get; set; }
+        public ActionPlanDeliveryMethod? ActionPlanDeliveryMethod { get; set; }
 
         [DataType(DataType.DateTime)]
         [Display(Description = "Date and time the customer acknowledged receipt of the action plan.")]
@@ -37,7 +37,7 @@ namespace NCS.DSS.ActionPlan.Models
 
         [Display(Description = "Priority Customer reference data.")]
         [Example(Description = "1")]
-        public PriorityCustomer PriorityCustomer { get; set; }
+        public PriorityCustomer? PriorityCustomer { get; set; }
 
         [StringLength(4000)]
         [Display(Description = "Summary of a customer current situation and how it affects their career.")]
@@ -47,11 +47,11 @@ namespace NCS.DSS.ActionPlan.Models
         [DataType(DataType.DateTime)]
         [Display(Description = "Date and time of the last modification to the record.")]
         [Example(Description = "2018-06-20T13:45:00")]
-        public DateTime LastModifiedDate { get; set; }
+        public DateTime? LastModifiedDate { get; set; }
 
         [Display(Description = "Identifier of the touchpoint who made the last change to the record")]
         [Example(Description = "d1307d77-af23-4cb4-b600-a60e04f8c3df")]
-        public Guid LastModifiedTouchpointId { get; set; }
+        public Guid? LastModifiedTouchpointId { get; set; }
 
     }
 }

@@ -76,16 +76,36 @@ namespace NCS.DSS.ActionPlan.Models
             if (actionPlanPatch == null)
                 return;
 
-            DateActionPlanCreated = actionPlanPatch.DateActionPlanCreated;
-            CustomerCharterShownToCustomer = actionPlanPatch.CustomerCharterShownToCustomer;
-            DateAndTimeCharterShown = actionPlanPatch.DateAndTimeCharterShown;
-            DateActionPlanSentToCustomer = actionPlanPatch.DateActionPlanSentToCustomer;
-            ActionPlanDeliveryMethod = actionPlanPatch.ActionPlanDeliveryMethod;
-            DateActionPlanAcknowledged = actionPlanPatch.DateActionPlanAcknowledged;
-            PriorityCustomer = actionPlanPatch.PriorityCustomer;
-            CurrentSituation = actionPlanPatch.CurrentSituation;
-            LastModifiedDate = actionPlanPatch.LastModifiedDate;
-            LastModifiedTouchpointId = actionPlanPatch.LastModifiedTouchpointId;
+            if(actionPlanPatch.DateActionPlanCreated.HasValue)
+                DateActionPlanCreated = actionPlanPatch.DateActionPlanCreated;
+
+            if (actionPlanPatch.CustomerCharterShownToCustomer.HasValue)
+                CustomerCharterShownToCustomer = actionPlanPatch.CustomerCharterShownToCustomer;
+
+            if (actionPlanPatch.DateAndTimeCharterShown.HasValue)
+                DateAndTimeCharterShown = actionPlanPatch.DateAndTimeCharterShown;
+
+            if (actionPlanPatch.DateActionPlanSentToCustomer.HasValue)
+                DateActionPlanSentToCustomer = actionPlanPatch.DateActionPlanSentToCustomer;
+            
+            if (actionPlanPatch.ActionPlanDeliveryMethod.HasValue)
+                ActionPlanDeliveryMethod = actionPlanPatch.ActionPlanDeliveryMethod.Value;
+
+            if (actionPlanPatch.DateActionPlanAcknowledged.HasValue)
+                DateActionPlanAcknowledged = actionPlanPatch.DateActionPlanAcknowledged;
+
+            if (actionPlanPatch.PriorityCustomer.HasValue)
+                PriorityCustomer = actionPlanPatch.PriorityCustomer.Value;
+
+            if (!string.IsNullOrEmpty(actionPlanPatch.CurrentSituation))
+                CurrentSituation = actionPlanPatch.CurrentSituation;
+
+            if (actionPlanPatch.LastModifiedDate.HasValue)
+                LastModifiedDate = actionPlanPatch.LastModifiedDate;
+
+            if (actionPlanPatch.LastModifiedTouchpointId.HasValue)
+                LastModifiedTouchpointId = actionPlanPatch.LastModifiedTouchpointId;
+
         }
     }
 }
