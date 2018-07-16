@@ -13,6 +13,9 @@ namespace NCS.DSS.ActionPlan.PatchActionPlanHttpTrigger.Service
             if (actionPlan == null)
                 return null;
 
+            if (!actionPlanPatch.LastModifiedDate.HasValue)
+                actionPlanPatch.LastModifiedDate = DateTime.Now;
+
             actionPlan.Patch(actionPlanPatch);
 
             var documentDbProvider = new DocumentDBProvider();

@@ -15,6 +15,9 @@ namespace NCS.DSS.ActionPlan.PostActionPlanHttpTrigger.Service
             var actionPlanId = Guid.NewGuid();
             actionPlan.ActionPlanId = actionPlanId;
 
+            if (!actionPlan.LastModifiedDate.HasValue)
+                actionPlan.LastModifiedDate = DateTime.Now;
+
             var documentDbProvider = new DocumentDBProvider();
 
             var response = await documentDbProvider.CreateActionPlanAsync(actionPlan);
