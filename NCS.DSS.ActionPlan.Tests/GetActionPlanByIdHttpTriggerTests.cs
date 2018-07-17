@@ -2,8 +2,7 @@
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
-using Microsoft.Azure.WebJobs.Extensions;
-using Microsoft.Azure.WebJobs.Host;
+using Microsoft.Extensions.Logging;
 using NCS.DSS.ActionPlan.Cosmos.Helper;
 using NCS.DSS.ActionPlan.GetActionPlanByIdHttpTrigger.Service;
 using NSubstitute;
@@ -19,7 +18,7 @@ namespace NCS.DSS.ActionPlan.Tests
         private const string ValidActionPlanId = "d5369b9a-6959-4bd3-92fc-1583e72b7e51";
         private const string InValidId = "1111111-2222-3333-4444-555555555555";
 
-        private TraceWriter _log;
+        private ILogger _log;
         private HttpRequestMessage _request;
         private IResourceHelper _resourceHelper;
         private IGetActionPlanByIdHttpTriggerService _getActionPlanByIdHttpTriggerService;
@@ -38,7 +37,8 @@ namespace NCS.DSS.ActionPlan.Tests
                             $"Interactions/aa57e39e-4469-4c79-a9e9-9cb4ef410382/" +
                             $"ActionPlans/d5369b9a-6959-4bd3-92fc-1583e72b7e51")
             };
-            _log = new TraceMonitor();
+
+            _log = Substitute.For<ILogger>();
             _resourceHelper = Substitute.For<IResourceHelper>();
             _getActionPlanByIdHttpTriggerService = Substitute.For<IGetActionPlanByIdHttpTriggerService>();
         }
