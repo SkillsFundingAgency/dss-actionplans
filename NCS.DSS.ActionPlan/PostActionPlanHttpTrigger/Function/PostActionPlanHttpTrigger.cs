@@ -8,6 +8,7 @@ using System.Web.Http.Description;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Azure.WebJobs.Host;
+using Microsoft.Extensions.Logging;
 using NCS.DSS.ActionPlan.Annotations;
 using NCS.DSS.ActionPlan.Cosmos.Helper;
 using NCS.DSS.ActionPlan.Helpers;
@@ -29,13 +30,13 @@ namespace NCS.DSS.ActionPlan.PostActionPlanHttpTrigger.Function
         [Response(HttpStatusCode = (int)HttpStatusCode.Forbidden, Description = "Insufficient access", ShowSchema = false)]
         [Response(HttpStatusCode = 422, Description = "Action Plan validation error(s)", ShowSchema = false)]
         [Display(Name = "Post", Description = "Ability to create a new action plan for a customer.")]
-        public static async Task<HttpResponseMessage> Run([HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "Customers/{customerId}/Interactions/{interactionId}/ActionPlans")]HttpRequestMessage req, TraceWriter log, string customerId, string interactionId,
+        public static async Task<HttpResponseMessage> Run([HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "Customers/{customerId}/Interactions/{interactionId}/ActionPlans")]HttpRequestMessage req, ILogger log, string customerId, string interactionId,
             [Inject]IResourceHelper resourceHelper,
             [Inject]IHttpRequestMessageHelper httpRequestMessageHelper,
             [Inject]IValidate validate,
             [Inject]IPostActionPlanHttpTriggerService actionPlanPostService)
         {
-            log.Info("Post Action Plan C# HTTP trigger function processed a request.");
+            log.LogInformation("Post Action Plan C# HTTP trigger function processed a request.");
 
             if (!Guid.TryParse(customerId, out var customerGuid))
                 return HttpResponseMessageHelper.BadRequest(customerGuid);

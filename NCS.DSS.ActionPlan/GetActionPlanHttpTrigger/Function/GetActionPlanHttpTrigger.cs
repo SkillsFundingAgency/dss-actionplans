@@ -7,6 +7,7 @@ using System.Net.Http;
 using System.Net;
 using System.Threading.Tasks;
 using System.Web.Http.Description;
+using Microsoft.Extensions.Logging;
 using NCS.DSS.ActionPlan.Annotations;
 using NCS.DSS.ActionPlan.Cosmos.Helper;
 using NCS.DSS.ActionPlan.GetActionPlanHttpTrigger.Service;
@@ -25,11 +26,11 @@ namespace NCS.DSS.ActionPlan.GetActionPlanHttpTrigger.Function
         [Response(HttpStatusCode = (int)HttpStatusCode.Unauthorized, Description = "API key is unknown or invalid", ShowSchema = false)]
         [Response(HttpStatusCode = (int)HttpStatusCode.Forbidden, Description = "Insufficient access", ShowSchema = false)]
         [Display(Name = "Get", Description = "Ability to return all action plans for the given customer.")]
-        public static async Task<HttpResponseMessage> Run([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "Customers/{customerId}/ActionPlans")]HttpRequestMessage req, TraceWriter log, string customerId,
+        public static async Task<HttpResponseMessage> Run([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "Customers/{customerId}/ActionPlans")]HttpRequestMessage req, ILogger log, string customerId,
             [Inject]IResourceHelper resourceHelper,
             [Inject]IGetActionPlanHttpTriggerService actionPlanGetService)
         {
-            log.Info("Get Action Plan C# HTTP trigger function processed a request.");
+            log.LogInformation("Get Action Plan C# HTTP trigger function processed a request.");
 
             if (!Guid.TryParse(customerId, out var customerGuid))
                 return HttpResponseMessageHelper.BadRequest(customerGuid);
