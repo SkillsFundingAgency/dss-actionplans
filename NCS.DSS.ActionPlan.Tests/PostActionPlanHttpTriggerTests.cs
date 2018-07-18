@@ -50,7 +50,7 @@ namespace NCS.DSS.ActionPlan.Tests
         }
 
         [Test]
-        public async Task GetActionPlanHttpTrigger_ReturnsStatusCodeBadRequest_WhenCustomerIdIsInvalid()
+        public async Task PostActionPlanHttpTrigger_ReturnsStatusCodeBadRequest_WhenCustomerIdIsInvalid()
         {
             // Act
             var result = await RunFunction(InValidId, ValidInteractionId);
@@ -61,7 +61,7 @@ namespace NCS.DSS.ActionPlan.Tests
         }
 
         [Test]
-        public async Task GetActionPlanHttpTrigger_ReturnsStatusCodeBadRequest_WhenInteractionIdIsInvalid()
+        public async Task PostActionPlanHttpTrigger_ReturnsStatusCodeBadRequest_WhenInteractionIdIsInvalid()
         {
             // Act
             var result = await RunFunction(ValidCustomerId, InValidId);
@@ -146,6 +146,23 @@ namespace NCS.DSS.ActionPlan.Tests
         }
 
         [Test]
+        public async Task PostActionPlanHttpTrigger_ReturnsStatusCodeCreated_WhenRequestIsNotValid()
+        {
+            _httpRequestMessageHelper.GetActionPlanFromRequest<Models.ActionPlan>(_request).Returns(Task.FromResult(_actionPlan).Result);
+
+            _resourceHelper.DoesCustomerExist(Arg.Any<Guid>()).ReturnsForAnyArgs(true);
+            _resourceHelper.DoesInteractionExist(Arg.Any<Guid>()).Returns(true);
+
+            _postActionPlanHttpTriggerService.CreateAsync(Arg.Any<Models.ActionPlan>()).Returns(Task.FromResult<Models.ActionPlan>(null).Result);
+
+            var result = await RunFunction(ValidCustomerId, ValidInteractionId);
+
+            // Assert
+            Assert.IsInstanceOf<HttpResponseMessage>(result);
+            Assert.AreEqual(HttpStatusCode.BadRequest, result.StatusCode);
+        }
+
+        [Test]
         public async Task PostActionPlanHttpTrigger_ReturnsStatusCodeCreated_WhenRequestIsValid()
         {
             _httpRequestMessageHelper.GetActionPlanFromRequest<Models.ActionPlan>(_request).Returns(Task.FromResult(_actionPlan).Result);
@@ -153,7 +170,7 @@ namespace NCS.DSS.ActionPlan.Tests
             _resourceHelper.DoesCustomerExist(Arg.Any<Guid>()).ReturnsForAnyArgs(true);
             _resourceHelper.DoesInteractionExist(Arg.Any<Guid>()).Returns(true);
 
-            _postActionPlanHttpTriggerService.CreateAsync(Arg.Any<Models.ActionPlan>()).Returns(Task.FromResult<Models.ActionPlan>(_actionPlan).Result);
+            _postActionPlanHttpTriggerService.CreateAsync(Arg.Any<Models.ActionPlan>()).Returns(Task.FromResult(_actionPlan).Result);
 
             var result = await RunFunction(ValidCustomerId, ValidInteractionId);
 

@@ -53,7 +53,7 @@ namespace NCS.DSS.ActionPlan.Tests
         }
 
         [Test]
-        public async Task GetActionPlanHttpTrigger_ReturnsStatusCodeBadRequest_WhenCustomerIdIsInvalid()
+        public async Task PatchActionPlanHttpTrigger_ReturnsStatusCodeBadRequest_WhenCustomerIdIsInvalid()
         {
             // Act
             var result = await RunFunction(InValidId, ValidInteractionId, ValidActionPlanId);
@@ -64,7 +64,7 @@ namespace NCS.DSS.ActionPlan.Tests
         }
 
         [Test]
-        public async Task GetActionPlanHttpTrigger_ReturnsStatusCodeBadRequest_WhenInteractionIdIsInvalid()
+        public async Task PatchActionPlanHttpTrigger_ReturnsStatusCodeBadRequest_WhenInteractionIdIsInvalid()
         {
             // Act
             var result = await RunFunction(ValidCustomerId, InValidId, ValidActionPlanId);
@@ -75,7 +75,7 @@ namespace NCS.DSS.ActionPlan.Tests
         }
 
         [Test]
-        public async Task GetActionPlanHttpTrigger_ReturnsStatusCodeBadRequest_WhenActionPlanIdIsInvalid()
+        public async Task PatchActionPlanHttpTrigger_ReturnsStatusCodeBadRequest_WhenActionPlanIdIsInvalid()
         {
             // Act
             var result = await RunFunction(ValidCustomerId, ValidInteractionId, InValidId);
@@ -128,39 +128,7 @@ namespace NCS.DSS.ActionPlan.Tests
         }
 
         [Test]
-        public async Task PatchActionPlanHttpTrigger_ReturnsStatusCodeNoContent_WhenActionPlanDoesNotExist()
-        {
-            _httpRequestMessageHelper.GetActionPlanFromRequest<ActionPlanPatch>(_request).Returns(Task.FromResult(_actionPlanPatch).Result);
-
-            _resourceHelper.DoesCustomerExist(Arg.Any<Guid>()).ReturnsForAnyArgs(true);
-
-            _patchActionPlanHttpTriggerService.GetActionPlanForCustomerAsync(Arg.Any<Guid>(), Arg.Any<Guid>()).Returns(Task.FromResult<Models.ActionPlan>(null).Result);
-
-            // Act
-            var result = await RunFunction(ValidCustomerId, ValidInteractionId, ValidActionPlanId);
-
-            // Assert
-            Assert.IsInstanceOf<HttpResponseMessage>(result);
-            Assert.AreEqual(HttpStatusCode.NoContent, result.StatusCode);
-        }
-
-        [Test]
-        public async Task GetActionPlanHttpTrigger_ReturnsStatusCodeNoContent_WhenCustomerDoesNotExist()
-        {
-            _httpRequestMessageHelper.GetActionPlanFromRequest<ActionPlanPatch>(_request).Returns(Task.FromResult(_actionPlanPatch).Result);
-
-            _resourceHelper.DoesCustomerExist(Arg.Any<Guid>()).ReturnsForAnyArgs(false);
-
-            // Act
-            var result = await RunFunction(ValidCustomerId, ValidInteractionId, ValidActionPlanId);
-
-            // Assert
-            Assert.IsInstanceOf<HttpResponseMessage>(result);
-            Assert.AreEqual(HttpStatusCode.NoContent, result.StatusCode);
-        }
-
-        [Test]
-        public async Task GetActionPlanHttpTrigger_ReturnsStatusCodeNoContent_WhenInteractionDoesNotExist()
+        public async Task PatchActionPlanHttpTrigger_ReturnsStatusCodeNoContent_WhenInteractionDoesNotExist()
         {
             _httpRequestMessageHelper.GetActionPlanFromRequest<ActionPlanPatch>(_request).Returns(Task.FromResult(_actionPlanPatch).Result);
 
@@ -176,7 +144,24 @@ namespace NCS.DSS.ActionPlan.Tests
         }
 
         [Test]
-        public async Task GetActionPlanHttpTrigger_ReturnsStatusCodeOk_WhenActionPlanDoesNotExist()
+        public async Task PatchActionPlanHttpTrigger_ReturnsStatusCodeNoContent_WhenActionPlanDoesNotExist()
+        {
+            _httpRequestMessageHelper.GetActionPlanFromRequest<ActionPlanPatch>(_request).Returns(Task.FromResult(_actionPlanPatch).Result);
+
+            _resourceHelper.DoesCustomerExist(Arg.Any<Guid>()).ReturnsForAnyArgs(true);
+
+            _patchActionPlanHttpTriggerService.GetActionPlanForCustomerAsync(Arg.Any<Guid>(), Arg.Any<Guid>()).Returns(Task.FromResult<Models.ActionPlan>(null).Result);
+
+            // Act
+            var result = await RunFunction(ValidCustomerId, ValidInteractionId, ValidActionPlanId);
+
+            // Assert
+            Assert.IsInstanceOf<HttpResponseMessage>(result);
+            Assert.AreEqual(HttpStatusCode.NoContent, result.StatusCode);
+        }
+        
+        [Test]
+        public async Task PatchActionPlanHttpTrigger_ReturnsStatusCodeOk_WhenActionPlanDoesNotExist()
         {
             _httpRequestMessageHelper.GetActionPlanFromRequest<ActionPlanPatch>(_request).Returns(Task.FromResult(_actionPlanPatch).Result);
 
@@ -195,6 +180,25 @@ namespace NCS.DSS.ActionPlan.Tests
 
         [Test]
         public async Task PatchActionPlanHttpTrigger_ReturnsStatusCodeBadRequest_WhenUnableToUpdateActionPlanRecord()
+        {
+            _httpRequestMessageHelper.GetActionPlanFromRequest<ActionPlanPatch>(_request).Returns(Task.FromResult(_actionPlanPatch).Result);
+
+            _resourceHelper.DoesCustomerExist(Arg.Any<Guid>()).ReturnsForAnyArgs(true);
+            _resourceHelper.DoesInteractionExist(Arg.Any<Guid>()).Returns(true);
+
+            _patchActionPlanHttpTriggerService.GetActionPlanForCustomerAsync(Arg.Any<Guid>(), Arg.Any<Guid>()).Returns(Task.FromResult(_actionPlan).Result);
+
+            _patchActionPlanHttpTriggerService.UpdateAsync(Arg.Any<Models.ActionPlan>(), Arg.Any<ActionPlanPatch>()).Returns(Task.FromResult<Models.ActionPlan>(null).Result);
+
+            var result = await RunFunction(ValidCustomerId, ValidInteractionId, ValidActionPlanId);
+
+            // Assert
+            Assert.IsInstanceOf<HttpResponseMessage>(result);
+            Assert.AreEqual(HttpStatusCode.BadRequest, result.StatusCode);
+        }
+
+        [Test]
+        public async Task PatchActionPlanHttpTrigger_ReturnsStatusCodeOK_WhenRequestIsNotValid()
         {
             _httpRequestMessageHelper.GetActionPlanFromRequest<ActionPlanPatch>(_request).Returns(Task.FromResult(_actionPlanPatch).Result);
 
