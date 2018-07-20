@@ -53,7 +53,7 @@ namespace NCS.DSS.ActionPlan.PatchActionPlanHttpTrigger.Function
             {
                 actionPlanPatchRequest = await httpRequestMessageHelper.GetActionPlanFromRequest<Models.ActionPlanPatch>(req);
             }
-            catch (JsonSerializationException ex)
+            catch (JsonException ex)
             {
                 return HttpResponseMessageHelper.UnprocessableEntity(ex);
             }

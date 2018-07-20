@@ -50,7 +50,7 @@ namespace NCS.DSS.ActionPlan.PostActionPlanHttpTrigger.Function
             {
                 actionPlanRequest = await httpRequestMessageHelper.GetActionPlanFromRequest<Models.ActionPlan>(req);
             }
-            catch (JsonSerializationException ex)
+            catch (JsonException ex)
             {
                 return HttpResponseMessageHelper.UnprocessableEntity(ex);
             }
