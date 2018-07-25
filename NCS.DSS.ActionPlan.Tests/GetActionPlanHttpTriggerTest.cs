@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using NCS.DSS.ActionPlan.Cosmos.Helper;
 using NCS.DSS.ActionPlan.GetActionPlanHttpTrigger.Service;
+using NCS.DSS.ActionPlan.Helpers;
 using NSubstitute;
 using NUnit.Framework;
 
@@ -21,6 +22,7 @@ namespace NCS.DSS.ActionPlan.Tests
         private HttpRequestMessage _request;
         private IResourceHelper _resourceHelper;
         private IGetActionPlanHttpTriggerService _getActionPlanHttpTriggerService;
+        private IHttpRequestMessageHelper _httpRequestMessageHelper;
 
         [SetUp]
         public void Setup()
@@ -35,11 +37,27 @@ namespace NCS.DSS.ActionPlan.Tests
             _log = Substitute.For<ILogger>();
             _resourceHelper = Substitute.For<IResourceHelper>();
             _getActionPlanHttpTriggerService = Substitute.For<IGetActionPlanHttpTriggerService>();
+            _httpRequestMessageHelper = Substitute.For<IHttpRequestMessageHelper>();
+        }
+
+        [Test]
+        public async Task GetActionPlanHttpTrigger_ReturnsStatusCodeBadRequest_WhenTouchpointIdIsNotProvided()
+        {
+            _httpRequestMessageHelper.GetTouchpointId(_request).Returns((Guid?)null);
+
+            // Act
+            var result = await RunFunction(InValidId);
+
+            // Assert
+            Assert.IsInstanceOf<HttpResponseMessage>(result);
+            Assert.AreEqual(HttpStatusCode.BadRequest, result.StatusCode);
         }
 
         [Test]
         public async Task GetActionPlanHttpTrigger_ReturnsStatusCodeBadRequest_WhenCustomerIdIsInvalid()
         {
+            _httpRequestMessageHelper.GetTouchpointId(_request).Returns(new Guid());
+
             // Act
             var result = await RunFunction(InValidId);
 
@@ -51,6 +69,7 @@ namespace NCS.DSS.ActionPlan.Tests
         [Test]
         public async Task GetActionPlanHttpTrigger_ReturnsStatusCodeNoContent_WhenCustomerDoesNotExist()
         {
+            _httpRequestMessageHelper.GetTouchpointId(_request).Returns(new Guid());
             _resourceHelper.DoesCustomerExist(Arg.Any<Guid>()).ReturnsForAnyArgs(false);
 
             // Act
@@ -64,6 +83,7 @@ namespace NCS.DSS.ActionPlan.Tests
         [Test]
         public async Task GetActionPlanHttpTrigger_ReturnsStatusCodeNoContent_WhenActionPlanDoesNotExist()
         {
+            _httpRequestMessageHelper.GetTouchpointId(_request).Returns(new Guid());
             _resourceHelper.DoesCustomerExist(Arg.Any<Guid>()).Returns(true);
             _resourceHelper.DoesInteractionExist(Arg.Any<Guid>()).Returns(false);
 
@@ -80,6 +100,7 @@ namespace NCS.DSS.ActionPlan.Tests
         [Test]
         public async Task GetActionPlanHttpTrigger_ReturnsStatusCodeOk_WhenActionPlanExists()
         {
+            _httpRequestMessageHelper.GetTouchpointId(_request).Returns(new Guid());
             _resourceHelper.DoesCustomerExist(Arg.Any<Guid>()).Returns(true);
             _resourceHelper.DoesInteractionExist(Arg.Any<Guid>()).Returns(true);
 
@@ -97,7 +118,7 @@ namespace NCS.DSS.ActionPlan.Tests
         private async Task<HttpResponseMessage> RunFunction(string customerId)
         {
             return await GetActionPlanHttpTrigger.Function.GetActionPlanHttpTrigger.Run(
-                _request, _log, customerId, _resourceHelper, _getActionPlanHttpTriggerService).ConfigureAwait(false);
+                _request, _log, customerId, _resourceHelper, _httpRequestMessageHelper, _getActionPlanHttpTriggerService).ConfigureAwait(false);
         }
 
     }

@@ -28,9 +28,17 @@ namespace NCS.DSS.ActionPlan.GetActionPlanByIdHttpTrigger.Function
         [Display(Name = "Get", Description = "Ability to retrieve an individual action plan for the given customer")]
         public static async Task<HttpResponseMessage> Run([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "Customers/{customerId}/Interactions/{interactionId}/ActionPlans/{actionPlanId}")]HttpRequestMessage req, ILogger log, string customerId, string interactionId, string actionPlanId,
             [Inject]IResourceHelper resourceHelper,
+            [Inject]IHttpRequestMessageHelper httpRequestMessageHelper,
             [Inject]IGetActionPlanByIdHttpTriggerService actionPlanGetService)
         {
-            log.LogInformation("Get Action Plan By Id C# HTTP trigger function  processed a request.");
+            var touchpointId = httpRequestMessageHelper.GetTouchpointId(req);
+            if (touchpointId == null)
+            {
+                log.LogInformation("Unable to locate touchpoint id in request header");
+                return HttpResponseMessageHelper.BadRequest();
+            }
+
+            log.LogInformation("Get Action Plan By Id C# HTTP trigger function  processed a request. By Touchpoint " + touchpointId);
 
             if (!Guid.TryParse(customerId, out var customerGuid))
                 return HttpResponseMessageHelper.BadRequest(customerGuid);

@@ -7,7 +7,6 @@ using System.Threading.Tasks;
 using System.Web.Http.Description;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
-using Microsoft.Azure.WebJobs.Host;
 using Microsoft.Extensions.Logging;
 using NCS.DSS.ActionPlan.Annotations;
 using NCS.DSS.ActionPlan.Cosmos.Helper;
@@ -36,7 +35,14 @@ namespace NCS.DSS.ActionPlan.PatchActionPlanHttpTrigger.Function
             [Inject]IValidate validate,
             [Inject]IPatchActionPlanHttpTriggerService actionPlanPatchService)
         {
-            log.LogInformation("Patch Action Plan C# HTTP trigger function processed a request.");
+            var touchpointId = httpRequestMessageHelper.GetTouchpointId(req);
+            if (touchpointId == null)
+            {
+                log.LogInformation("Unable to locate touchpoint id in request header");
+                return HttpResponseMessageHelper.BadRequest();
+            }
+
+            log.LogInformation("Patch Action Plan C# HTTP trigger function processed a request. By Touchpoint " + touchpointId);
 
             if (!Guid.TryParse(customerId, out var customerGuid))
                 return HttpResponseMessageHelper.BadRequest(customerGuid);
@@ -60,6 +66,8 @@ namespace NCS.DSS.ActionPlan.PatchActionPlanHttpTrigger.Function
 
             if (actionPlanPatchRequest == null)
                 return HttpResponseMessageHelper.UnprocessableEntity(req);
+
+            actionPlanPatchRequest.LastModifiedTouchpointId = touchpointId;
 
             var errors = validate.ValidateResource(actionPlanPatchRequest);
 
