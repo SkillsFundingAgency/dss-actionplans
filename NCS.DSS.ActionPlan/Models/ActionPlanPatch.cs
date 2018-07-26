@@ -5,7 +5,7 @@ using NCS.DSS.ActionPlan.ReferenceData;
 
 namespace NCS.DSS.ActionPlan.Models
 {
-    public class ActionPlanPatch
+    public class ActionPlanPatch : IActionPlan
     {
         [DataType(DataType.DateTime)]
         [Display(Description = "Date and time action plan was created.")]
@@ -53,5 +53,10 @@ namespace NCS.DSS.ActionPlan.Models
         [Example(Description = "d1307d77-af23-4cb4-b600-a60e04f8c3df")]
         public Guid? LastModifiedTouchpointId { get; set; }
 
+        public void SetDefaultValues()
+        {
+            if (!LastModifiedDate.HasValue)
+                LastModifiedDate = DateTime.UtcNow;
+        }
     }
 }

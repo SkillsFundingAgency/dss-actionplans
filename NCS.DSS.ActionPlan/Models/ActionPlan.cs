@@ -5,7 +5,7 @@ using NCS.DSS.ActionPlan.ReferenceData;
 
 namespace NCS.DSS.ActionPlan.Models
 {
-    public class ActionPlan
+    public class ActionPlan : IActionPlan
     {
         [Display(Description = "Unique identifier of the action plan record.")]
         [Example(Description = "b8592ff8-af97-49ad-9fb2-e5c3c717fd85")]
@@ -45,7 +45,7 @@ namespace NCS.DSS.ActionPlan.Models
 
         [Display(Description = "Action Plan Delivery Method reference data.")]
         [Example(Description = "1")]
-        public ActionPlanDeliveryMethod ActionPlanDeliveryMethod { get; set; }
+        public ActionPlanDeliveryMethod? ActionPlanDeliveryMethod { get; set; }
 
         [DataType(DataType.DateTime)]
         [Display(Description = "Date and time the customer acknowledged receipt of the action plan.")]
@@ -55,7 +55,7 @@ namespace NCS.DSS.ActionPlan.Models
         [Required]
         [Display(Description = "Priority Customer reference data.")]
         [Example(Description = "1")]
-        public PriorityCustomer PriorityCustomer { get; set; }
+        public PriorityCustomer? PriorityCustomer { get; set; }
 
         [StringLength(4000)]
         [Display(Description = "Summary of a customer current situation and how it affects their career.")]
@@ -70,6 +70,21 @@ namespace NCS.DSS.ActionPlan.Models
         [Display(Description = "Identifier of the touchpoint who made the last change to the record")]
         [Example(Description = "d1307d77-af23-4cb4-b600-a60e04f8c3df")]
         public Guid? LastModifiedTouchpointId { get; set; }
+
+        public void SetDefaultValues()
+        {
+            var actionPlanId = Guid.NewGuid();
+            ActionPlanId = actionPlanId;
+
+            if (!LastModifiedDate.HasValue)
+                LastModifiedDate = DateTime.UtcNow;
+
+            if (!CustomerCharterShownToCustomer.HasValue)
+                CustomerCharterShownToCustomer = false;
+
+            if (PriorityCustomer == null)
+                PriorityCustomer = ReferenceData.PriorityCustomer.NotAPriorityCustomer;
+        }
 
         public void Patch(ActionPlanPatch actionPlanPatch)
         {

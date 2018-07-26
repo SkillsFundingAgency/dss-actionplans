@@ -12,11 +12,7 @@ namespace NCS.DSS.ActionPlan.PostActionPlanHttpTrigger.Service
             if (actionPlan == null)
                 return null;
 
-            var actionPlanId = Guid.NewGuid();
-            actionPlan.ActionPlanId = actionPlanId;
-
-            if (!actionPlan.LastModifiedDate.HasValue)
-                actionPlan.LastModifiedDate = DateTime.Now;
+           actionPlan.SetDefaultValues();
 
             var documentDbProvider = new DocumentDBProvider();
 
