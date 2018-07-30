@@ -49,6 +49,7 @@ namespace NCS.DSS.ActionPlan.Tests
             _httpRequestMessageHelper = Substitute.For<IHttpRequestMessageHelper>();
             _validate = Substitute.For<IValidate>();
             _postActionPlanHttpTriggerService = Substitute.For<IPostActionPlanHttpTriggerService>();
+            _httpRequestMessageHelper.GetTouchpointId(_request).Returns(new Guid());
         }
 
         [Test]
@@ -67,8 +68,6 @@ namespace NCS.DSS.ActionPlan.Tests
         [Test]
         public async Task PostActionPlanHttpTrigger_ReturnsStatusCodeBadRequest_WhenCustomerIdIsInvalid()
         {
-            _httpRequestMessageHelper.GetTouchpointId(_request).Returns(new Guid());
-
             // Act
             var result = await RunFunction(InValidId, ValidInteractionId);
 
@@ -80,8 +79,6 @@ namespace NCS.DSS.ActionPlan.Tests
         [Test]
         public async Task PostActionPlanHttpTrigger_ReturnsStatusCodeBadRequest_WhenInteractionIdIsInvalid()
         {
-            _httpRequestMessageHelper.GetTouchpointId(_request).Returns(new Guid());
-
             // Act
             var result = await RunFunction(ValidCustomerId, InValidId);
 
@@ -93,7 +90,6 @@ namespace NCS.DSS.ActionPlan.Tests
         [Test]
         public async Task PostActionPlanHttpTrigger_ReturnsStatusCodeUnprocessableEntity_WhenActionPlanHasFailedValidation()
         {
-            _httpRequestMessageHelper.GetTouchpointId(_request).Returns(new Guid());
             _httpRequestMessageHelper.GetActionPlanFromRequest<Models.ActionPlan>(_request).Returns(Task.FromResult(_actionPlan).Result);
 
             var validationResults = new List<ValidationResult> { new ValidationResult("interaction Id is Required") };
@@ -109,7 +105,6 @@ namespace NCS.DSS.ActionPlan.Tests
         [Test]
         public async Task PostActionPlanHttpTrigger_ReturnsStatusCodeUnprocessableEntity_WhenActionPlanRequestIsInvalid()
         {
-            _httpRequestMessageHelper.GetTouchpointId(_request).Returns(new Guid());
             _httpRequestMessageHelper.GetActionPlanFromRequest<Models.ActionPlan>(_request).Throws(new JsonException());
 
             var result = await RunFunction(ValidCustomerId, ValidInteractionId);
@@ -122,7 +117,6 @@ namespace NCS.DSS.ActionPlan.Tests
         [Test]
         public async Task PostActionPlanHttpTrigger_ReturnsStatusCodeNoContent_WhenCustomerDoesNotExist()
         {
-            _httpRequestMessageHelper.GetTouchpointId(_request).Returns(new Guid());
             _httpRequestMessageHelper.GetActionPlanFromRequest<Models.ActionPlan>(_request).Returns(Task.FromResult(_actionPlan).Result);
 
             _resourceHelper.DoesCustomerExist(Arg.Any<Guid>()).Returns(false);
@@ -137,7 +131,6 @@ namespace NCS.DSS.ActionPlan.Tests
         [Test]
         public async Task PostActionPlanHttpTrigger_ReturnsStatusCodeNoContent_WhenInteractionDoesNotExist()
         {
-            _httpRequestMessageHelper.GetTouchpointId(_request).Returns(new Guid());
             _httpRequestMessageHelper.GetActionPlanFromRequest<Models.ActionPlan>(_request).Returns(Task.FromResult(_actionPlan).Result);
 
             _resourceHelper.DoesCustomerExist(Arg.Any<Guid>()).Returns(true);
@@ -153,7 +146,6 @@ namespace NCS.DSS.ActionPlan.Tests
         [Test]
         public async Task PostActionPlanHttpTrigger_ReturnsStatusCodeBadRequest_WhenUnableToCreateActionPlanRecord()
         {
-            _httpRequestMessageHelper.GetTouchpointId(_request).Returns(new Guid());
             _httpRequestMessageHelper.GetActionPlanFromRequest<Models.ActionPlan>(_request).Returns(Task.FromResult(_actionPlan).Result);
 
             _resourceHelper.DoesCustomerExist(Arg.Any<Guid>()).ReturnsForAnyArgs(true);
@@ -171,7 +163,6 @@ namespace NCS.DSS.ActionPlan.Tests
         [Test]
         public async Task PostActionPlanHttpTrigger_ReturnsStatusCodeCreated_WhenRequestIsNotValid()
         {
-            _httpRequestMessageHelper.GetTouchpointId(_request).Returns(new Guid());
             _httpRequestMessageHelper.GetActionPlanFromRequest<Models.ActionPlan>(_request).Returns(Task.FromResult(_actionPlan).Result);
 
             _resourceHelper.DoesCustomerExist(Arg.Any<Guid>()).ReturnsForAnyArgs(true);
@@ -189,7 +180,6 @@ namespace NCS.DSS.ActionPlan.Tests
         [Test]
         public async Task PostActionPlanHttpTrigger_ReturnsStatusCodeCreated_WhenRequestIsValid()
         {
-            _httpRequestMessageHelper.GetTouchpointId(_request).Returns(new Guid());
             _httpRequestMessageHelper.GetActionPlanFromRequest<Models.ActionPlan>(_request).Returns(Task.FromResult(_actionPlan).Result);
 
             _resourceHelper.DoesCustomerExist(Arg.Any<Guid>()).ReturnsForAnyArgs(true);
