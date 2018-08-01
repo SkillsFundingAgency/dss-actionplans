@@ -12,6 +12,7 @@ namespace NCS.DSS.ActionPlan.Helpers
             if (req == null)
                 return default(T);
 
+            req.Content.Headers.ContentType.MediaType = "application/json";
             return await req.Content.ReadAsAsync<T>();
         }
 
