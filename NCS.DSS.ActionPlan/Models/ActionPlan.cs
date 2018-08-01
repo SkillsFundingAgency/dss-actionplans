@@ -18,11 +18,6 @@ namespace NCS.DSS.ActionPlan.Models
         public Guid? CustomerId { get; set; }
 
         [Required]
-        [Display(Description = "Unique identifier of a customer.")]
-        [Example(Description = "2730af9c-fc34-4c2b-a905-c4b584b0f379")]
-        public Guid CustomerId { get; set; }
-
-        [Required]
         [Display(Description = "Unique identifier to the related interaction resource.")]
         [Example(Description = "2730af9c-fc34-4c2b-a905-c4b584b0f379")]
         public Guid? InteractionId { get; set; }
@@ -43,16 +38,6 @@ namespace NCS.DSS.ActionPlan.Models
         [Example(Description = "2018-06-20T21:45:00")]
         public DateTime? DateAndTimeCharterShown { get; set; }
 
-        [Required]
-        [Display(Description = "Customer has seen the customer charter.")]
-        [Example(Description = "true")]
-        public bool CustomerCharterShownToCustomer { get; set; }
-
-        [DataType(DataType.DateTime)]
-        [Display(Description = "Date and time the customer was shown the customer charter.")]
-        [Example(Description = "2018-06-20T21:45:00")]
-        public DateTime DateAndTimeCharterShown { get; set; }
-
         [DataType(DataType.DateTime)]
         [Display(Description = "Date and time the action plan was sent (or made available) to the customer.")]
         [Example(Description = "2018-06-21T13:32:00")]
@@ -61,10 +46,6 @@ namespace NCS.DSS.ActionPlan.Models
         [Display(Description = "Action Plan Delivery Method reference data.")]
         [Example(Description = "1")]
         public ActionPlanDeliveryMethod? ActionPlanDeliveryMethod { get; set; }
-
-        [Display(Description = "Action Plan Delivery Method reference data.")]
-        [Example(Description = "1")]
-        public ActionPlanDeliveryMethod ActionPlanDeliveryMethod { get; set; }
 
         [DataType(DataType.DateTime)]
         [Display(Description = "Date and time the customer acknowledged receipt of the action plan.")]
@@ -92,8 +73,8 @@ namespace NCS.DSS.ActionPlan.Models
 
         public void SetDefaultValues()
         {
-            var actionPlanId = Guid.NewGuid();
-            ActionPlanId = actionPlanId;
+
+            ActionPlanId = Guid.NewGuid();
 
             if (!LastModifiedDate.HasValue)
                 LastModifiedDate = DateTime.UtcNow;
