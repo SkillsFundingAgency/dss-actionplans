@@ -26,7 +26,7 @@ namespace NCS.DSS.ActionPlan.Helpers
         {
             return new HttpResponseMessage(HttpStatusCode.OK)
             {
-                Content = new StringContent(JsonConvert.SerializeObject(resource), 
+                Content = new StringContent(JsonHelper.SerializeObject(resource), 
                     Encoding.UTF8, "application/json")
             };
         }
@@ -35,7 +35,7 @@ namespace NCS.DSS.ActionPlan.Helpers
         {
             return new HttpResponseMessage(HttpStatusCode.OK)
             {
-                Content = new StringContent(JsonConvert.SerializeObject(resourcesList),
+                Content = new StringContent(JsonHelper.SerializeObjects(resourcesList),
                     Encoding.UTF8, "application/json")
             };
         }
@@ -44,11 +44,11 @@ namespace NCS.DSS.ActionPlan.Helpers
 
         #region Created(201) 
 
-        public static HttpResponseMessage Created<T>( T resource)
+        public static HttpResponseMessage Created<T>(T resource)
         {
             return new HttpResponseMessage(HttpStatusCode.Created)
             {
-                Content = new StringContent(JsonConvert.SerializeObject(resource), 
+                Content = new StringContent(JsonHelper.SerializeObject(resource), 
                     Encoding.UTF8, "application/json")
             };
         }
