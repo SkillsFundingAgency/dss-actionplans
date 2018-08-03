@@ -22,21 +22,11 @@ namespace NCS.DSS.ActionPlan.Helpers
             };
         }
 
-        public static HttpResponseMessage Ok<T>(T resource)
+        public static HttpResponseMessage Ok(string resourceJson)
         {
             return new HttpResponseMessage(HttpStatusCode.OK)
             {
-                Content = new StringContent(JsonHelper.SerializeObject(resource), 
-                    Encoding.UTF8, "application/json")
-            };
-        }
-
-        public static HttpResponseMessage Ok<T>(List<T> resourcesList)
-        {
-            return new HttpResponseMessage(HttpStatusCode.OK)
-            {
-                Content = new StringContent(JsonHelper.SerializeObjects(resourcesList),
-                    Encoding.UTF8, "application/json")
+                Content = new StringContent(resourceJson, Encoding.UTF8, "application/json")
             };
         }
 
@@ -44,12 +34,11 @@ namespace NCS.DSS.ActionPlan.Helpers
 
         #region Created(201) 
 
-        public static HttpResponseMessage Created<T>(T resource)
+        public static HttpResponseMessage Created(string resourceJson)
         {
             return new HttpResponseMessage(HttpStatusCode.Created)
             {
-                Content = new StringContent(JsonHelper.SerializeObject(resource), 
-                    Encoding.UTF8, "application/json")
+                Content = new StringContent(resourceJson, Encoding.UTF8, "application/json")
             };
         }
 
