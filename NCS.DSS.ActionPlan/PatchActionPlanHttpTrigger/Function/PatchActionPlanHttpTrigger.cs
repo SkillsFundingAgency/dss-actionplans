@@ -93,7 +93,7 @@ namespace NCS.DSS.ActionPlan.PatchActionPlanHttpTrigger.Function
 
             return updatedActionPlan == null ?
                 HttpResponseMessageHelper.BadRequest(actionPlanGuid) :
-                HttpResponseMessageHelper.Ok(updatedActionPlan);
+                HttpResponseMessageHelper.Ok(JsonHelper.SerializeObject(updatedActionPlan));
 
         }
     }

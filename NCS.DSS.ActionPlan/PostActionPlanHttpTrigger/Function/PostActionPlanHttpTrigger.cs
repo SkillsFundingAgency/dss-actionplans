@@ -85,7 +85,7 @@ namespace NCS.DSS.ActionPlan.PostActionPlanHttpTrigger.Function
 
             return actionPlan == null
                 ? HttpResponseMessageHelper.BadRequest(customerGuid)
-                : HttpResponseMessageHelper.Created(actionPlan);
+                : HttpResponseMessageHelper.Created(JsonHelper.SerializeObject(actionPlan));
 
         }
     }

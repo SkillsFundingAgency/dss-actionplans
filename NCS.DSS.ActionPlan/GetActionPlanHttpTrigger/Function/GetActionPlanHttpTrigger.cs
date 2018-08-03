@@ -51,7 +51,7 @@ namespace NCS.DSS.ActionPlan.GetActionPlanHttpTrigger.Function
 
             return actionPlans == null ?
                 HttpResponseMessageHelper.NoContent(customerGuid) :
-                HttpResponseMessageHelper.Ok(actionPlans);
+                HttpResponseMessageHelper.Ok(JsonHelper.SerializeObjects(actionPlans));
 
         }
     }
