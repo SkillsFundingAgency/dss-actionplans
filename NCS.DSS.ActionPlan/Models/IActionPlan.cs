@@ -14,7 +14,7 @@ namespace NCS.DSS.ActionPlan.Models
         PriorityCustomer? PriorityCustomer { get; set; }
         string CurrentSituation { get; set; }
         DateTime? LastModifiedDate { get; set; }
-        Guid? LastModifiedTouchpointId { get; set; }
+        string LastModifiedTouchpointId { get; set; }
 
         void SetDefaultValues();
     }
