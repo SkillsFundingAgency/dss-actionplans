@@ -38,13 +38,13 @@ namespace NCS.DSS.ActionPlan.Tests
             _resourceHelper = Substitute.For<IResourceHelper>();
             _getActionPlanHttpTriggerService = Substitute.For<IGetActionPlanHttpTriggerService>();
             _httpRequestMessageHelper = Substitute.For<IHttpRequestMessageHelper>();
-            _httpRequestMessageHelper.GetTouchpointId(_request).Returns(new Guid());
+            _httpRequestMessageHelper.GetTouchpointId(_request).Returns("0000000001");
         }
 
         [Test]
         public async Task GetActionPlanHttpTrigger_ReturnsStatusCodeBadRequest_WhenTouchpointIdIsNotProvided()
         {
-            _httpRequestMessageHelper.GetTouchpointId(_request).Returns((Guid?)null);
+            _httpRequestMessageHelper.GetTouchpointId(_request).Returns((string)null);
 
             // Act
             var result = await RunFunction(InValidId);
