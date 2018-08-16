@@ -3,6 +3,7 @@ using System.Net;
 using System.Threading.Tasks;
 using NCS.DSS.ActionPlan.Cosmos.Provider;
 using NCS.DSS.ActionPlan.Models;
+using NCS.DSS.ActionPlan.ServiceBus;
 
 namespace NCS.DSS.ActionPlan.PatchActionPlanHttpTrigger.Service
 {
@@ -31,6 +32,11 @@ namespace NCS.DSS.ActionPlan.PatchActionPlanHttpTrigger.Service
             var actionPlan = await documentDbProvider.GetActionPlanForCustomerAsync(customerId, actionPlanId);
 
             return actionPlan;
+        }
+
+        public async Task SendToServiceBusQueueAsync(Models.ActionPlan actionPlan, Guid customerId, string reqUrl)
+        {
+            await ServiceBusClient.SendPatchMessageAsync(actionPlan, customerId, reqUrl);
         }
     }
 }
