@@ -83,6 +83,9 @@ namespace NCS.DSS.ActionPlan.PostActionPlanHttpTrigger.Function
 
             var actionPlan = await actionPlanPostService.CreateAsync(actionPlanRequest);
 
+            if (actionPlan != null)
+                await actionPlanPostService.SendToServiceBusQueueAsync(actionPlan, req.RequestUri.AbsoluteUri);
+
             return actionPlan == null
                 ? HttpResponseMessageHelper.BadRequest(customerGuid)
                 : HttpResponseMessageHelper.Created(JsonHelper.SerializeObject(actionPlan));

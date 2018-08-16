@@ -53,7 +53,7 @@ namespace NCS.DSS.ActionPlan.PatchActionPlanHttpTrigger.Function
             if (!Guid.TryParse(actionPlanId, out var actionPlanGuid))
                 return HttpResponseMessageHelper.BadRequest(actionPlanGuid);
 
-            Models.ActionPlanPatch  actionPlanPatchRequest;
+            Models.ActionPlanPatch actionPlanPatchRequest;
 
             try
             {
@@ -90,6 +90,9 @@ namespace NCS.DSS.ActionPlan.PatchActionPlanHttpTrigger.Function
                 return HttpResponseMessageHelper.NoContent(actionPlanGuid);
 
             var updatedActionPlan = await actionPlanPatchService.UpdateAsync(actionPlan, actionPlanPatchRequest);
+
+            if (updatedActionPlan != null)
+                await actionPlanPatchService.SendToServiceBusQueueAsync(updatedActionPlan, customerGuid,  req.RequestUri.AbsoluteUri);
 
             return updatedActionPlan == null ?
                 HttpResponseMessageHelper.BadRequest(actionPlanGuid) :
