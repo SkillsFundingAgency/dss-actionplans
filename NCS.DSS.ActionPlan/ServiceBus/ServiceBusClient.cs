@@ -5,7 +5,6 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.ServiceBus;
 using Microsoft.ServiceBus.Messaging;
-using NCS.DSS.ActionPlan.Models;
 using Newtonsoft.Json;
 
 namespace NCS.DSS.ActionPlan.ServiceBus
@@ -29,10 +28,11 @@ namespace NCS.DSS.ActionPlan.ServiceBus
                 CustomerGuid = actionPlan.CustomerId,
                 LastModifiedDate = actionPlan.LastModifiedDate,
                 URL = reqUrl,
-                IsNewCustomer = false
+                IsNewCustomer = false,
+                TouchpointId = actionPlan.LastModifiedTouchpointId
             };
 
-            var msg = new BrokeredMessage(messageModel)
+            var msg = new BrokeredMessage(new MemoryStream(Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(messageModel))))
             {
                 ContentType = "application/json",
                 MessageId = actionPlan.CustomerId + " " + DateTime.UtcNow
@@ -53,7 +53,8 @@ namespace NCS.DSS.ActionPlan.ServiceBus
                 CustomerGuid = customerId,
                 LastModifiedDate = actionPlan.LastModifiedDate,
                 URL = reqUrl,
-                IsNewCustomer = false
+                IsNewCustomer = false,
+                TouchpointId = actionPlan.LastModifiedTouchpointId
             };
 
             var msg = new BrokeredMessage(new MemoryStream(Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(messageModel))))
@@ -75,6 +76,7 @@ namespace NCS.DSS.ActionPlan.ServiceBus
         public DateTime? LastModifiedDate { get; set; }
         public string URL { get; set; }
         public bool IsNewCustomer { get; set; }
+        public string TouchpointId { get; set; }
     }
 
 }
