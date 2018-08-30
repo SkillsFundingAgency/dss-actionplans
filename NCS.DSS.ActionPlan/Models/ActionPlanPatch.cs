@@ -26,10 +26,10 @@ namespace NCS.DSS.ActionPlan.Models
         [Example(Description = "2018-06-21T13:32:00")]
         public DateTime? DateActionPlanSentToCustomer { get; set; }
 
-        [Display(Description = "Action Plan Delivery Method reference data. \n " +
-                                "1 - Paper,\n " +
-                                "2 - Email,\n  " +
-                                "3 - Digital,\n  " +
+        [Display(Description = "Action Plan Delivery Method reference data.   " +
+                                "1 - Paper,  " +
+                                "2 - Email,   " +
+                                "3 - Digital,   " +
                                 "99 - Other")]
         [Example(Description = "1")]
         public ActionPlanDeliveryMethod? ActionPlanDeliveryMethod { get; set; }
@@ -39,13 +39,13 @@ namespace NCS.DSS.ActionPlan.Models
         [Example(Description = "2018-06-22T07:55:00")]
         public DateTime? DateActionPlanAcknowledged { get; set; }
 
-        [Display(Description = "Priority Customer reference data. \n" +
-                                "1 - 18 to 24 not in education, employment or training \n" +
-                                "2 - Low skilled adults without a level 2 qualification \n" +
-                                "3 - Adults who have been unemployed for more than 12 months \n" +
-                                "4 - Single parents with at least one dependant child living in the same household \n" +
-                                "5 - Adults with special educational needs and / or disabilities \n" +
-                                "6 - Adults aged 50 years or over who are unemployed or at demonstrable risk of unemployment \n" +
+        [Display(Description = "Priority Customer reference data.  " +
+                                "1 - 18 to 24 not in education, employment or training  " +
+                                "2 - Low skilled adults without a level 2 qualification  " +
+                                "3 - Adults who have been unemployed for more than 12 months  " +
+                                "4 - Single parents with at least one dependant child living in the same household  " +
+                                "5 - Adults with special educational needs and / or disabilities  " +
+                                "6 - Adults aged 50 years or over who are unemployed or at demonstrable risk of unemployment  " +
                                 "99 - Not a priority customer")]
         [Example(Description = "1")]
         public PriorityCustomer? PriorityCustomer { get; set; }
