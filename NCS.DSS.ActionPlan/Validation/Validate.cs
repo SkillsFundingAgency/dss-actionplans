@@ -41,7 +41,10 @@ namespace NCS.DSS.ActionPlan.Validation
 
             if (actionPlanResource.PriorityCustomer.HasValue && !Enum.IsDefined(typeof(PriorityCustomer), actionPlanResource.PriorityCustomer.Value))
                 results.Add(new ValidationResult("Please supply a valid Priority Customer", new[] { "PriorityCustomer" }));
-        }
 
+            if (actionPlanResource.ActionPlanDeliveryMethod.HasValue && !Enum.IsDefined(typeof(ActionPlanDeliveryMethod), actionPlanResource.ActionPlanDeliveryMethod.Value))
+                results.Add(new ValidationResult("Please supply a valid Action Plan Delivery Method", new[] { "ActionPlanDeliveryMethod" }));
+            
+        }
     }
 }
