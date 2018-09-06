@@ -8,5 +8,6 @@ namespace NCS.DSS.ActionPlan.Helpers
     {
         Task<T> GetActionPlanFromRequest<T>(HttpRequestMessage req);
         string GetTouchpointId(HttpRequestMessage req);
+        string GetApimURL(HttpRequestMessage req);
     }
 }
