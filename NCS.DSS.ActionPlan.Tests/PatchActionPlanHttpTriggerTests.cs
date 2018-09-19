@@ -53,6 +53,7 @@ namespace NCS.DSS.ActionPlan.Tests
             _httpRequestMessageHelper = Substitute.For<IHttpRequestMessageHelper>();
             _patchActionPlanHttpTriggerService = Substitute.For<IPatchActionPlanHttpTriggerService>();
             _httpRequestMessageHelper.GetTouchpointId(_request).Returns("0000000001");
+            _httpRequestMessageHelper.GetApimURL(_request).Returns("http://localhost:7071/");
         }
 
         [Test]
