@@ -12,16 +12,9 @@ namespace NCS.DSS.ActionPlan.Cosmos.Provider
 {
     public class DocumentDBProvider : IDocumentDBProvider
     {
-        private readonly DocumentDBHelper _documentDbHelper;
-
-        public DocumentDBProvider()
-        {
-            _documentDbHelper = new DocumentDBHelper();
-        }
-
         public bool DoesCustomerResourceExist(Guid customerId)
         {
-            var collectionUri = _documentDbHelper.CreateCustomerDocumentCollectionUri();
+            var collectionUri = DocumentDBHelper.CreateCustomerDocumentCollectionUri();
 
             var client = DocumentDBClient.CreateDocumentClient();
 
@@ -34,7 +27,7 @@ namespace NCS.DSS.ActionPlan.Cosmos.Provider
 
         public async Task<bool> DoesCustomerHaveATerminationDate(Guid customerId)
         {
-            var collectionUri = _documentDbHelper.CreateCustomerDocumentCollectionUri();
+            var collectionUri = DocumentDBHelper.CreateCustomerDocumentCollectionUri();
 
             var client = DocumentDBClient.CreateDocumentClient();
 
@@ -60,7 +53,7 @@ namespace NCS.DSS.ActionPlan.Cosmos.Provider
 
         public bool DoesInteractionResourceExist(Guid interactionId)
         {
-            var collectionUri = _documentDbHelper.CreateInteractionDocumentCollectionUri();
+            var collectionUri = DocumentDBHelper.CreateInteractionDocumentCollectionUri();
 
             var client = DocumentDBClient.CreateDocumentClient();
 
@@ -73,7 +66,7 @@ namespace NCS.DSS.ActionPlan.Cosmos.Provider
 
         public async Task<List<Models.ActionPlan>> GetActionPlansForCustomerAsync(Guid customerId)
         {
-            var collectionUri = _documentDbHelper.CreateDocumentCollectionUri();
+            var collectionUri = DocumentDBHelper.CreateDocumentCollectionUri();
 
             var client = DocumentDBClient.CreateDocumentClient();
 
@@ -96,7 +89,7 @@ namespace NCS.DSS.ActionPlan.Cosmos.Provider
 
         public async Task<Models.ActionPlan> GetActionPlanForCustomerAsync(Guid customerId, Guid actionPlanId)
         {
-            var collectionUri = _documentDbHelper.CreateDocumentCollectionUri();
+            var collectionUri = DocumentDBHelper.CreateDocumentCollectionUri();
 
             var client = DocumentDBClient.CreateDocumentClient();
 
@@ -116,7 +109,7 @@ namespace NCS.DSS.ActionPlan.Cosmos.Provider
         public async Task<ResourceResponse<Document>> CreateActionPlanAsync(Models.ActionPlan actionPlan)
         {
 
-            var collectionUri = _documentDbHelper.CreateDocumentCollectionUri();
+            var collectionUri = DocumentDBHelper.CreateDocumentCollectionUri();
 
             var client = DocumentDBClient.CreateDocumentClient();
 
@@ -131,7 +124,7 @@ namespace NCS.DSS.ActionPlan.Cosmos.Provider
 
         public async Task<ResourceResponse<Document>> UpdateActionPlanAsync(Models.ActionPlan actionPlan)
         {
-            var documentUri = _documentDbHelper.CreateDocumentUri(actionPlan.ActionPlanId.GetValueOrDefault());
+            var documentUri = DocumentDBHelper.CreateDocumentUri(actionPlan.ActionPlanId.GetValueOrDefault());
 
             var client = DocumentDBClient.CreateDocumentClient();
 
