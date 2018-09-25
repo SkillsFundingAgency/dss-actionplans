@@ -43,17 +43,28 @@ namespace NCS.DSS.ActionPlan.Cosmos.Provider
             if (client == null)
                 return false;
 
-            var query = client.CreateDocumentQuery<long>(collectionUri, new SqlQuerySpec()
+            try
             {
-                QueryText = "SELECT VALUE COUNT(1) FROM interactions c WHERE c.id = @interactionId AND c.CustomerId = @customerId",
-                Parameters = new SqlParameterCollection()
+                var query = client.CreateDocumentQuery<long>(collectionUri, new SqlQuerySpec()
                 {
-                    new SqlParameter("@interactionId", interactionId),
-                    new SqlParameter("@customerId", customerId)
-                }
-            }).AsEnumerable().FirstOrDefault();
+                    QueryText = "SELECT VALUE COUNT(1) FROM interactions i " +
+                                "WHERE i.id = @interactionId " +
+                                "AND i.CustomerId = @customerId",
 
-            return Convert.ToBoolean(Convert.ToInt16(query));
+                    Parameters = new SqlParameterCollection()
+                    {
+                        new SqlParameter("@interactionId", interactionId),
+                        new SqlParameter("@customerId", customerId)
+                    }
+                }).AsEnumerable().FirstOrDefault();
+
+                return Convert.ToBoolean(Convert.ToInt16(query));
+            }
+            catch (DocumentQueryException)
+            {
+                return false;
+            }
+
         }
 
         public async Task<bool> DoesCustomerHaveATerminationDate(Guid customerId)
