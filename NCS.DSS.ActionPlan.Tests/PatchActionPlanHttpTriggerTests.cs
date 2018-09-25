@@ -149,7 +149,7 @@ namespace NCS.DSS.ActionPlan.Tests
             _httpRequestMessageHelper.GetActionPlanFromRequest<ActionPlanPatch>(_request).Returns(Task.FromResult(_actionPlanPatch).Result);
 
             _resourceHelper.DoesCustomerExist(Arg.Any<Guid>()).Returns(true);
-            _resourceHelper.DoesInteractionExist(Arg.Any<Guid>()).Returns(false);
+            _resourceHelper.DoesInteractionExistAndBelongToCustomer(Arg.Any<Guid>(), Arg.Any<Guid>()).Returns(false);
 
             // Act
             var result = await RunFunction(ValidCustomerId, ValidInteractionId, ValidActionPlanId);
@@ -182,7 +182,7 @@ namespace NCS.DSS.ActionPlan.Tests
             _httpRequestMessageHelper.GetActionPlanFromRequest<ActionPlanPatch>(_request).Returns(Task.FromResult(_actionPlanPatch).Result);
 
             _resourceHelper.DoesCustomerExist(Arg.Any<Guid>()).Returns(true);
-            _resourceHelper.DoesInteractionExist(Arg.Any<Guid>()).Returns(true);
+            _resourceHelper.DoesInteractionExistAndBelongToCustomer(Arg.Any<Guid>(), Arg.Any<Guid>()).Returns(true);
 
             _patchActionPlanHttpTriggerService.GetActionPlanForCustomerAsync(Arg.Any<Guid>(), Arg.Any<Guid>()).Returns(Task.FromResult<Models.ActionPlan>(null).Result);
 
@@ -200,7 +200,7 @@ namespace NCS.DSS.ActionPlan.Tests
             _httpRequestMessageHelper.GetActionPlanFromRequest<ActionPlanPatch>(_request).Returns(Task.FromResult(_actionPlanPatch).Result);
 
             _resourceHelper.DoesCustomerExist(Arg.Any<Guid>()).ReturnsForAnyArgs(true);
-            _resourceHelper.DoesInteractionExist(Arg.Any<Guid>()).Returns(true);
+            _resourceHelper.DoesInteractionExistAndBelongToCustomer(Arg.Any<Guid>(), Arg.Any<Guid>()).Returns(true);
 
             _patchActionPlanHttpTriggerService.GetActionPlanForCustomerAsync(Arg.Any<Guid>(), Arg.Any<Guid>()).Returns(Task.FromResult(_actionPlan).Result);
 
@@ -219,7 +219,7 @@ namespace NCS.DSS.ActionPlan.Tests
             _httpRequestMessageHelper.GetActionPlanFromRequest<ActionPlanPatch>(_request).Returns(Task.FromResult(_actionPlanPatch).Result);
 
             _resourceHelper.DoesCustomerExist(Arg.Any<Guid>()).ReturnsForAnyArgs(true);
-            _resourceHelper.DoesInteractionExist(Arg.Any<Guid>()).Returns(true);
+            _resourceHelper.DoesInteractionExistAndBelongToCustomer(Arg.Any<Guid>(), Arg.Any<Guid>()).Returns(true);
 
             _patchActionPlanHttpTriggerService.GetActionPlanForCustomerAsync(Arg.Any<Guid>(), Arg.Any<Guid>()).Returns(Task.FromResult(_actionPlan).Result);
 
@@ -238,7 +238,7 @@ namespace NCS.DSS.ActionPlan.Tests
             _httpRequestMessageHelper.GetActionPlanFromRequest<ActionPlanPatch>(_request).Returns(Task.FromResult(_actionPlanPatch).Result);
 
             _resourceHelper.DoesCustomerExist(Arg.Any<Guid>()).ReturnsForAnyArgs(true);
-            _resourceHelper.DoesInteractionExist(Arg.Any<Guid>()).Returns(true);
+            _resourceHelper.DoesInteractionExistAndBelongToCustomer(Arg.Any<Guid>(), Arg.Any<Guid>()).Returns(true);
 
             _patchActionPlanHttpTriggerService.GetActionPlanForCustomerAsync(Arg.Any<Guid>(), Arg.Any<Guid>()).Returns(Task.FromResult(_actionPlan).Result);
 
