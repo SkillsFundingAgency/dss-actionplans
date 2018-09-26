@@ -9,7 +9,7 @@ namespace NCS.DSS.ActionPlan.Cosmos.Provider
     public interface IDocumentDBProvider
     {
         Task<bool> DoesCustomerResourceExist(Guid customerId);
-        Task<bool> DoesInteractionResourceExist(Guid interactionId);
+        bool DoesInteractionResourceExistAndBelongToCustomer(Guid interactionId, Guid customerId);
         Task<bool> DoesCustomerHaveATerminationDate(Guid customerId);
         Task<List<Models.ActionPlan>> GetActionPlansForCustomerAsync(Guid customerId);
         Task<Models.ActionPlan> GetActionPlanForCustomerAsync(Guid customerId, Guid actionPlanId);

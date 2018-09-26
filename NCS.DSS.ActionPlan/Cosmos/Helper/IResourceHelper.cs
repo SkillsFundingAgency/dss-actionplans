@@ -7,6 +7,6 @@ namespace NCS.DSS.ActionPlan.Cosmos.Helper
     {
         Task<bool> DoesCustomerExist(Guid customerId);
         Task<bool> IsCustomerReadOnly(Guid customerId);
-        Task<bool> DoesInteractionExist(Guid interactionId);
+        bool DoesInteractionExistAndBelongToCustomer(Guid interactionId, Guid customerId);
     }
 }
