@@ -4,14 +4,17 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
-using System.Web.Http.Description;
+using DFC.Common.Standard.Logging;
+using DFC.Functions.DI.Standard.Attributes;
+using DFC.HTTP.Standard;
+using DFC.JSON.Standard;
+using DFC.Swagger.Standard.Annotations;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Extensions.Logging;
-using NCS.DSS.ActionPlan.Annotations;
 using NCS.DSS.ActionPlan.Cosmos.Helper;
-using NCS.DSS.ActionPlan.Helpers;
-using NCS.DSS.ActionPlan.Ioc;
 using NCS.DSS.ActionPlan.PatchActionPlanHttpTrigger.Service;
 using NCS.DSS.ActionPlan.Validation;
 using Newtonsoft.Json;
@@ -21,7 +24,7 @@ namespace NCS.DSS.ActionPlan.PatchActionPlanHttpTrigger.Function
     public static class PatchActionPlanHttpTrigger
     {
         [FunctionName("Patch")]
-        [ResponseType(typeof(Models.ActionPlan))]
+        [ProducesResponseType(typeof(Models.ActionPlan), (int)HttpStatusCode.OK)]
         [Response(HttpStatusCode = (int)HttpStatusCode.OK, Description = "Action Plan Updated", ShowSchema = true)]
         [Response(HttpStatusCode = (int)HttpStatusCode.NoContent, Description = "Action Plan does not exist", ShowSchema = false)]
         [Response(HttpStatusCode = (int)HttpStatusCode.BadRequest, Description = "Request was malformed", ShowSchema = false)]
@@ -29,86 +32,105 @@ namespace NCS.DSS.ActionPlan.PatchActionPlanHttpTrigger.Function
         [Response(HttpStatusCode = (int)HttpStatusCode.Forbidden, Description = "Insufficient access", ShowSchema = false)]
         [Response(HttpStatusCode = 422, Description = "Action Plan validation error(s)", ShowSchema = false)]
         [Display(Name = "Patch", Description = "Ability to modify/update a customers action plan record.")]
-        public static async Task<HttpResponseMessage> Run([HttpTrigger(AuthorizationLevel.Anonymous, "patch", Route = "Customers/{customerId}/Interactions/{interactionId}/ActionPlans/{actionPlanId}")]HttpRequestMessage req, ILogger log, string customerId, string interactionId, string actionPlanId,
+        public static async Task<HttpResponseMessage> Run([HttpTrigger(AuthorizationLevel.Anonymous, "patch", Route = "Customers/{customerId}/Interactions/{interactionId}/ActionPlans/{actionPlanId}")]HttpRequest req, ILogger log, string customerId, string interactionId, string actionPlanId,
             [Inject]IResourceHelper resourceHelper, 
-            [Inject]IHttpRequestMessageHelper httpRequestMessageHelper,
             [Inject]IValidate validate,
-            [Inject]IPatchActionPlanHttpTriggerService actionPlanPatchService)
+            [Inject]IPatchActionPlanHttpTriggerService actionPlanPatchService,
+            [Inject]ILoggerHelper loggerHelper,
+            [Inject]IHttpRequestHelper httpRequestHelper,
+            [Inject]IHttpResponseMessageHelper httpResponseMessageHelper,
+            [Inject]IJsonHelper jsonHelper)
         {
-            var touchpointId = httpRequestMessageHelper.GetTouchpointId(req);
+            loggerHelper.LogMethodEnter(log);
+
+            var correlationId = httpRequestHelper.GetDssCorrelationId(req);
+            if (string.IsNullOrEmpty(correlationId))
+            {
+                log.LogInformation("Unable to locate 'DssCorrelationId' in request header");
+                return httpResponseMessageHelper.BadRequest();
+            }
+
+            if (!Guid.TryParse(correlationId, out var correlationGuid))
+                return httpResponseMessageHelper.BadRequest(correlationGuid);
+
+            var touchpointId = httpRequestHelper.GetDssTouchpointId(req);
             if (string.IsNullOrEmpty(touchpointId))
             {
-                log.LogInformation("Unable to locate 'TouchpointId' in request header");
-                return HttpResponseMessageHelper.BadRequest();
+                loggerHelper.LogInformationMessage(log, correlationGuid, "Unable to locate 'TouchpointId' in request header");
+                return httpResponseMessageHelper.BadRequest();
             }
-
-            var ApimURL = httpRequestMessageHelper.GetApimURL(req);
+            
+            var ApimURL = httpRequestHelper.GetDssApimUrl(req);
             if (string.IsNullOrEmpty(ApimURL))
             {
-                log.LogInformation("Unable to locate 'apimurl' in request header");
-                return HttpResponseMessageHelper.BadRequest();
+                loggerHelper.LogInformationMessage(log, correlationGuid, "Unable to locate 'apimurl' in request header");
+                return httpResponseMessageHelper.BadRequest();
             }
 
-            log.LogInformation("Patch Action Plan C# HTTP trigger function processed a request. By Touchpoint " + touchpointId);
+            loggerHelper.LogInformationMessage(log, correlationGuid,
+                string.Format("Patch Action Plan C# HTTP trigger function  processed a request. By Touchpoint: {0}",
+                    touchpointId));
 
             if (!Guid.TryParse(customerId, out var customerGuid))
-                return HttpResponseMessageHelper.BadRequest(customerGuid);
+                return httpResponseMessageHelper.BadRequest(customerGuid);
 
             if (!Guid.TryParse(interactionId, out var interactionGuid))
-                return HttpResponseMessageHelper.BadRequest(interactionGuid);
+                return httpResponseMessageHelper.BadRequest(interactionGuid);
 
             if (!Guid.TryParse(actionPlanId, out var actionPlanGuid))
-                return HttpResponseMessageHelper.BadRequest(actionPlanGuid);
+                return httpResponseMessageHelper.BadRequest(actionPlanGuid);
 
             Models.ActionPlanPatch actionPlanPatchRequest;
 
             try
             {
-                actionPlanPatchRequest = await httpRequestMessageHelper.GetActionPlanFromRequest<Models.ActionPlanPatch>(req);
+                actionPlanPatchRequest = await httpRequestHelper.GetResourceFromRequest<Models.ActionPlanPatch>(req);
             }
             catch (JsonException ex)
             {
-                return HttpResponseMessageHelper.UnprocessableEntity(ex);
+                return httpResponseMessageHelper.UnprocessableEntity(ex);
             }
 
             if (actionPlanPatchRequest == null)
-                return HttpResponseMessageHelper.UnprocessableEntity(req);
+                return httpResponseMessageHelper.UnprocessableEntity(req);
 
             actionPlanPatchRequest.LastModifiedTouchpointId = touchpointId;
 
             var errors = validate.ValidateResource(actionPlanPatchRequest);
 
             if (errors != null && errors.Any())
-                return HttpResponseMessageHelper.UnprocessableEntity(errors);
+                return httpResponseMessageHelper.UnprocessableEntity(errors);
 
             var doesCustomerExist = await resourceHelper.DoesCustomerExist(customerGuid);
 
             if (!doesCustomerExist)
-                return HttpResponseMessageHelper.NoContent(customerGuid);
+                return httpResponseMessageHelper.NoContent(customerGuid);
 
             var isCustomerReadOnly = await resourceHelper.IsCustomerReadOnly(customerGuid);
 
             if (isCustomerReadOnly)
-                return HttpResponseMessageHelper.Forbidden(customerGuid);
+                return httpResponseMessageHelper.Forbidden(customerGuid);
 
             var doesInteractionExist = resourceHelper.DoesInteractionExistAndBelongToCustomer(interactionGuid, customerGuid);
 
             if (!doesInteractionExist)
-                return HttpResponseMessageHelper.NoContent(interactionGuid);
+                return httpResponseMessageHelper.NoContent(interactionGuid);
         
             var actionPlan = await actionPlanPatchService.GetActionPlanForCustomerAsync(customerGuid, actionPlanGuid);
 
             if (actionPlan == null)
-                return HttpResponseMessageHelper.NoContent(actionPlanGuid);
+                return httpResponseMessageHelper.NoContent(actionPlanGuid);
 
             var updatedActionPlan = await actionPlanPatchService.UpdateAsync(actionPlan, actionPlanPatchRequest);
 
             if (updatedActionPlan != null)
                 await actionPlanPatchService.SendToServiceBusQueueAsync(updatedActionPlan, customerGuid,  ApimURL);
 
+            loggerHelper.LogMethodExit(log);
+
             return updatedActionPlan == null ?
-                HttpResponseMessageHelper.BadRequest(actionPlanGuid) :
-                HttpResponseMessageHelper.Ok(JsonHelper.SerializeObject(updatedActionPlan));
+                httpResponseMessageHelper.BadRequest(actionPlanGuid) :
+                httpResponseMessageHelper.Ok(jsonHelper.SerializeObjectAndRenameIdProperty(actionPlan, "id", "ActionPlanId"));
 
         }
     }

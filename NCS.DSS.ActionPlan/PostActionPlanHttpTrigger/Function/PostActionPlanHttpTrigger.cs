@@ -4,14 +4,17 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
-using System.Web.Http.Description;
+using DFC.Common.Standard.Logging;
+using DFC.Functions.DI.Standard.Attributes;
+using DFC.HTTP.Standard;
+using DFC.JSON.Standard;
+using DFC.Swagger.Standard.Annotations;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Extensions.Logging;
-using NCS.DSS.ActionPlan.Annotations;
 using NCS.DSS.ActionPlan.Cosmos.Helper;
-using NCS.DSS.ActionPlan.Helpers;
-using NCS.DSS.ActionPlan.Ioc;
 using NCS.DSS.ActionPlan.PostActionPlanHttpTrigger.Service;
 using NCS.DSS.ActionPlan.Validation;
 using Newtonsoft.Json;
@@ -21,7 +24,7 @@ namespace NCS.DSS.ActionPlan.PostActionPlanHttpTrigger.Function
     public static class PostActionPlanHttpTrigger
     {
         [FunctionName("Post")]
-        [ResponseType(typeof(Models.ActionPlan))]
+        [ProducesResponseType(typeof(Models.ActionPlan), (int)HttpStatusCode.OK)]
         [Response(HttpStatusCode = (int)HttpStatusCode.Created, Description = "Action Plan Created", ShowSchema = true)]
         [Response(HttpStatusCode = (int)HttpStatusCode.NoContent, Description = "Action Plan does not exist", ShowSchema = false)]
         [Response(HttpStatusCode = (int)HttpStatusCode.BadRequest, Description = "Request was malformed", ShowSchema = false)]
@@ -29,78 +32,98 @@ namespace NCS.DSS.ActionPlan.PostActionPlanHttpTrigger.Function
         [Response(HttpStatusCode = (int)HttpStatusCode.Forbidden, Description = "Insufficient access", ShowSchema = false)]
         [Response(HttpStatusCode = 422, Description = "Action Plan validation error(s)", ShowSchema = false)]
         [Display(Name = "Post", Description = "Ability to create a new action plan for a customer.")]
-        public static async Task<HttpResponseMessage> Run([HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "Customers/{customerId}/Interactions/{interactionId}/ActionPlans")]HttpRequestMessage req, ILogger log, string customerId, string interactionId,
+        public static async Task<HttpResponseMessage> Run([HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "Customers/{customerId}/Interactions/{interactionId}/ActionPlans")]HttpRequest req, ILogger log, string customerId, string interactionId,
             [Inject]IResourceHelper resourceHelper,
-            [Inject]IHttpRequestMessageHelper httpRequestMessageHelper,
             [Inject]IValidate validate,
-            [Inject]IPostActionPlanHttpTriggerService actionPlanPostService)
+            [Inject]IPostActionPlanHttpTriggerService actionPlanPostService,
+            [Inject]ILoggerHelper loggerHelper,
+            [Inject]IHttpRequestHelper httpRequestHelper,
+            [Inject]IHttpResponseMessageHelper httpResponseMessageHelper,
+            [Inject]IJsonHelper jsonHelper)
         {
-            var touchpointId = httpRequestMessageHelper.GetTouchpointId(req);
+            loggerHelper.LogMethodEnter(log);
+
+            loggerHelper.LogMethodEnter(log);
+
+            var correlationId = httpRequestHelper.GetDssCorrelationId(req);
+            if (string.IsNullOrEmpty(correlationId))
+            {
+                log.LogInformation("Unable to locate 'DssCorrelationId' in request header");
+                return httpResponseMessageHelper.BadRequest();
+            }
+
+            if (!Guid.TryParse(correlationId, out var correlationGuid))
+                return httpResponseMessageHelper.BadRequest(correlationGuid);
+
+            var touchpointId = httpRequestHelper.GetDssTouchpointId(req);
             if (string.IsNullOrEmpty(touchpointId))
             {
-                log.LogInformation("Unable to locate 'TouchpointId' in request header");
-                return HttpResponseMessageHelper.BadRequest();
+                loggerHelper.LogInformationMessage(log, correlationGuid, "Unable to locate 'TouchpointId' in request header");
+                return httpResponseMessageHelper.BadRequest();
             }
 
-            var ApimURL = httpRequestMessageHelper.GetApimURL(req);
+            var ApimURL = httpRequestHelper.GetDssApimUrl(req);
             if (string.IsNullOrEmpty(ApimURL))
             {
-                log.LogInformation("Unable to locate 'apimurl' in request header");
-                return HttpResponseMessageHelper.BadRequest();
+                loggerHelper.LogInformationMessage(log, correlationGuid, "Unable to locate 'apimurl' in request header");
+                return httpResponseMessageHelper.BadRequest();
             }
 
-            log.LogInformation("Post Action Plan C# HTTP trigger function processed a request. By Touchpoint " + touchpointId);
+            loggerHelper.LogInformationMessage(log, correlationGuid,
+                string.Format("Post Action Plan C# HTTP trigger function  processed a request. By Touchpoint: {0}", touchpointId));
 
             if (!Guid.TryParse(customerId, out var customerGuid))
-                return HttpResponseMessageHelper.BadRequest(customerGuid);
+                return httpResponseMessageHelper.BadRequest(customerGuid);
 
             if (!Guid.TryParse(interactionId, out var interactionGuid))
-                return HttpResponseMessageHelper.BadRequest(interactionGuid);
+                return httpResponseMessageHelper.BadRequest(interactionGuid);
 
             Models.ActionPlan actionPlanRequest;
 
             try
             {
-                actionPlanRequest = await httpRequestMessageHelper.GetActionPlanFromRequest<Models.ActionPlan>(req);
+                actionPlanRequest = await httpRequestHelper.GetResourceFromRequest<Models.ActionPlan>(req);
             }
             catch (JsonException ex)
             {
-                return HttpResponseMessageHelper.UnprocessableEntity(ex);
+                return httpResponseMessageHelper.UnprocessableEntity(ex);
             }
 
             if (actionPlanRequest == null)
-                return HttpResponseMessageHelper.UnprocessableEntity(req);
+                return httpResponseMessageHelper.UnprocessableEntity(req);
 
             actionPlanRequest.SetIds(actionPlanRequest, customerGuid, interactionGuid, touchpointId);
 
             var errors = validate.ValidateResource(actionPlanRequest);
 
             if (errors != null && errors.Any())
-                return HttpResponseMessageHelper.UnprocessableEntity(errors);
+                return httpResponseMessageHelper.UnprocessableEntity(errors);
 
             var doesCustomerExist = await resourceHelper.DoesCustomerExist(customerGuid);
 
             if (!doesCustomerExist)
-                return HttpResponseMessageHelper.NoContent(customerGuid);
+                return httpResponseMessageHelper.NoContent(customerGuid);
 
             var isCustomerReadOnly = await resourceHelper.IsCustomerReadOnly(customerGuid);
 
             if (isCustomerReadOnly)
-                return HttpResponseMessageHelper.Forbidden(customerGuid);
+                return httpResponseMessageHelper.Forbidden(customerGuid);
 
             var doesInteractionExist = resourceHelper.DoesInteractionExistAndBelongToCustomer(interactionGuid, customerGuid);
 
             if (!doesInteractionExist)
-                return HttpResponseMessageHelper.NoContent(interactionGuid);
+                return httpResponseMessageHelper.NoContent(interactionGuid);
 
             var actionPlan = await actionPlanPostService.CreateAsync(actionPlanRequest);
 
             if (actionPlan != null)
                 await actionPlanPostService.SendToServiceBusQueueAsync(actionPlan, ApimURL);
 
+            loggerHelper.LogMethodExit(log);
+
             return actionPlan == null
-                ? HttpResponseMessageHelper.BadRequest(customerGuid)
-                : HttpResponseMessageHelper.Created(JsonHelper.SerializeObject(actionPlan));
+                ? httpResponseMessageHelper.BadRequest(customerGuid)
+                : httpResponseMessageHelper.Created(jsonHelper.SerializeObjectAndRenameIdProperty(actionPlan, "id", "ActionPlanId"));
 
         }
     }
