@@ -59,7 +59,7 @@ namespace NCS.DSS.ActionPlan.Tests.ModelTests
         {
             var actionPlan = new Models.ActionPlan();
 
-            actionPlan.SetIds(actionPlan, Arg.Any<Guid>(), Arg.Any<Guid>(), Arg.Any<string>());
+            actionPlan.SetIds(Arg.Any<Guid>(), Arg.Any<Guid>(), Arg.Any<string>(), Arg.Any<string>());
 
             // Assert
             Assert.AreNotSame(Guid.Empty, actionPlan.ActionPlanId);
@@ -71,7 +71,7 @@ namespace NCS.DSS.ActionPlan.Tests.ModelTests
             var actionPlan = new Models.ActionPlan();
 
             var customerId = Guid.NewGuid();
-            actionPlan.SetIds(actionPlan, customerId, Arg.Any<Guid>(), Arg.Any<string>());
+            actionPlan.SetIds(customerId, Arg.Any<Guid>(), Arg.Any<string>(), Arg.Any<string>());
 
             // Assert
             Assert.AreEqual(customerId, actionPlan.CustomerId);
@@ -83,142 +83,33 @@ namespace NCS.DSS.ActionPlan.Tests.ModelTests
             var actionPlan = new Models.ActionPlan();
 
             var interactionId = Guid.NewGuid();
-            actionPlan.SetIds(actionPlan, Arg.Any<Guid>(), interactionId, Arg.Any<string>());
+            actionPlan.SetIds(Arg.Any<Guid>(), interactionId, Arg.Any<string>(), Arg.Any<string>());
 
             // Assert
             Assert.AreEqual(interactionId, actionPlan.InteractionId);
         }
 
         [Test]
-        public void ActionPlanTests_CheckLastModifiedTouchpointIdIsSet_WhenSetIdsIsCalled()
+        public void ActionPlanTests_CheckTouchpointIdIsSet_WhenSetIdsIsCalled()
         {
             var actionPlan = new Models.ActionPlan();
 
-            actionPlan.SetIds(actionPlan, Arg.Any<Guid>(), Arg.Any<Guid>(), "0000000000");
+            actionPlan.SetIds(Arg.Any<Guid>(), Arg.Any<Guid>(), "0000000000", Arg.Any<string>());
 
             // Assert
             Assert.AreEqual("0000000000", actionPlan.LastModifiedTouchpointId);
         }
 
         [Test]
-        public void ActionPlanTests_CheckDateActionPlanCreatedIsUpdated_WhenPatchIsCalled()
+        public void ActionPlanTests_CheckSubcontractorIdIsSet_WhenSetIdsIsCalled()
         {
-            var actionPlan = new Models.ActionPlan { DateActionPlanCreated = DateTime.UtcNow };
-            var actionPlanPatch = new Models.ActionPlanPatch() { DateActionPlanCreated = DateTime.MaxValue };
+            var actionPlan = new Models.ActionPlan();
 
-            actionPlan.Patch(actionPlanPatch);
+            actionPlan.SetIds(Arg.Any<Guid>(), Arg.Any<Guid>(), Arg.Any<string>(), "0000000000");
 
             // Assert
-            Assert.AreEqual(DateTime.MaxValue, actionPlan.DateActionPlanCreated);
+            Assert.AreEqual("0000000000", actionPlan.SubcontractorId);
         }
-
-        [Test]
-        public void ActionPlanTests_CheckCustomerCharterShownToCustomerIsUpdated_WhenPatchIsCalled()
-        {
-            var actionPlan = new Models.ActionPlan { CustomerCharterShownToCustomer = false };
-            var actionPlanPatch = new Models.ActionPlanPatch { CustomerCharterShownToCustomer = true };
-
-            actionPlan.Patch(actionPlanPatch);
-
-            // Assert
-            Assert.AreEqual(true, actionPlan.CustomerCharterShownToCustomer);
-        }
-
-        [Test]
-        public void ActionPlanTests_CheckDateAndTimeCharterShownIsUpdated_WhenPatchIsCalled()
-        {
-            var actionPlan = new Models.ActionPlan { DateAndTimeCharterShown = DateTime.UtcNow };
-            var actionPlanPatch = new Models.ActionPlanPatch { DateAndTimeCharterShown = DateTime.MaxValue };
-
-            actionPlan.Patch(actionPlanPatch);
-
-            // Assert
-            Assert.AreEqual(DateTime.MaxValue, actionPlan.DateAndTimeCharterShown);
-        }
-
-        [Test]
-        public void ActionPlanTests_CheckDateActionPlanSentToCustomerIsUpdated_WhenPatchIsCalled()
-        {
-            var actionPlan = new Models.ActionPlan { DateActionPlanSentToCustomer = DateTime.UtcNow };
-            var actionPlanPatch = new Models.ActionPlanPatch { DateActionPlanSentToCustomer = DateTime.MaxValue };
-
-            actionPlan.Patch(actionPlanPatch);
-
-            // Assert
-            Assert.AreEqual(DateTime.MaxValue, actionPlan.DateActionPlanSentToCustomer);
-        }
-
-        [Test]
-        public void ActionPlanTests_CheckActionPlanDeliveryMethodIsUpdated_WhenPatchIsCalled()
-        {
-            var actionPlan = new Models.ActionPlan { ActionPlanDeliveryMethod = ActionPlanDeliveryMethod.Other };
-            var actionPlanPatch = new Models.ActionPlanPatch { ActionPlanDeliveryMethod = ActionPlanDeliveryMethod.Paper };
-
-            actionPlan.Patch(actionPlanPatch);
-
-            // Assert
-            Assert.AreEqual(ActionPlanDeliveryMethod.Paper, actionPlan.ActionPlanDeliveryMethod);
-        }
-
-        [Test]
-        public void ActionPlanTests_CheckDateActionPlanAcknowledgedIsUpdated_WhenPatchIsCalled()
-        {
-            var actionPlan = new Models.ActionPlan { DateActionPlanAcknowledged = DateTime.UtcNow };
-            var actionPlanPatch = new Models.ActionPlanPatch { DateActionPlanAcknowledged = DateTime.MaxValue };
-
-            actionPlan.Patch(actionPlanPatch);
-
-            // Assert
-            Assert.AreEqual(DateTime.MaxValue, actionPlan.DateActionPlanAcknowledged);
-        }
-
-        [Test]
-        public void ActionPlanTests_CheckPriorityCustomerIsUpdated_WhenPatchIsCalled()
-        {
-            var actionPlan = new Models.ActionPlan { PriorityCustomer = PriorityCustomer.LowSkilledAdultsWithoutALevel2Qualification };
-            var actionPlanPatch = new Models.ActionPlanPatch { PriorityCustomer = PriorityCustomer.NotAPriorityCustomer };
-
-            actionPlan.Patch(actionPlanPatch);
-
-            // Assert
-            Assert.AreEqual(PriorityCustomer.NotAPriorityCustomer, actionPlan.PriorityCustomer);
-        }
-
-        [Test]
-        public void ActionPlanTests_CheckCurrentSituationIsUpdated_WhenPatchIsCalled()
-        {
-            var actionPlan = new Models.ActionPlan { CurrentSituation = "Old" };
-            var actionPlanPatch = new Models.ActionPlanPatch { CurrentSituation = "Current" };
-
-            actionPlan.Patch(actionPlanPatch);
-
-            // Assert
-            Assert.AreEqual("Current", actionPlan.CurrentSituation);
-        }
-
-        [Test]
-        public void ActionPlanTests_CheckLastModifiedDateIsUpdated_WhenPatchIsCalled()
-        {
-            var actionPlan = new Models.ActionPlan { LastModifiedDate = DateTime.UtcNow };
-            var actionPlanPatch = new Models.ActionPlanPatch { LastModifiedDate = DateTime.MaxValue };
-
-            actionPlan.Patch(actionPlanPatch);
-
-            // Assert
-            Assert.AreEqual(DateTime.MaxValue, actionPlan.LastModifiedDate);
-        }
-
-        [Test]
-        public void ActionPlanTests_CheckLastModifiedTouchpointIdIsUpdated_WhenPatchIsCalled()
-        {
-            var actionPlan = new Models.ActionPlan { LastModifiedTouchpointId = "0000000000" };
-            var actionPlanPatch = new Models.ActionPlanPatch { LastModifiedTouchpointId = "0000000111" };
-
-            actionPlan.Patch(actionPlanPatch);
-
-            // Assert
-            Assert.AreEqual("0000000111", actionPlan.LastModifiedTouchpointId);
-        }
-
+        
     }
 }

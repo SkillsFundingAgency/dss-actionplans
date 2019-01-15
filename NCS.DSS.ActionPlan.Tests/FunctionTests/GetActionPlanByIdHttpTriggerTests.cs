@@ -55,21 +55,6 @@ namespace NCS.DSS.ActionPlan.Tests.FunctionTests
         }
 
         [Test]
-        public async Task GetActionPlanByIdHttpTrigger_ReturnsStatusCodeBadRequest_WhenDssCorrelationIdIsNotProvided()
-        {
-            _httpRequestHelper.GetDssCorrelationId(_request).Returns((string)null);
-
-            _httpResponseMessageHelper.BadRequest().Returns(x => new HttpResponseMessage(HttpStatusCode.BadRequest));
-
-            // Act
-            var result = await RunFunction(InValidId, ValidInteractionId, ValidActionPlanId);
-
-            // Assert
-            Assert.IsInstanceOf<HttpResponseMessage>(result);
-            Assert.AreEqual(HttpStatusCode.BadRequest, result.StatusCode);
-        }
-
-        [Test]
         public async Task GetActionPlanByIdHttpTrigger_ReturnsStatusCodeBadRequest_WhenDssCorrelationIdIsInvalid()
         {
             _httpRequestHelper.GetDssCorrelationId(_request).Returns(InValidId);

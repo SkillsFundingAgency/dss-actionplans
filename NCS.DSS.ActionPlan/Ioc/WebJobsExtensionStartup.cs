@@ -7,6 +7,7 @@ using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using NCS.DSS.ActionPlan.Cosmos.Helper;
+using NCS.DSS.ActionPlan.Cosmos.Provider;
 using NCS.DSS.ActionPlan.GetActionPlanByIdHttpTrigger.Service;
 using NCS.DSS.ActionPlan.GetActionPlanHttpTrigger.Service;
 using NCS.DSS.ActionPlan.Ioc;
@@ -24,12 +25,15 @@ namespace NCS.DSS.ActionPlan.Ioc
         {
             builder.AddDependencyInjection();
 
-            builder.Services.AddScoped<IResourceHelper, ResourceHelper>();
-            builder.Services.AddScoped<IValidate, Validate>();
-            builder.Services.AddScoped<ILoggerHelper, LoggerHelper>();
-            builder.Services.AddScoped<IHttpRequestHelper, HttpRequestHelper>();
-            builder.Services.AddScoped<IHttpResponseMessageHelper, HttpResponseMessageHelper>();
-            builder.Services.AddScoped<IJsonHelper, JsonHelper>();
+            builder.Services.AddSingleton<IResourceHelper, ResourceHelper>();
+            builder.Services.AddSingleton<IValidate, Validate>();
+            builder.Services.AddSingleton<ILoggerHelper, LoggerHelper>();
+            builder.Services.AddSingleton<IHttpRequestHelper, HttpRequestHelper>();
+            builder.Services.AddSingleton<IHttpResponseMessageHelper, HttpResponseMessageHelper>();
+            builder.Services.AddSingleton<IJsonHelper, JsonHelper>();
+            builder.Services.AddSingleton<IDocumentDBProvider, DocumentDBProvider>();
+            builder.Services.AddSingleton<IActionPlanPatchService, ActionPlanPatchService>();
+
             builder.Services.AddScoped<ISwaggerDocumentGenerator, SwaggerDocumentGenerator>();
             builder.Services.AddScoped<IGetActionPlanHttpTriggerService, GetActionPlanHttpTriggerService>();
             builder.Services.AddScoped<IGetActionPlanByIdHttpTriggerService, GetActionPlanByIdHttpTriggerService>();

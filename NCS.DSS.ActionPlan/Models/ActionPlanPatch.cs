@@ -5,6 +5,7 @@ using NCS.DSS.ActionPlan.ReferenceData;
 
 namespace NCS.DSS.ActionPlan.Models
 {
+
     public class ActionPlanPatch : IActionPlan
     {
         [DataType(DataType.DateTime)]
@@ -63,12 +64,26 @@ namespace NCS.DSS.ActionPlan.Models
         [StringLength(10, MinimumLength = 10)]
         [Display(Description = "Identifier of the touchpoint who made the last change to the record")]
         [Example(Description = "0000000001")]
+
         public string LastModifiedTouchpointId { get; set; }
+
+        [StringLength(50)]
+        [Display(Description = "Identifier supplied by the touchpoint to indicate their subcontractor")]
+        [Example(Description = "01234567899876543210")]
+        public string SubcontractorId { get; set; }
+
 
         public void SetDefaultValues()
         {
             if (!LastModifiedDate.HasValue)
                 LastModifiedDate = DateTime.UtcNow;
         }
+
+        public void SetIds(string touchpointId, string subcontractorId)
+        {
+            LastModifiedTouchpointId = touchpointId;
+            SubcontractorId = subcontractorId;
+        }
+
     }
 }
