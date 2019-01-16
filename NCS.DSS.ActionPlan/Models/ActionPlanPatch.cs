@@ -5,7 +5,7 @@ using NCS.DSS.ActionPlan.ReferenceData;
 
 namespace NCS.DSS.ActionPlan.Models
 {
-
+    
     public class ActionPlanPatch : IActionPlan
     {
         [DataType(DataType.DateTime)]

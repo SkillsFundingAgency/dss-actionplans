@@ -101,7 +101,6 @@ namespace NCS.DSS.ActionPlan.Tests.FunctionTests
         public async Task GetActionPlanHttpTrigger_ReturnsStatusCodeNoContent_WhenActionPlanDoesNotExist()
         {
             _resourceHelper.DoesCustomerExist(Arg.Any<Guid>()).Returns(true);
-            _resourceHelper.DoesInteractionExistAndBelongToCustomer(Arg.Any<Guid>(), Arg.Any<Guid>()).Returns(false);
 
             _getActionPlanHttpTriggerService.GetActionPlansAsync(Arg.Any<Guid>()).Returns(Task.FromResult<List<Models.ActionPlan>>(null).Result);
 
@@ -120,7 +119,6 @@ namespace NCS.DSS.ActionPlan.Tests.FunctionTests
         public async Task GetActionPlanHttpTrigger_ReturnsStatusCodeOk_WhenActionPlanExists()
         {
             _resourceHelper.DoesCustomerExist(Arg.Any<Guid>()).Returns(true);
-            _resourceHelper.DoesInteractionExistAndBelongToCustomer(Arg.Any<Guid>(), Arg.Any<Guid>()).Returns(true);
 
             var listOfActionPlanes = new List<Models.ActionPlan>();
             _getActionPlanHttpTriggerService.GetActionPlansAsync(Arg.Any<Guid>()).Returns(Task.FromResult(listOfActionPlanes).Result);

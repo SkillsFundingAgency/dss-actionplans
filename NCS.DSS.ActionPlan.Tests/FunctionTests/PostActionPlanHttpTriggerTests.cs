@@ -25,6 +25,7 @@ namespace NCS.DSS.ActionPlan.Tests.FunctionTests
     {
         private const string ValidCustomerId = "7E467BDB-213F-407A-B86A-1954053D3C24";
         private const string ValidInteractionId = "1e1a555c-9633-4e12-ab28-09ed60d51cb3";
+        private const string ValidSessionId = "58b43e3f-4a50-4900-9c82-a14682ee90fa";
         private const string ValidDssCorrelationId = "452d8e8c-2516-4a6b-9fc1-c85e578ac066";
         private const string InValidId = "1111111-2222-3333-4444-555555555555";
 
@@ -66,7 +67,7 @@ namespace NCS.DSS.ActionPlan.Tests.FunctionTests
             _httpResponseMessageHelper.BadRequest().Returns(x => new HttpResponseMessage(HttpStatusCode.BadRequest));
 
             // Act
-            var result = await RunFunction(InValidId, ValidInteractionId);
+            var result = await RunFunction(InValidId, ValidInteractionId, ValidSessionId);
 
             // Assert
             Assert.IsInstanceOf<HttpResponseMessage>(result);
@@ -81,7 +82,7 @@ namespace NCS.DSS.ActionPlan.Tests.FunctionTests
             _httpResponseMessageHelper.BadRequest().Returns(x => new HttpResponseMessage(HttpStatusCode.BadRequest));
 
             // Act
-            var result = await RunFunction(InValidId, ValidInteractionId);
+            var result = await RunFunction(InValidId, ValidInteractionId, ValidSessionId);
 
             // Assert
             Assert.IsInstanceOf<HttpResponseMessage>(result);
@@ -95,7 +96,7 @@ namespace NCS.DSS.ActionPlan.Tests.FunctionTests
                 .BadRequest(Arg.Any<Guid>()).Returns(x => new HttpResponseMessage(HttpStatusCode.BadRequest));
 
             // Act
-            var result = await RunFunction(InValidId, ValidInteractionId);
+            var result = await RunFunction(InValidId, ValidInteractionId, ValidSessionId);
 
             // Assert
             Assert.IsInstanceOf<HttpResponseMessage>(result);
@@ -109,7 +110,21 @@ namespace NCS.DSS.ActionPlan.Tests.FunctionTests
                 .BadRequest(Arg.Any<Guid>()).Returns(x => new HttpResponseMessage(HttpStatusCode.BadRequest));
 
             // Act
-            var result = await RunFunction(ValidCustomerId, InValidId);
+            var result = await RunFunction(ValidCustomerId, InValidId, ValidSessionId);
+
+            // Assert
+            Assert.IsInstanceOf<HttpResponseMessage>(result);
+            Assert.AreEqual(HttpStatusCode.BadRequest, result.StatusCode);
+        }
+
+        [Test]
+        public async Task GetActionPlanByIdHttpTrigger_ReturnsStatusCodeBadRequest_WhenSessionIdIsInvalid()
+        {
+            _httpResponseMessageHelper
+                .BadRequest(Arg.Any<Guid>()).Returns(x => new HttpResponseMessage(HttpStatusCode.BadRequest));
+
+            // Act
+            var result = await RunFunction(ValidCustomerId, ValidInteractionId, InValidId);
 
             // Assert
             Assert.IsInstanceOf<HttpResponseMessage>(result);
@@ -127,7 +142,7 @@ namespace NCS.DSS.ActionPlan.Tests.FunctionTests
             _httpResponseMessageHelper
                 .UnprocessableEntity(Arg.Any<List<ValidationResult>>()).Returns(x => new HttpResponseMessage((HttpStatusCode)422));
 
-            var result = await RunFunction(ValidCustomerId, ValidInteractionId);
+            var result = await RunFunction(ValidCustomerId, ValidInteractionId, ValidSessionId);
 
             // Assert
             Assert.IsInstanceOf<HttpResponseMessage>(result);
@@ -142,7 +157,7 @@ namespace NCS.DSS.ActionPlan.Tests.FunctionTests
             _httpResponseMessageHelper
                 .UnprocessableEntity(Arg.Any<JsonException>()).Returns(x => new HttpResponseMessage((HttpStatusCode)422));
 
-            var result = await RunFunction(ValidCustomerId, ValidInteractionId);
+            var result = await RunFunction(ValidCustomerId, ValidInteractionId, ValidSessionId);
 
             // Assert
             Assert.IsInstanceOf<HttpResponseMessage>(result);
@@ -159,7 +174,7 @@ namespace NCS.DSS.ActionPlan.Tests.FunctionTests
             _httpResponseMessageHelper
                 .NoContent(Arg.Any<Guid>()).Returns(x => new HttpResponseMessage(HttpStatusCode.NoContent));
 
-            var result = await RunFunction(ValidCustomerId, ValidInteractionId);
+            var result = await RunFunction(ValidCustomerId, ValidInteractionId, ValidSessionId);
 
             // Assert
             Assert.IsInstanceOf<HttpResponseMessage>(result);
@@ -172,12 +187,12 @@ namespace NCS.DSS.ActionPlan.Tests.FunctionTests
             _httpRequestHelper.GetResourceFromRequest<Models.ActionPlan>(_request).Returns(Task.FromResult(_actionPlan).Result);
 
             _resourceHelper.DoesCustomerExist(Arg.Any<Guid>()).Returns(true);
-            _resourceHelper.DoesInteractionExistAndBelongToCustomer(Arg.Any<Guid>(), Arg.Any<Guid>()).Returns(false);
+            _resourceHelper.DoesSessionExistAndBelongToCustomer(Arg.Any<Guid>(), Arg.Any<Guid>(), Arg.Any<Guid>()).Returns(false);
 
             _httpResponseMessageHelper
                 .NoContent(Arg.Any<Guid>()).Returns(x => new HttpResponseMessage(HttpStatusCode.NoContent));
 
-            var result = await RunFunction(ValidCustomerId, ValidInteractionId);
+            var result = await RunFunction(ValidCustomerId, ValidInteractionId, ValidSessionId);
 
             // Assert
             Assert.IsInstanceOf<HttpResponseMessage>(result);
@@ -190,14 +205,14 @@ namespace NCS.DSS.ActionPlan.Tests.FunctionTests
             _httpRequestHelper.GetResourceFromRequest<Models.ActionPlan>(_request).Returns(Task.FromResult(_actionPlan).Result);
 
             _resourceHelper.DoesCustomerExist(Arg.Any<Guid>()).ReturnsForAnyArgs(true);
-            _resourceHelper.DoesInteractionExistAndBelongToCustomer(Arg.Any<Guid>(), Arg.Any<Guid>()).Returns(true);
+            _resourceHelper.DoesSessionExistAndBelongToCustomer(Arg.Any<Guid>(), Arg.Any<Guid>(), Arg.Any<Guid>()).Returns(true);
 
             _postActionPlanHttpTriggerService.CreateAsync(Arg.Any<Models.ActionPlan>()).Returns(Task.FromResult<Models.ActionPlan>(null).Result);
 
             _httpResponseMessageHelper
                 .BadRequest(Arg.Any<Guid>()).Returns(x => new HttpResponseMessage(HttpStatusCode.BadRequest));
 
-            var result = await RunFunction(ValidCustomerId, ValidInteractionId);
+            var result = await RunFunction(ValidCustomerId, ValidInteractionId, ValidSessionId);
 
             // Assert
             Assert.IsInstanceOf<HttpResponseMessage>(result);
@@ -210,14 +225,14 @@ namespace NCS.DSS.ActionPlan.Tests.FunctionTests
             _httpRequestHelper.GetResourceFromRequest<Models.ActionPlan>(_request).Returns(Task.FromResult(_actionPlan).Result);
 
             _resourceHelper.DoesCustomerExist(Arg.Any<Guid>()).ReturnsForAnyArgs(true);
-            _resourceHelper.DoesInteractionExistAndBelongToCustomer(Arg.Any<Guid>(), Arg.Any<Guid>()).Returns(true);
+            _resourceHelper.DoesSessionExistAndBelongToCustomer(Arg.Any<Guid>(), Arg.Any<Guid>(), Arg.Any<Guid>()).Returns(true);
 
             _postActionPlanHttpTriggerService.CreateAsync(Arg.Any<Models.ActionPlan>()).Returns(Task.FromResult<Models.ActionPlan>(null).Result);
 
             _httpResponseMessageHelper
                 .BadRequest(Arg.Any<Guid>()).Returns(x => new HttpResponseMessage(HttpStatusCode.BadRequest));
 
-            var result = await RunFunction(ValidCustomerId, ValidInteractionId);
+            var result = await RunFunction(ValidCustomerId, ValidInteractionId, ValidSessionId);
 
             // Assert
             Assert.IsInstanceOf<HttpResponseMessage>(result);
@@ -230,27 +245,28 @@ namespace NCS.DSS.ActionPlan.Tests.FunctionTests
             _httpRequestHelper.GetResourceFromRequest<Models.ActionPlan>(_request).Returns(Task.FromResult(_actionPlan).Result);
 
             _resourceHelper.DoesCustomerExist(Arg.Any<Guid>()).ReturnsForAnyArgs(true);
-            _resourceHelper.DoesInteractionExistAndBelongToCustomer(Arg.Any<Guid>(), Arg.Any<Guid>()).Returns(true);
+            _resourceHelper.DoesSessionExistAndBelongToCustomer(Arg.Any<Guid>(), Arg.Any<Guid>(), Arg.Any<Guid>()).Returns(true);
 
             _postActionPlanHttpTriggerService.CreateAsync(Arg.Any<Models.ActionPlan>()).Returns(Task.FromResult(_actionPlan).Result);
 
             _httpResponseMessageHelper
                 .Created(Arg.Any<string>()).Returns(x => new HttpResponseMessage(HttpStatusCode.Created));
 
-            var result = await RunFunction(ValidCustomerId, ValidInteractionId);
+            var result = await RunFunction(ValidCustomerId, ValidInteractionId, ValidSessionId);
 
             // Assert
             Assert.IsInstanceOf<HttpResponseMessage>(result);
             Assert.AreEqual(HttpStatusCode.Created, result.StatusCode);
         }
 
-        private async Task<HttpResponseMessage> RunFunction(string customerId, string interactionId)
+        private async Task<HttpResponseMessage> RunFunction(string customerId, string interactionId, string sessionId)
         {
             return await PostActionPlanHttpTrigger.Function.PostActionPlanHttpTrigger.Run(
                 _request,
                 _log,
                 customerId,
                 interactionId,
+                sessionId,
                 _resourceHelper,
                 _validate,
                 _postActionPlanHttpTriggerService,

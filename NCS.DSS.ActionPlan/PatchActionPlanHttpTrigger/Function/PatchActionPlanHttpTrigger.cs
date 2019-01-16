@@ -33,7 +33,7 @@ namespace NCS.DSS.ActionPlan.PatchActionPlanHttpTrigger.Function
         [Response(HttpStatusCode = (int)HttpStatusCode.Forbidden, Description = "Insufficient access", ShowSchema = false)]
         [Response(HttpStatusCode = 422, Description = "Action Plan validation error(s)", ShowSchema = false)]
         [Display(Name = "Patch", Description = "Ability to modify/update a customers action plan record.")]
-        public static async Task<HttpResponseMessage> Run([HttpTrigger(AuthorizationLevel.Anonymous, "patch", Route = "Customers/{customerId}/Interactions/{interactionId}/ActionPlans/{actionPlanId}")]HttpRequest req, ILogger log, string customerId, string interactionId, string actionPlanId,
+        public static async Task<HttpResponseMessage> Run([HttpTrigger(AuthorizationLevel.Anonymous, "patch", Route = "Customers/{customerId}/Interactions/{interactionId}/Sessions/{sessionId}/ActionPlans/{actionPlanId}")]HttpRequest req, ILogger log, string customerId, string interactionId, string sessionId, string actionPlanId,
             [Inject]IResourceHelper resourceHelper, 
             [Inject]IValidate validate,
             [Inject]IPatchActionPlanHttpTriggerService actionPlanPatchService,
@@ -88,13 +88,19 @@ namespace NCS.DSS.ActionPlan.PatchActionPlanHttpTrigger.Function
                 return httpResponseMessageHelper.BadRequest(interactionGuid);
             }
 
+            if (!Guid.TryParse(sessionId, out var sessionGuid))
+            {
+                loggerHelper.LogInformationMessage(log, correlationGuid, string.Format("Unable to parse 'sessionId' to a Guid: {0}", sessionGuid));
+                return httpResponseMessageHelper.BadRequest(sessionGuid);
+            }
+
             if (!Guid.TryParse(actionPlanId, out var actionPlanGuid))
             {
                 loggerHelper.LogInformationMessage(log, correlationGuid, string.Format("Unable to parse 'actionPlanId' to a Guid: {0}", actionPlanId));
                 return httpResponseMessageHelper.BadRequest(actionPlanGuid);
             }
 
-            Models.ActionPlanPatch actionPlanPatchRequest;
+            ActionPlanPatch actionPlanPatchRequest;
             
             try
             {
@@ -144,9 +150,9 @@ namespace NCS.DSS.ActionPlan.PatchActionPlanHttpTrigger.Function
             }
 
             loggerHelper.LogInformationMessage(log, correlationGuid, string.Format("Attempting to get Interaction {0} for customer {1}", interactionGuid, customerGuid));
-            var doesInteractionExist = resourceHelper.DoesInteractionExistAndBelongToCustomer(interactionGuid, customerGuid);
+            var doesSessionExist = resourceHelper.DoesSessionExistAndBelongToCustomer(sessionGuid, interactionGuid, customerGuid);
 
-            if (!doesInteractionExist)
+            if (!doesSessionExist)
             {
                 loggerHelper.LogInformationMessage(log, correlationGuid, string.Format("Interaction does not exist {0}", interactionGuid));
                 return httpResponseMessageHelper.NoContent(interactionGuid);

@@ -10,7 +10,7 @@ namespace NCS.DSS.ActionPlan.PatchActionPlanHttpTrigger.Service
 {
     public class PatchActionPlanHttpTriggerService : IPatchActionPlanHttpTriggerService
     {
-        private IActionPlanPatchService _actionPlanPatchService;
+        private readonly IActionPlanPatchService _actionPlanPatchService;
         private readonly IDocumentDBProvider _documentDbProvider;
 
         public PatchActionPlanHttpTriggerService(IActionPlanPatchService actionPlanPatchService, IDocumentDBProvider documentDbProvider)
@@ -23,13 +23,19 @@ namespace NCS.DSS.ActionPlan.PatchActionPlanHttpTrigger.Service
             if (string.IsNullOrEmpty(actionPlanJson))
                 return null;
 
+            if (actionPlanPatch == null)
+                return null;
+
             actionPlanPatch.SetDefaultValues();
 
             var updatedJson = _actionPlanPatchService.Patch(actionPlanJson, actionPlanPatch);
 
+            if (string.IsNullOrEmpty(updatedJson))
+                return null;
+
             var response = await _documentDbProvider.UpdateActionPlanAsync(updatedJson, actionPlanId);
 
-            var responseStatusCode = response.StatusCode;
+            var responseStatusCode = response?.StatusCode;
 
             return responseStatusCode == HttpStatusCode.OK ? JsonConvert.DeserializeObject<Models.ActionPlan>(updatedJson) : null;
         }
