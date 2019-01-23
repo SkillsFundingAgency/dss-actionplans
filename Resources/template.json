@@ -41,6 +41,9 @@
       "storageAccountName": {
         "type": "string"
       },
+      "storageAccountKey": {
+        "type": "string"
+      },
       "templateBaseUrl": {
         "type": "string"
       }
@@ -96,6 +99,9 @@
                 },
                 "storageAccountName": {
                   "value": "[parameters('storageAccountName')]"
+                },
+                "storageAccountKey": {
+                  "value": "[parameters('storageAccountKey')]"
                 }
               }
             },
