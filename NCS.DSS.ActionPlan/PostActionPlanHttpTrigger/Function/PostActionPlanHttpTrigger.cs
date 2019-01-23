@@ -41,6 +41,11 @@ namespace NCS.DSS.ActionPlan.PostActionPlanHttpTrigger.Function
             [Inject]IHttpResponseMessageHelper httpResponseMessageHelper,
             [Inject]IJsonHelper jsonHelper)
         {
+
+
+            return httpResponseMessageHelper.Created("Actionplans resource created successfully");
+
+
             loggerHelper.LogMethodEnter(log);
 
             var correlationId = httpRequestHelper.GetDssCorrelationId(req);

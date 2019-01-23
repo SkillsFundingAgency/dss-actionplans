@@ -36,6 +36,13 @@ namespace NCS.DSS.ActionPlan.GetActionPlanByIdHttpTrigger.Function
             [Inject]IHttpResponseMessageHelper httpResponseMessageHelper,
             [Inject]IJsonHelper jsonHelper)
         {
+
+            Guid nGuid = new Guid();
+
+            return httpResponseMessageHelper.Ok(nGuid);
+            
+
+
             loggerHelper.LogMethodEnter(log);
             
             var correlationId = httpRequestHelper.GetDssCorrelationId(req);

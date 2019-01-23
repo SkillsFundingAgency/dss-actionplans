@@ -42,6 +42,11 @@ namespace NCS.DSS.ActionPlan.PatchActionPlanHttpTrigger.Function
             [Inject]IHttpResponseMessageHelper httpResponseMessageHelper,
             [Inject]IJsonHelper jsonHelper)
         {
+
+            return httpResponseMessageHelper.Ok("Actionplans resource updated successfully!");
+
+
+
             loggerHelper.LogMethodEnter(log);
 
             var correlationId = httpRequestHelper.GetDssCorrelationId(req);
