@@ -46,129 +46,129 @@ namespace NCS.DSS.ActionPlan.PostActionPlanHttpTrigger.Function
             return httpResponseMessageHelper.Created("Actionplans resource created successfully");
 
 
-            loggerHelper.LogMethodEnter(log);
+            //loggerHelper.LogMethodEnter(log);
 
-            var correlationId = httpRequestHelper.GetDssCorrelationId(req);
-            if (string.IsNullOrEmpty(correlationId))
-                log.LogInformation("Unable to locate 'DssCorrelationId' in request header");
+            //var correlationId = httpRequestHelper.GetDssCorrelationId(req);
+            //if (string.IsNullOrEmpty(correlationId))
+            //    log.LogInformation("Unable to locate 'DssCorrelationId' in request header");
 
-            if (!Guid.TryParse(correlationId, out var correlationGuid))
-            {
-                log.LogInformation("Unable to parse 'DssCorrelationId' to a Guid");
-                correlationGuid = Guid.NewGuid();
-            }
+            //if (!Guid.TryParse(correlationId, out var correlationGuid))
+            //{
+            //    log.LogInformation("Unable to parse 'DssCorrelationId' to a Guid");
+            //    correlationGuid = Guid.NewGuid();
+            //}
 
-            var touchpointId = httpRequestHelper.GetDssTouchpointId(req);
-            if (string.IsNullOrEmpty(touchpointId))
-            {
-                loggerHelper.LogInformationMessage(log, correlationGuid, "Unable to locate 'TouchpointId' in request header");
-                return httpResponseMessageHelper.BadRequest();
-            }
+            //var touchpointId = httpRequestHelper.GetDssTouchpointId(req);
+            //if (string.IsNullOrEmpty(touchpointId))
+            //{
+            //    loggerHelper.LogInformationMessage(log, correlationGuid, "Unable to locate 'TouchpointId' in request header");
+            //    return httpResponseMessageHelper.BadRequest();
+            //}
 
-            var ApimURL = httpRequestHelper.GetDssApimUrl(req);
-            if (string.IsNullOrEmpty(ApimURL))
-            {
-                loggerHelper.LogInformationMessage(log, correlationGuid, "Unable to locate 'apimurl' in request header");
-                return httpResponseMessageHelper.BadRequest();
-            }
+            //var ApimURL = httpRequestHelper.GetDssApimUrl(req);
+            //if (string.IsNullOrEmpty(ApimURL))
+            //{
+            //    loggerHelper.LogInformationMessage(log, correlationGuid, "Unable to locate 'apimurl' in request header");
+            //    return httpResponseMessageHelper.BadRequest();
+            //}
 
-            var subcontractorId = httpRequestHelper.GetDssSubcontractorId(req);
-            if (string.IsNullOrEmpty(subcontractorId))
-                loggerHelper.LogInformationMessage(log, correlationGuid, "Unable to locate 'SubcontractorId' in request header");
+            //var subcontractorId = httpRequestHelper.GetDssSubcontractorId(req);
+            //if (string.IsNullOrEmpty(subcontractorId))
+            //    loggerHelper.LogInformationMessage(log, correlationGuid, "Unable to locate 'SubcontractorId' in request header");
             
-            loggerHelper.LogInformationMessage(log, correlationGuid,
-                string.Format("Post Action Plan C# HTTP trigger function  processed a request. By Touchpoint: {0}", touchpointId));
+            //loggerHelper.LogInformationMessage(log, correlationGuid,
+            //    string.Format("Post Action Plan C# HTTP trigger function  processed a request. By Touchpoint: {0}", touchpointId));
 
-            if (!Guid.TryParse(customerId, out var customerGuid))
-            {
-                loggerHelper.LogInformationMessage(log, correlationGuid, string.Format("Unable to parse 'customerId' to a Guid: {0}", customerId));
-                return httpResponseMessageHelper.BadRequest(customerGuid);
-            }
+            //if (!Guid.TryParse(customerId, out var customerGuid))
+            //{
+            //    loggerHelper.LogInformationMessage(log, correlationGuid, string.Format("Unable to parse 'customerId' to a Guid: {0}", customerId));
+            //    return httpResponseMessageHelper.BadRequest(customerGuid);
+            //}
 
-            if (!Guid.TryParse(interactionId, out var interactionGuid))
-            {
-                loggerHelper.LogInformationMessage(log, correlationGuid, string.Format("Unable to parse 'interactionId' to a Guid: {0}", interactionId));
-                return httpResponseMessageHelper.BadRequest(interactionGuid);
-            }
+            //if (!Guid.TryParse(interactionId, out var interactionGuid))
+            //{
+            //    loggerHelper.LogInformationMessage(log, correlationGuid, string.Format("Unable to parse 'interactionId' to a Guid: {0}", interactionId));
+            //    return httpResponseMessageHelper.BadRequest(interactionGuid);
+            //}
 
-            if (!Guid.TryParse(sessionId, out var sessionGuid))
-            {
-                loggerHelper.LogInformationMessage(log, correlationGuid, string.Format("Unable to parse 'sessionId' to a Guid: {0}", sessionGuid));
-                return httpResponseMessageHelper.BadRequest(sessionGuid);
-            }
+            //if (!Guid.TryParse(sessionId, out var sessionGuid))
+            //{
+            //    loggerHelper.LogInformationMessage(log, correlationGuid, string.Format("Unable to parse 'sessionId' to a Guid: {0}", sessionGuid));
+            //    return httpResponseMessageHelper.BadRequest(sessionGuid);
+            //}
 
-            Models.ActionPlan actionPlanRequest;
+            //Models.ActionPlan actionPlanRequest;
 
-            try
-            {
-                loggerHelper.LogInformationMessage(log, correlationGuid, "Attempt to get resource from body of the request");
-                actionPlanRequest = await httpRequestHelper.GetResourceFromRequest<Models.ActionPlan>(req);
-            }
-            catch (JsonException ex)
-            {
-                loggerHelper.LogError(log, correlationGuid, "Unable to retrieve body from req", ex);
-                return httpResponseMessageHelper.UnprocessableEntity(ex);
-            }
+            //try
+            //{
+            //    loggerHelper.LogInformationMessage(log, correlationGuid, "Attempt to get resource from body of the request");
+            //    actionPlanRequest = await httpRequestHelper.GetResourceFromRequest<Models.ActionPlan>(req);
+            //}
+            //catch (JsonException ex)
+            //{
+            //    loggerHelper.LogError(log, correlationGuid, "Unable to retrieve body from req", ex);
+            //    return httpResponseMessageHelper.UnprocessableEntity(ex);
+            //}
 
-            if (actionPlanRequest == null)
-            {
-                loggerHelper.LogInformationMessage(log, correlationGuid, "Action plan request is null");
-                return httpResponseMessageHelper.UnprocessableEntity(req);
-            }
+            //if (actionPlanRequest == null)
+            //{
+            //    loggerHelper.LogInformationMessage(log, correlationGuid, "Action plan request is null");
+            //    return httpResponseMessageHelper.UnprocessableEntity(req);
+            //}
 
-            loggerHelper.LogInformationMessage(log, correlationGuid, "Attempt to set id's for action plan");
-            actionPlanRequest.SetIds(customerGuid, interactionGuid, sessionGuid, touchpointId, subcontractorId);
+            //loggerHelper.LogInformationMessage(log, correlationGuid, "Attempt to set id's for action plan");
+            //actionPlanRequest.SetIds(customerGuid, interactionGuid, sessionGuid, touchpointId, subcontractorId);
 
-            loggerHelper.LogInformationMessage(log, correlationGuid, "Attempt to validate resource");
-            var errors = validate.ValidateResource(actionPlanRequest);
+            //loggerHelper.LogInformationMessage(log, correlationGuid, "Attempt to validate resource");
+            //var errors = validate.ValidateResource(actionPlanRequest);
 
-            if (errors != null && errors.Any())
-            {
-                loggerHelper.LogInformationMessage(log, correlationGuid, "validation errors with resource");
-                return httpResponseMessageHelper.UnprocessableEntity(errors);
-            }
+            //if (errors != null && errors.Any())
+            //{
+            //    loggerHelper.LogInformationMessage(log, correlationGuid, "validation errors with resource");
+            //    return httpResponseMessageHelper.UnprocessableEntity(errors);
+            //}
 
-            loggerHelper.LogInformationMessage(log, correlationGuid, string.Format("Attempting to see if customer exists {0}", customerGuid));
-            var doesCustomerExist = await resourceHelper.DoesCustomerExist(customerGuid);
+            //loggerHelper.LogInformationMessage(log, correlationGuid, string.Format("Attempting to see if customer exists {0}", customerGuid));
+            //var doesCustomerExist = await resourceHelper.DoesCustomerExist(customerGuid);
 
-            if (!doesCustomerExist)
-            {
-                loggerHelper.LogInformationMessage(log, correlationGuid, string.Format("Customer does not exist {0}", customerGuid));
-                return httpResponseMessageHelper.NoContent(customerGuid);
-            }
+            //if (!doesCustomerExist)
+            //{
+            //    loggerHelper.LogInformationMessage(log, correlationGuid, string.Format("Customer does not exist {0}", customerGuid));
+            //    return httpResponseMessageHelper.NoContent(customerGuid);
+            //}
 
-            loggerHelper.LogInformationMessage(log, correlationGuid, string.Format("Attempting to see if this is a read only customer {0}", customerGuid));
-            var isCustomerReadOnly = await resourceHelper.IsCustomerReadOnly(customerGuid);
+            //loggerHelper.LogInformationMessage(log, correlationGuid, string.Format("Attempting to see if this is a read only customer {0}", customerGuid));
+            //var isCustomerReadOnly = await resourceHelper.IsCustomerReadOnly(customerGuid);
 
-            if (isCustomerReadOnly)
-            {
-                loggerHelper.LogInformationMessage(log, correlationGuid, string.Format("Customer is read only {0}", customerGuid));
-                return httpResponseMessageHelper.Forbidden(customerGuid);
-            }
+            //if (isCustomerReadOnly)
+            //{
+            //    loggerHelper.LogInformationMessage(log, correlationGuid, string.Format("Customer is read only {0}", customerGuid));
+            //    return httpResponseMessageHelper.Forbidden(customerGuid);
+            //}
 
-            loggerHelper.LogInformationMessage(log, correlationGuid, string.Format("Attempting to get Interaction {0} for customer {1}", interactionGuid, customerGuid));
-            var doesSessionExist = resourceHelper.DoesSessionExistAndBelongToCustomer(sessionGuid, interactionGuid, customerGuid);
+            //loggerHelper.LogInformationMessage(log, correlationGuid, string.Format("Attempting to get Interaction {0} for customer {1}", interactionGuid, customerGuid));
+            //var doesSessionExist = resourceHelper.DoesSessionExistAndBelongToCustomer(sessionGuid, interactionGuid, customerGuid);
 
-            if (!doesSessionExist)
-            {
-                loggerHelper.LogInformationMessage(log, correlationGuid, string.Format("Interaction does not exist {0}", interactionGuid));
-                return httpResponseMessageHelper.NoContent(interactionGuid);
-            }
+            //if (!doesSessionExist)
+            //{
+            //    loggerHelper.LogInformationMessage(log, correlationGuid, string.Format("Interaction does not exist {0}", interactionGuid));
+            //    return httpResponseMessageHelper.NoContent(interactionGuid);
+            //}
 
-            loggerHelper.LogInformationMessage(log, correlationGuid, string.Format("Attempting to get Create Action Plan for customer {0}", customerGuid));
-            var actionPlan = await actionPlanPostService.CreateAsync(actionPlanRequest);
+            //loggerHelper.LogInformationMessage(log, correlationGuid, string.Format("Attempting to get Create Action Plan for customer {0}", customerGuid));
+            //var actionPlan = await actionPlanPostService.CreateAsync(actionPlanRequest);
 
-            if (actionPlan != null)
-            {
-                loggerHelper.LogInformationMessage(log, correlationGuid, string.Format("attempting to send to service bus {0}", actionPlan.ActionPlanId));
-                await actionPlanPostService.SendToServiceBusQueueAsync(actionPlan, ApimURL);
-            }
+            //if (actionPlan != null)
+            //{
+            //    loggerHelper.LogInformationMessage(log, correlationGuid, string.Format("attempting to send to service bus {0}", actionPlan.ActionPlanId));
+            //    await actionPlanPostService.SendToServiceBusQueueAsync(actionPlan, ApimURL);
+            //}
 
-            loggerHelper.LogMethodExit(log);
+            //loggerHelper.LogMethodExit(log);
 
-            return actionPlan == null
-                ? httpResponseMessageHelper.BadRequest(customerGuid)
-                : httpResponseMessageHelper.Created(jsonHelper.SerializeObjectAndRenameIdProperty(actionPlan, "id", "ActionPlanId"));
+            //return actionPlan == null
+            //    ? httpResponseMessageHelper.BadRequest(customerGuid)
+            //    : httpResponseMessageHelper.Created(jsonHelper.SerializeObjectAndRenameIdProperty(actionPlan, "id", "ActionPlanId"));
 
         }
     }
