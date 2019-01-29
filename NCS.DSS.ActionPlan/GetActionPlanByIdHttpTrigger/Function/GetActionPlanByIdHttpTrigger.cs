@@ -37,14 +37,30 @@ namespace NCS.DSS.ActionPlan.GetActionPlanByIdHttpTrigger.Function
             [Inject]IJsonHelper jsonHelper)
         {
 
-            Guid nGuid = new Guid();
 
-            return httpResponseMessageHelper.Ok(nGuid);
-            
+            Models.ActionPlan testActionPlan = new Models.ActionPlan
+            {
+                ActionPlanId = Guid.Parse("d5529a13-fca1-4775-b456-b5ee12d02fcd"),
+                CustomerId = Guid.Parse("518b8b41-ff04-4668-9bf1-62800399b90c"),
+                InteractionId = Guid.Parse("2730af9c-fc34-4c2b-a905-c4b584b0f379"),
+                SessionId = Guid.Parse("f01f7631-1765-4c18-9885-afa244de372a"),
+                SubcontractorId = "01234567899876543210",
+                DateActionPlanCreated = DateTime.Parse("01/05/2018"),
+                CustomerCharterShownToCustomer = true,
+                DateAndTimeCharterShown = DateTime.Parse("04/04/2018"),
+                DateActionPlanSentToCustomer = DateTime.Parse("07/07/2018"),
+                ActionPlanDeliveryMethod = ReferenceData.ActionPlanDeliveryMethod.Email,
+                PriorityCustomer = ReferenceData.PriorityCustomer.AdultsWhoHaveBeenUnemployedForMoreThan12Months,
+                CurrentSituation = "Sample Currentsituation Text",
+                LastModifiedDate = DateTime.Parse("05/01/2019"),
+                LastModifiedTouchpointId = "000000010"
+            };
+
+            return httpResponseMessageHelper.Ok(jsonHelper.SerializeObjectAndRenameIdProperty(testActionPlan, "id", "ActionPlanId"));
 
 
             //loggerHelper.LogMethodEnter(log);
-            
+
             //var correlationId = httpRequestHelper.GetDssCorrelationId(req);
             //if (string.IsNullOrEmpty(correlationId))
             //{
