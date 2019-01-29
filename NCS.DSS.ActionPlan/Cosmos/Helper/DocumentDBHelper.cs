@@ -17,7 +17,6 @@ namespace NCS.DSS.ActionPlan.Cosmos.Helper
         private static readonly string SessionDatabaseId = Environment.GetEnvironmentVariable("SessionDatabaseId");
         private static readonly string SessionCollectionId = Environment.GetEnvironmentVariable("SessionCollectionId");
 
-
         public static Uri CreateDocumentCollectionUri()
         {
             if (_documentCollectionUri != null)
