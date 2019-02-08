@@ -8,33 +8,57 @@ namespace NCS.DSS.ActionPlan.Validation
 {
     public class Validate : IValidate
     {
-        public List<ValidationResult> ValidateResource(IActionPlan resource)
+        public List<ValidationResult> ValidateResource(IActionPlan resource, DateTime dateAndTimeSessionCreated)
         {
             var context = new ValidationContext(resource, null, null);
             var results = new List<ValidationResult>();
 
             Validator.TryValidateObject(resource, context, results, true);
-            ValidateActionPlanRules(resource, results);
+            ValidateActionPlanRules(resource, results, dateAndTimeSessionCreated);
 
             return results;
         }
 
-        private void ValidateActionPlanRules(IActionPlan actionPlanResource, List<ValidationResult> results)
+        private void ValidateActionPlanRules(IActionPlan actionPlanResource, List<ValidationResult> results, DateTime dateAndTimeSessionCreated)
         {
             if (actionPlanResource == null)
                 return;
 
-            if (actionPlanResource.DateActionPlanCreated.HasValue && actionPlanResource.DateActionPlanCreated.Value > DateTime.UtcNow)
-                results.Add(new ValidationResult("Date ActionPlan Created must be less the current date/time", new[] { "DateActionPlanCreated" }));
+            if (actionPlanResource.DateActionPlanCreated.HasValue)
+            {
+                if (actionPlanResource.DateActionPlanCreated.Value > DateTime.UtcNow)
+                    results.Add(new ValidationResult("Date ActionPlan Created must be less the current date/time", new[] { "DateActionPlanCreated" }));
 
-            if (actionPlanResource.DateAndTimeCharterShown.HasValue && actionPlanResource.DateAndTimeCharterShown.Value > DateTime.UtcNow)
-                results.Add(new ValidationResult("Date And Time Charter Shown must be less the current date/time", new[] { "DateAndTimeCharterShown" }));
+                if (!(actionPlanResource.DateActionPlanCreated.Value >= dateAndTimeSessionCreated))
+                    results.Add(new ValidationResult("Date ActionPlan Created must be greater than Date And Time Session Created", new[] { "DateActionPlanCreated" }));
+            }
 
-            if (actionPlanResource.DateActionPlanSentToCustomer.HasValue && actionPlanResource.DateActionPlanSentToCustomer.Value > DateTime.UtcNow)
-                results.Add(new ValidationResult("Date ActionPlan Sent To Customer must be less the current date/time", new[] { "DateActionPlanSentToCustomer" }));
+            if (actionPlanResource.DateAndTimeCharterShown.HasValue)
+            {
+                if (actionPlanResource.DateAndTimeCharterShown.Value > DateTime.UtcNow)
+                    results.Add(new ValidationResult("Date And Time Charter Shown must be less the current date/time", new[] { "DateAndTimeCharterShown" }));
 
-            if (actionPlanResource.DateActionPlanAcknowledged.HasValue && actionPlanResource.DateActionPlanAcknowledged.Value > DateTime.UtcNow)
-                results.Add(new ValidationResult("Date ActionPlan Acknowledged must be less the current date/time", new[] { "DateActionPlanAcknowledged" }));
+                if (!(actionPlanResource.DateAndTimeCharterShown.Value >= actionPlanResource.DateActionPlanCreated.GetValueOrDefault()))
+                    results.Add(new ValidationResult("Date And Time Charter Shown must be greater than Date Action Plan Created", new[] { "DateAndTimeCharterShown" }));
+            }
+
+            if (actionPlanResource.DateActionPlanSentToCustomer.HasValue)
+            {
+                if (actionPlanResource.DateActionPlanSentToCustomer.Value > DateTime.UtcNow)
+                    results.Add(new ValidationResult("Date ActionPlan Sent To Customer must be less the current date/time", new[] { "DateActionPlanSentToCustomer" }));
+
+                if (!(actionPlanResource.DateActionPlanSentToCustomer.Value >= actionPlanResource.DateActionPlanCreated.GetValueOrDefault()))
+                    results.Add(new ValidationResult("Date ActionPlan Sent To Customer must be greater than Date Action Plan Created", new[] { "DateActionPlanSentToCustomer" }));
+            }
+
+            if (actionPlanResource.DateActionPlanAcknowledged.HasValue)
+            {
+                if (actionPlanResource.DateActionPlanAcknowledged.Value > DateTime.UtcNow)
+                    results.Add(new ValidationResult("Date ActionPlan Acknowledged must be less the current date/time", new[] { "DateActionPlanAcknowledged" }));
+
+                if (!(actionPlanResource.DateActionPlanAcknowledged.Value >= actionPlanResource.DateActionPlanCreated.GetValueOrDefault()))
+                    results.Add(new ValidationResult("Date ActionPlan Acknowledged must be greater than Date Action Plan Created", new[] { "DateActionPlanAcknowledged" }));
+            }
 
             if (actionPlanResource.LastModifiedDate.HasValue && actionPlanResource.LastModifiedDate.Value > DateTime.UtcNow)
                 results.Add(new ValidationResult("Last Modified Date must be less the current date/time", new[] { "LastModifiedDate" }));

@@ -123,15 +123,6 @@ namespace NCS.DSS.ActionPlan.PatchActionPlanHttpTrigger.Function
             loggerHelper.LogInformationMessage(log, correlationGuid, "Attempt to set id's for action plan patch");
             actionPlanPatchRequest.SetIds(touchpointId, subcontractorId);
 
-            loggerHelper.LogInformationMessage(log, correlationGuid, "Attempt to validate resource");
-            var errors = validate.ValidateResource(actionPlanPatchRequest);
-
-            if (errors != null && errors.Any())
-            {
-                loggerHelper.LogInformationMessage(log, correlationGuid, "validation errors with resource");
-                return httpResponseMessageHelper.UnprocessableEntity(errors);
-            }
-
             loggerHelper.LogInformationMessage(log, correlationGuid, string.Format("Attempting to see if customer exists {0}", customerGuid));
             var doesCustomerExist = await resourceHelper.DoesCustomerExist(customerGuid);
 
@@ -150,15 +141,24 @@ namespace NCS.DSS.ActionPlan.PatchActionPlanHttpTrigger.Function
                 return httpResponseMessageHelper.Forbidden(customerGuid);
             }
 
-            loggerHelper.LogInformationMessage(log, correlationGuid, string.Format("Attempting to get Interaction {0} for customer {1}", interactionGuid, customerGuid));
+            loggerHelper.LogInformationMessage(log, correlationGuid, string.Format("Attempting to get Session {0} for customer {1}", sessionGuid, customerGuid));
             var doesSessionExist = resourceHelper.DoesSessionExistAndBelongToCustomer(sessionGuid, interactionGuid, customerGuid);
 
             if (!doesSessionExist)
             {
-                loggerHelper.LogInformationMessage(log, correlationGuid, string.Format("Interaction does not exist {0}", interactionGuid));
-                return httpResponseMessageHelper.NoContent(interactionGuid);
+                loggerHelper.LogInformationMessage(log, correlationGuid, string.Format("Session does not exist {0}", sessionGuid));
+                return httpResponseMessageHelper.NoContent(sessionGuid);
             }
 
+            loggerHelper.LogInformationMessage(log, correlationGuid, string.Format("Attempting to get GetDateAndTimeOfSession for Session {0}", sessionGuid));
+            var dateAndTimeOfSession = await resourceHelper.GetDateAndTimeOfSession(sessionGuid);
+
+            if (!dateAndTimeOfSession.HasValue)
+            {
+                loggerHelper.LogInformationMessage(log, correlationGuid, string.Format("Unable to get GetDateAndTimeOfSession{0}", sessionGuid));
+                return httpResponseMessageHelper.NoContent(sessionGuid);
+            }
+            
             loggerHelper.LogInformationMessage(log, correlationGuid, string.Format("Attempting to get action plan {0} for customer {1}", actionPlanGuid, customerGuid));
             var actionPlan = await actionPlanPatchService.GetActionPlanForCustomerAsync(customerGuid, actionPlanGuid);
 
@@ -166,6 +166,15 @@ namespace NCS.DSS.ActionPlan.PatchActionPlanHttpTrigger.Function
             {
                 loggerHelper.LogInformationMessage(log, correlationGuid, string.Format("ActionPlan does not exist {0}", actionPlanGuid));
                 return httpResponseMessageHelper.NoContent(actionPlanGuid);
+            }
+
+            loggerHelper.LogInformationMessage(log, correlationGuid, "Attempt to validate resource");
+            var errors = validate.ValidateResource(actionPlanPatchRequest, dateAndTimeOfSession.Value);
+
+            if (errors != null && errors.Any())
+            {
+                loggerHelper.LogInformationMessage(log, correlationGuid, "validation errors with resource");
+                return httpResponseMessageHelper.UnprocessableEntity(errors);
             }
 
             loggerHelper.LogInformationMessage(log, correlationGuid, string.Format("Attempting to update action plan {0}", actionPlanGuid));

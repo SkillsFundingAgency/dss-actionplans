@@ -10,6 +10,7 @@ namespace NCS.DSS.ActionPlan.Cosmos.Provider
     {
         Task<bool> DoesCustomerResourceExist(Guid customerId);
         bool DoesSessionResourceExistAndBelongToCustomer(Guid sessionId, Guid interactionId, Guid customerId);
+        Task<DateTime?> GetDateAndTimeOfSessionFromSessionResource(Guid sessionId);
         Task<bool> DoesCustomerHaveATerminationDate(Guid customerId);
         Task<List<Models.ActionPlan>> GetActionPlansForCustomerAsync(Guid customerId);
         Task<string> GetActionPlanForCustomerToUpdateAsync(Guid customerId, Guid actionPlanId);

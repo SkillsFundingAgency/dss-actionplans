@@ -32,5 +32,12 @@ namespace NCS.DSS.ActionPlan.Cosmos.Helper
 
             return doesInteractionExist;
         }
+
+        public async Task<DateTime?> GetDateAndTimeOfSession(Guid sessionId)
+        {
+            var dateAndTimeOfSession = await _documentDbProvider.GetDateAndTimeOfSessionFromSessionResource(sessionId);
+
+            return dateAndTimeOfSession;
+        }
     }
 }

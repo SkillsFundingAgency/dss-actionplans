@@ -79,6 +79,29 @@ namespace NCS.DSS.ActionPlan.Cosmos.Provider
 
         }
 
+        public async Task<DateTime?> GetDateAndTimeOfSessionFromSessionResource(Guid sessionId)
+        {
+            var documentUri = DocumentDBHelper.CreateSessionDocumentUri(sessionId);
+
+            var client = DocumentDBClient.CreateDocumentClient();
+
+            if (client == null)
+                return null;
+
+            try
+            {
+                var response = await client.ReadDocumentAsync(documentUri);
+
+                var dateAndTimeOfSession = response.Resource?.GetPropertyValue<DateTime?>("DateandTimeOfSession");
+
+                return dateAndTimeOfSession.GetValueOrDefault();
+            }
+            catch (DocumentClientException)
+            {
+                return null;
+            }
+        }
+
         public async Task<bool> DoesCustomerHaveATerminationDate(Guid customerId)
         {
             var documentUri = DocumentDBHelper.CreateCustomerDocumentUri(customerId);

@@ -54,9 +54,16 @@ namespace NCS.DSS.ActionPlan.Tests.FunctionTests
             _validate = Substitute.For<IValidate>();
             _postActionPlanHttpTriggerService = Substitute.For<IPostActionPlanHttpTriggerService>();
 
+            _resourceHelper.DoesCustomerExist(Arg.Any<Guid>()).ReturnsForAnyArgs(true);
+            _resourceHelper.IsCustomerReadOnly(Arg.Any<Guid>()).ReturnsForAnyArgs(false);
+            _resourceHelper.DoesSessionExistAndBelongToCustomer(Arg.Any<Guid>(), Arg.Any<Guid>(), Arg.Any<Guid>()).Returns(true);
+            _resourceHelper.GetDateAndTimeOfSession(Arg.Any<Guid>()).Returns(DateTime.Now);
+
             _httpRequestHelper.GetDssCorrelationId(_request).Returns(ValidDssCorrelationId);
             _httpRequestHelper.GetDssTouchpointId(_request).Returns("0000000001");
             _httpRequestHelper.GetDssApimUrl(_request).Returns("http://localhost:");
+            _httpRequestHelper.GetResourceFromRequest<Models.ActionPlan>(_request).Returns(Task.FromResult(_actionPlan).Result);
+
         }
 
         [Test]
@@ -134,10 +141,8 @@ namespace NCS.DSS.ActionPlan.Tests.FunctionTests
         [Test]
         public async Task PostActionPlanHttpTrigger_ReturnsStatusCodeUnprocessableEntity_WhenActionPlanHasFailedValidation()
         {
-            _httpRequestHelper.GetResourceFromRequest<Models.ActionPlan>(_request).Returns(Task.FromResult(_actionPlan).Result);
-
             var validationResults = new List<ValidationResult> { new ValidationResult("interaction Id is Required") };
-            _validate.ValidateResource(Arg.Any<Models.ActionPlan>()).Returns(validationResults);
+            _validate.ValidateResource(Arg.Any<Models.ActionPlan>(), Arg.Any<DateTime>()).Returns(validationResults);
 
             _httpResponseMessageHelper
                 .UnprocessableEntity(Arg.Any<List<ValidationResult>>()).Returns(x => new HttpResponseMessage((HttpStatusCode)422));
@@ -167,8 +172,6 @@ namespace NCS.DSS.ActionPlan.Tests.FunctionTests
         [Test]
         public async Task PostActionPlanHttpTrigger_ReturnsStatusCodeNoContent_WhenCustomerDoesNotExist()
         {
-            _httpRequestHelper.GetResourceFromRequest<Models.ActionPlan>(_request).Returns(Task.FromResult(_actionPlan).Result);
-
             _resourceHelper.DoesCustomerExist(Arg.Any<Guid>()).Returns(false);
 
             _httpResponseMessageHelper
@@ -182,11 +185,8 @@ namespace NCS.DSS.ActionPlan.Tests.FunctionTests
         }
 
         [Test]
-        public async Task PostActionPlanHttpTrigger_ReturnsStatusCodeNoContent_WhenInteractionDoesNotExist()
+        public async Task PostActionPlanHttpTrigger_ReturnsStatusCodeNoContent_WhenSessionDoesNotExist()
         {
-            _httpRequestHelper.GetResourceFromRequest<Models.ActionPlan>(_request).Returns(Task.FromResult(_actionPlan).Result);
-
-            _resourceHelper.DoesCustomerExist(Arg.Any<Guid>()).Returns(true);
             _resourceHelper.DoesSessionExistAndBelongToCustomer(Arg.Any<Guid>(), Arg.Any<Guid>(), Arg.Any<Guid>()).Returns(false);
 
             _httpResponseMessageHelper
@@ -200,13 +200,24 @@ namespace NCS.DSS.ActionPlan.Tests.FunctionTests
         }
 
         [Test]
+        public async Task PostActionPlanHttpTrigger_ReturnsStatusCodeNoContent_WhenDateAndTimeOfSessionDoesNotExist()
+        {
+            _resourceHelper.GetDateAndTimeOfSession(Arg.Any<Guid>()).Returns((DateTime?)null);
+
+            _httpResponseMessageHelper
+                .NoContent(Arg.Any<Guid>()).Returns(x => new HttpResponseMessage(HttpStatusCode.NoContent));
+
+            // Act
+            var result = await RunFunction(ValidCustomerId, ValidInteractionId, ValidSessionId);
+
+            // Assert
+            Assert.IsInstanceOf<HttpResponseMessage>(result);
+            Assert.AreEqual(HttpStatusCode.NoContent, result.StatusCode);
+        }
+
+        [Test]
         public async Task PostActionPlanHttpTrigger_ReturnsStatusCodeBadRequest_WhenUnableToCreateActionPlanRecord()
         {
-            _httpRequestHelper.GetResourceFromRequest<Models.ActionPlan>(_request).Returns(Task.FromResult(_actionPlan).Result);
-
-            _resourceHelper.DoesCustomerExist(Arg.Any<Guid>()).ReturnsForAnyArgs(true);
-            _resourceHelper.DoesSessionExistAndBelongToCustomer(Arg.Any<Guid>(), Arg.Any<Guid>(), Arg.Any<Guid>()).Returns(true);
-
             _postActionPlanHttpTriggerService.CreateAsync(Arg.Any<Models.ActionPlan>()).Returns(Task.FromResult<Models.ActionPlan>(null).Result);
 
             _httpResponseMessageHelper
@@ -222,11 +233,6 @@ namespace NCS.DSS.ActionPlan.Tests.FunctionTests
         [Test]
         public async Task PostActionPlanHttpTrigger_ReturnsStatusCodeBadRequest_WhenRequestIsNotValid()
         {
-            _httpRequestHelper.GetResourceFromRequest<Models.ActionPlan>(_request).Returns(Task.FromResult(_actionPlan).Result);
-
-            _resourceHelper.DoesCustomerExist(Arg.Any<Guid>()).ReturnsForAnyArgs(true);
-            _resourceHelper.DoesSessionExistAndBelongToCustomer(Arg.Any<Guid>(), Arg.Any<Guid>(), Arg.Any<Guid>()).Returns(true);
-
             _postActionPlanHttpTriggerService.CreateAsync(Arg.Any<Models.ActionPlan>()).Returns(Task.FromResult<Models.ActionPlan>(null).Result);
 
             _httpResponseMessageHelper
@@ -242,11 +248,6 @@ namespace NCS.DSS.ActionPlan.Tests.FunctionTests
         [Test]
         public async Task PostActionPlanHttpTrigger_ReturnsStatusCodeCreated_WhenRequestIsValid()
         {
-            _httpRequestHelper.GetResourceFromRequest<Models.ActionPlan>(_request).Returns(Task.FromResult(_actionPlan).Result);
-
-            _resourceHelper.DoesCustomerExist(Arg.Any<Guid>()).ReturnsForAnyArgs(true);
-            _resourceHelper.DoesSessionExistAndBelongToCustomer(Arg.Any<Guid>(), Arg.Any<Guid>(), Arg.Any<Guid>()).Returns(true);
-
             _postActionPlanHttpTriggerService.CreateAsync(Arg.Any<Models.ActionPlan>()).Returns(Task.FromResult(_actionPlan).Result);
 
             _httpResponseMessageHelper
