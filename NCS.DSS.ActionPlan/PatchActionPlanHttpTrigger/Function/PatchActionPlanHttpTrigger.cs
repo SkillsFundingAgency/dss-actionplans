@@ -170,7 +170,11 @@ namespace NCS.DSS.ActionPlan.PatchActionPlanHttpTrigger.Function
 
             var actionPlan = actionPlanPatchService.PatchResource(actionPlanForCustomer, actionPlanPatchRequest);
 
-            if(actionPlan == null)
+            if (actionPlan == null)
+            {
+                loggerHelper.LogInformationMessage(log, correlationGuid, string.Format("ActionPlan does not exist {0}", actionPlanGuid));
+                return httpResponseMessageHelper.NoContent(actionPlanGuid);
+            }
 
             loggerHelper.LogInformationMessage(log, correlationGuid, "Attempt to validate resource");
             var errors = validate.ValidateResource(actionPlan, dateAndTimeOfSession.Value);
@@ -182,7 +186,7 @@ namespace NCS.DSS.ActionPlan.PatchActionPlanHttpTrigger.Function
             }
 
             loggerHelper.LogInformationMessage(log, correlationGuid, string.Format("Attempting to update action plan {0}", actionPlanGuid));
-            var updatedActionPlan = await actionPlanPatchService.UpdateCosmosAsync(actionPlan, actionPlanGuid);
+            var updatedActionPlan = await actionPlanPatchService.UpdateCosmosAsync(actionPlan);
 
             if (updatedActionPlan != null)
             {

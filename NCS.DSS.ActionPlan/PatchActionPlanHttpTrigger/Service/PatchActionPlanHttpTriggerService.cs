@@ -33,12 +33,12 @@ namespace NCS.DSS.ActionPlan.PatchActionPlanHttpTrigger.Service
             return updatedActionPlan;
         }
 
-        public async Task<Models.ActionPlan> UpdateCosmosAsync(Models.ActionPlan actionPlan, Guid actionPlanId)
+        public async Task<Models.ActionPlan> UpdateCosmosAsync(Models.ActionPlan actionPlan)
         {
             if (actionPlan == null)
                 return null;
 
-            var response = await _documentDbProvider.UpdateActionPlanAsync(actionPlan, actionPlanId);
+            var response = await _documentDbProvider.UpdateActionPlanAsync(actionPlan);
 
             var responseStatusCode = response?.StatusCode;
 

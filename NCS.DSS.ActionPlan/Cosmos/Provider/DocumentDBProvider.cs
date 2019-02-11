@@ -215,21 +215,5 @@ namespace NCS.DSS.ActionPlan.Cosmos.Provider
 
             return response;
         }
-
-        public async Task<ResourceResponse<Document>> UpdateActionPlanAsync(Models.ActionPlan actionPlan, Guid actionPlanId)
-        {
-            var documentUri = DocumentDBHelper.CreateDocumentUri(actionPlanId);
-
-            var client = DocumentDBClient.CreateDocumentClient();
-
-            if (client == null)
-                return null;
-
-            //var content = JObject.Parse(actionPlan);
-
-            var response = await client.ReplaceDocumentAsync(documentUri, actionPlan);
-
-            return response;
-        }
     }
 }
