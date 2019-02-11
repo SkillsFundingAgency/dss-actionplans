@@ -6,7 +6,6 @@ using NCS.DSS.ActionPlan.ReferenceData;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using NSubstitute;
-using NSubstitute.ReturnsExtensions;
 using NUnit.Framework;
 
 namespace NCS.DSS.ActionPlan.Tests.ServiceTests
@@ -44,11 +43,9 @@ namespace NCS.DSS.ActionPlan.Tests.ServiceTests
         {
             var actionPlanPatch = new ActionPlanPatch() { DateActionPlanCreated = DateTime.MaxValue };
 
-            var updated = _actionPlanPatchService.Patch(_json, actionPlanPatch);
+            var actionPlan = _actionPlanPatchService.Patch(_json, actionPlanPatch);
 
-            var jsonObject = (JObject) JsonConvert.DeserializeObject(updated);
-
-            var dateActionPlanCreated = (DateTime) jsonObject["DateActionPlanCreated"];
+            var dateActionPlanCreated = actionPlan.DateActionPlanCreated;
 
             // Assert
             Assert.AreEqual(DateTime.MaxValue, dateActionPlanCreated);
@@ -60,11 +57,9 @@ namespace NCS.DSS.ActionPlan.Tests.ServiceTests
         {
             var actionPlanPatch = new ActionPlanPatch { CustomerCharterShownToCustomer = true };
 
-            var updated = _actionPlanPatchService.Patch(_json, actionPlanPatch);
+            var actionPlan = _actionPlanPatchService.Patch(_json, actionPlanPatch);
 
-            var jsonObject = (JObject)JsonConvert.DeserializeObject(updated);
-
-            var customerCharterShownToCustomer = (bool) jsonObject["CustomerCharterShownToCustomer"];
+            var customerCharterShownToCustomer = actionPlan.CustomerCharterShownToCustomer;
 
             // Assert
             Assert.AreEqual(true, customerCharterShownToCustomer);
@@ -75,11 +70,9 @@ namespace NCS.DSS.ActionPlan.Tests.ServiceTests
         {
             var actionPlanPatch = new Models.ActionPlanPatch { DateAndTimeCharterShown = DateTime.MaxValue };
 
-            var updated = _actionPlanPatchService.Patch(_json, actionPlanPatch);
+            var actionPlan = _actionPlanPatchService.Patch(_json, actionPlanPatch);
 
-            var jsonObject = (JObject)JsonConvert.DeserializeObject(updated);
-
-            var dateAndTimeCharterShown = (DateTime)jsonObject["DateAndTimeCharterShown"];
+            var dateAndTimeCharterShown = actionPlan.DateAndTimeCharterShown;
 
             // Assert
             Assert.AreEqual(DateTime.MaxValue, dateAndTimeCharterShown);
@@ -90,11 +83,9 @@ namespace NCS.DSS.ActionPlan.Tests.ServiceTests
         {
             var actionPlanPatch = new Models.ActionPlanPatch { DateActionPlanSentToCustomer = DateTime.MaxValue };
 
-            var updated = _actionPlanPatchService.Patch(_json, actionPlanPatch);
+            var actionPlan = _actionPlanPatchService.Patch(_json, actionPlanPatch);
 
-            var jsonObject = (JObject)JsonConvert.DeserializeObject(updated);
-
-            var dateActionPlanSentToCustomer = (DateTime)jsonObject["DateActionPlanSentToCustomer"];
+            var dateActionPlanSentToCustomer = actionPlan.DateActionPlanSentToCustomer;
 
             // Assert
             Assert.AreEqual(DateTime.MaxValue, dateActionPlanSentToCustomer);
@@ -105,11 +96,9 @@ namespace NCS.DSS.ActionPlan.Tests.ServiceTests
         {
             var actionPlanPatch = new ActionPlanPatch { ActionPlanDeliveryMethod = ActionPlanDeliveryMethod.Paper };
             
-            var updated = _actionPlanPatchService.Patch(_json, actionPlanPatch);
+            var actionPlan = _actionPlanPatchService.Patch(_json, actionPlanPatch);
 
-            var jsonObject = (JObject)JsonConvert.DeserializeObject(updated);
-
-            var actionPlanDeliveryMethod = (ActionPlanDeliveryMethod) int.Parse(jsonObject["ActionPlanDeliveryMethod"].ToString());
+            var actionPlanDeliveryMethod = actionPlan.ActionPlanDeliveryMethod;
 
             // Assert
             Assert.AreEqual(ActionPlanDeliveryMethod.Paper, actionPlanDeliveryMethod);
@@ -120,11 +109,9 @@ namespace NCS.DSS.ActionPlan.Tests.ServiceTests
         {
             var actionPlanPatch = new Models.ActionPlanPatch { DateActionPlanAcknowledged = DateTime.MaxValue };
 
-            var updated = _actionPlanPatchService.Patch(_json, actionPlanPatch);
+            var actionPlan = _actionPlanPatchService.Patch(_json, actionPlanPatch);
 
-            var jsonObject = (JObject)JsonConvert.DeserializeObject(updated);
-
-            var dateActionPlanAcknowledged = (DateTime)jsonObject["DateActionPlanAcknowledged"];
+            var dateActionPlanAcknowledged = actionPlan.DateActionPlanAcknowledged;
 
             // Assert
             Assert.AreEqual(DateTime.MaxValue, dateActionPlanAcknowledged);
@@ -135,11 +122,9 @@ namespace NCS.DSS.ActionPlan.Tests.ServiceTests
         {
             var actionPlanPatch = new Models.ActionPlanPatch { PriorityCustomer = PriorityCustomer.NotAPriorityCustomer };
 
-            var updated = _actionPlanPatchService.Patch(_json, actionPlanPatch);
+            var actionPlan = _actionPlanPatchService.Patch(_json, actionPlanPatch);
 
-            var jsonObject = (JObject)JsonConvert.DeserializeObject(updated);
-
-            var priorityCustomer = (PriorityCustomer)int.Parse(jsonObject["PriorityCustomer"].ToString());
+            var priorityCustomer = actionPlan.PriorityCustomer;
             
             // Assert
             Assert.AreEqual(PriorityCustomer.NotAPriorityCustomer, priorityCustomer);
@@ -150,11 +135,9 @@ namespace NCS.DSS.ActionPlan.Tests.ServiceTests
         {
             var actionPlanPatch = new ActionPlanPatch { CurrentSituation = "Current" };
 
-            var updated = _actionPlanPatchService.Patch(_json, actionPlanPatch);
+            var actionPlan = _actionPlanPatchService.Patch(_json, actionPlanPatch);
 
-            var jsonObject = (JObject)JsonConvert.DeserializeObject(updated);
-
-            var currentSituation = jsonObject["CurrentSituation"].ToString();
+            var currentSituation = actionPlan.CurrentSituation;
 
             // Assert
             Assert.AreEqual("Current", currentSituation);
@@ -165,11 +148,9 @@ namespace NCS.DSS.ActionPlan.Tests.ServiceTests
         {
             var actionPlanPatch = new ActionPlanPatch { LastModifiedDate = DateTime.MaxValue };
             
-            var updated = _actionPlanPatchService.Patch(_json, actionPlanPatch);
+            var actionPlan = _actionPlanPatchService.Patch(_json, actionPlanPatch);
 
-            var jsonObject = (JObject)JsonConvert.DeserializeObject(updated);
-
-            var lastModifiedDate = (DateTime)jsonObject["LastModifiedDate"];
+            var lastModifiedDate = actionPlan.LastModifiedDate;
 
             // Assert
             Assert.AreEqual(DateTime.MaxValue, lastModifiedDate);
@@ -180,11 +161,9 @@ namespace NCS.DSS.ActionPlan.Tests.ServiceTests
         {
             var actionPlanPatch = new ActionPlanPatch { LastModifiedTouchpointId = "0000000111" };
 
-            var updated = _actionPlanPatchService.Patch(_json, actionPlanPatch);
+            var actionPlan = _actionPlanPatchService.Patch(_json, actionPlanPatch);
 
-            var jsonObject = (JObject)JsonConvert.DeserializeObject(updated);
-
-            var lastModifiedTouchpointId = jsonObject["LastModifiedTouchpointId"].ToString();
+            var lastModifiedTouchpointId = actionPlan.LastModifiedTouchpointId;
             
             // Assert
             Assert.AreEqual("0000000111", lastModifiedTouchpointId);

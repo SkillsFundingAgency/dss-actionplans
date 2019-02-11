@@ -275,7 +275,7 @@ namespace NCS.DSS.ActionPlan.Tests.FunctionTests
         {
             _patchActionPlanHttpTriggerService.GetActionPlanForCustomerAsync(Arg.Any<Guid>(), Arg.Any<Guid>()).Returns(Task.FromResult("actionplan").Result);
 
-            _patchActionPlanHttpTriggerService.UpdateAsync(Arg.Any<string>(), Arg.Any<ActionPlanPatch>(),Arg.Any<Guid>()).Returns(Task.FromResult<Models.ActionPlan>(null).Result);
+            _patchActionPlanHttpTriggerService.UpdateCosmosAsync(Arg.Any<Models.ActionPlan>(),Arg.Any<Guid>()).Returns(Task.FromResult<Models.ActionPlan>(null).Result);
 
             _httpResponseMessageHelper
                 .BadRequest(Arg.Any<Guid>()).Returns(x => new HttpResponseMessage(HttpStatusCode.BadRequest));
@@ -292,7 +292,7 @@ namespace NCS.DSS.ActionPlan.Tests.FunctionTests
         {
             _patchActionPlanHttpTriggerService.GetActionPlanForCustomerAsync(Arg.Any<Guid>(), Arg.Any<Guid>()).Returns(Task.FromResult<string>(null).Result);
 
-            _patchActionPlanHttpTriggerService.UpdateAsync(Arg.Any<string>(), Arg.Any<ActionPlanPatch>(), Arg.Any<Guid>()).Returns(Task.FromResult<Models.ActionPlan>(null).Result);
+            _patchActionPlanHttpTriggerService.UpdateCosmosAsync(Arg.Any<Models.ActionPlan>(), Arg.Any<Guid>()).Returns(Task.FromResult(_actionPlan).Result);
 
             _httpResponseMessageHelper
                 .NoContent(Arg.Any<Guid>()).Returns(x => new HttpResponseMessage(HttpStatusCode.NoContent));
@@ -309,7 +309,7 @@ namespace NCS.DSS.ActionPlan.Tests.FunctionTests
         {
             _patchActionPlanHttpTriggerService.GetActionPlanForCustomerAsync(Arg.Any<Guid>(), Arg.Any<Guid>()).Returns(Task.FromResult("actionPlan").Result);
 
-            _patchActionPlanHttpTriggerService.UpdateAsync(Arg.Any<string>(), Arg.Any<ActionPlanPatch>(), Arg.Any<Guid>()).Returns(Task.FromResult(_actionPlan).Result);
+            _patchActionPlanHttpTriggerService.UpdateCosmosAsync(Arg.Any<Models.ActionPlan>(), Arg.Any<Guid>()).Returns(Task.FromResult(_actionPlan).Result);
 
             _httpResponseMessageHelper
                 .Ok(Arg.Any<string>()).Returns(x => new HttpResponseMessage(HttpStatusCode.OK));

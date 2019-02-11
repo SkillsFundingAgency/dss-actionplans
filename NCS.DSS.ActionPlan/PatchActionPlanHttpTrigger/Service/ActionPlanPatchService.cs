@@ -6,13 +6,13 @@ namespace NCS.DSS.ActionPlan.PatchActionPlanHttpTrigger.Service
 {
     public class ActionPlanPatchService : IActionPlanPatchService
     {
-        private IJsonHelper _jsonHelper;
+        private readonly IJsonHelper _jsonHelper;
 
         public ActionPlanPatchService(IJsonHelper jsonHelper)
         {
             _jsonHelper = jsonHelper;
         }
-        public string Patch(string actionPlanJson, ActionPlanPatch actionPlanPatch)
+        public Models.ActionPlan Patch(string actionPlanJson, ActionPlanPatch actionPlanPatch)
         {
             if (string.IsNullOrEmpty(actionPlanJson))
                 return null;
@@ -52,7 +52,7 @@ namespace NCS.DSS.ActionPlan.PatchActionPlanHttpTrigger.Service
             if (!string.IsNullOrEmpty(actionPlanPatch.SubcontractorId))
                 _jsonHelper.UpdatePropertyValue(obj["SubcontractorId"], actionPlanPatch.SubcontractorId);
 
-            return obj.ToString();
+            return obj.ToObject<Models.ActionPlan>();
         }
     }
 }

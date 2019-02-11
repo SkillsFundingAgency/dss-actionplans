@@ -160,16 +160,20 @@ namespace NCS.DSS.ActionPlan.PatchActionPlanHttpTrigger.Function
             }
             
             loggerHelper.LogInformationMessage(log, correlationGuid, string.Format("Attempting to get action plan {0} for customer {1}", actionPlanGuid, customerGuid));
-            var actionPlan = await actionPlanPatchService.GetActionPlanForCustomerAsync(customerGuid, actionPlanGuid);
+            var actionPlanForCustomer = await actionPlanPatchService.GetActionPlanForCustomerAsync(customerGuid, actionPlanGuid);
 
-            if (actionPlan == null)
+            if (actionPlanForCustomer == null)
             {
                 loggerHelper.LogInformationMessage(log, correlationGuid, string.Format("ActionPlan does not exist {0}", actionPlanGuid));
                 return httpResponseMessageHelper.NoContent(actionPlanGuid);
             }
 
+            var actionPlan = actionPlanPatchService.PatchResource(actionPlanForCustomer, actionPlanPatchRequest);
+
+            if(actionPlan == null)
+
             loggerHelper.LogInformationMessage(log, correlationGuid, "Attempt to validate resource");
-            var errors = validate.ValidateResource(actionPlanPatchRequest, dateAndTimeOfSession.Value);
+            var errors = validate.ValidateResource(actionPlan, dateAndTimeOfSession.Value);
 
             if (errors != null && errors.Any())
             {
@@ -178,7 +182,7 @@ namespace NCS.DSS.ActionPlan.PatchActionPlanHttpTrigger.Function
             }
 
             loggerHelper.LogInformationMessage(log, correlationGuid, string.Format("Attempting to update action plan {0}", actionPlanGuid));
-            var updatedActionPlan = await actionPlanPatchService.UpdateAsync(actionPlan, actionPlanPatchRequest, actionPlanGuid);
+            var updatedActionPlan = await actionPlanPatchService.UpdateCosmosAsync(actionPlan, actionPlanGuid);
 
             if (updatedActionPlan != null)
             {

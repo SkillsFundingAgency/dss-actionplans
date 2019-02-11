@@ -23,6 +23,7 @@ namespace NCS.DSS.ActionPlan.Tests.ServiceTests
         private IActionPlanPatchService _actionPlanPatchService;
         private IDocumentDBProvider _documentDbProvider;
         private string _json;
+        private Models.ActionPlan _actionPlan;
         private ActionPlanPatch _actionPlanPatch;
         private readonly Guid _actionPlanId = Guid.Parse("7E467BDB-213F-407A-B86A-1954053D3C24");
 
@@ -33,25 +34,37 @@ namespace NCS.DSS.ActionPlan.Tests.ServiceTests
             _documentDbProvider = Substitute.For<IDocumentDBProvider>();
             _actionPlanHttpTriggerService = Substitute.For<PatchActionPlanHttpTriggerService>(_actionPlanPatchService, _documentDbProvider);
             _actionPlanPatch = Substitute.For<ActionPlanPatch>();
+            _actionPlan = Substitute.For<Models.ActionPlan>();
+
             _json = JsonConvert.SerializeObject(_actionPlanPatch);
-            _actionPlanPatchService.Patch(_json, _actionPlanPatch).Returns(_json);
+            _actionPlanPatchService.Patch(_json, _actionPlanPatch).Returns(_actionPlan);
         }
 
         [Test]
-        public async Task PatchActionPlanHttpTriggerServiceTests_UpdateAsync_ReturnsNullWhenActionPlanJsonIsNullOrEmpty()
+        public void PatchActionPlanHttpTriggerServiceTests_PatchResource_ReturnsNullWhenActionPlanJsonIsNullOrEmpty()
         {
             // Act
-            var result = await _actionPlanHttpTriggerService.UpdateAsync(null, Arg.Any<ActionPlanPatch>(), Arg.Any<Guid>());
+            var result = _actionPlanHttpTriggerService.PatchResource(null, Arg.Any<ActionPlanPatch>());
 
             // Assert
             Assert.IsNull(result);
         }
 
         [Test]
-        public async Task PatchActionPlanHttpTriggerServiceTests_UpdateAsync_ReturnsNullWhenActionPlanPatchIsNullOrEmpty()
+        public void PatchActionPlanHttpTriggerServiceTests_PatchResource_ReturnsNullWhenActionPlanPatchIsNullOrEmpty()
         {
             // Act
-            var result = await _actionPlanHttpTriggerService.UpdateAsync(Arg.Any<string>(), null, Arg.Any<Guid>());
+            var result = _actionPlanHttpTriggerService.PatchResource(Arg.Any<string>(), null);
+
+            // Assert
+            Assert.IsNull(result);
+        }
+
+        [Test]
+        public async Task PatchActionPlanHttpTriggerServiceTests_UpdateAsync_ReturnsNullWhenActionPlanIsNullOrEmpty()
+        {
+            // Act
+            var result = await _actionPlanHttpTriggerService.UpdateCosmosAsync(null, Arg.Any<Guid>());
 
             // Assert
             Assert.IsNull(result);
@@ -63,7 +76,7 @@ namespace NCS.DSS.ActionPlan.Tests.ServiceTests
             _actionPlanPatchService.Patch(Arg.Any<string>(), Arg.Any<ActionPlanPatch>()).ReturnsNull();
 
             // Act
-            var result = await _actionPlanHttpTriggerService.UpdateAsync(_json, _actionPlanPatch, _actionPlanId);
+            var result = await _actionPlanHttpTriggerService.UpdateCosmosAsync(_actionPlan, _actionPlanId);
 
             // Assert
             Assert.IsNull(result);
@@ -72,10 +85,10 @@ namespace NCS.DSS.ActionPlan.Tests.ServiceTests
         [Test]
         public async Task PatchActionPlanHttpTriggerServiceTests_UpdateAsync_ReturnsNullWhenResourceCannotBeUpdated()
         {
-            _documentDbProvider.UpdateActionPlanAsync(Arg.Any<string>(), Arg.Any<Guid>()).ReturnsNull();
+            _documentDbProvider.UpdateActionPlanAsync(Arg.Any<Models.ActionPlan>(), Arg.Any<Guid>()).ReturnsNull();
 
             // Act
-            var result = await _actionPlanHttpTriggerService.UpdateAsync(_json, _actionPlanPatch, _actionPlanId);
+            var result = await _actionPlanHttpTriggerService.UpdateCosmosAsync(_actionPlan, _actionPlanId);
 
             // Assert
             Assert.IsNull(result);
@@ -87,7 +100,7 @@ namespace NCS.DSS.ActionPlan.Tests.ServiceTests
             _documentDbProvider.CreateActionPlanAsync(Arg.Any<Models.ActionPlan>()).Returns(Task.FromResult(new ResourceResponse<Document>(null)).Result);
 
             // Act
-            var result = await _actionPlanHttpTriggerService.UpdateAsync(_json, _actionPlanPatch, _actionPlanId);
+            var result = await _actionPlanHttpTriggerService.UpdateCosmosAsync(_actionPlan, _actionPlanId);
 
             // Assert
             Assert.IsNull(result);
@@ -118,10 +131,10 @@ namespace NCS.DSS.ActionPlan.Tests.ServiceTests
 
             responseField?.SetValue(resourceResponse, documentServiceResponse);
 
-            _documentDbProvider.UpdateActionPlanAsync(Arg.Any<string>(), Arg.Any<Guid>()).Returns(Task.FromResult(resourceResponse).Result);
+            _documentDbProvider.UpdateActionPlanAsync(Arg.Any<Models.ActionPlan>(), Arg.Any<Guid>()).Returns(Task.FromResult(resourceResponse).Result);
 
             // Act
-            var result = await _actionPlanHttpTriggerService.UpdateAsync(_json, _actionPlanPatch, _actionPlanId);
+            var result = await _actionPlanHttpTriggerService.UpdateCosmosAsync(_actionPlan, _actionPlanId);
 
             // Assert
             Assert.IsNotNull(result);

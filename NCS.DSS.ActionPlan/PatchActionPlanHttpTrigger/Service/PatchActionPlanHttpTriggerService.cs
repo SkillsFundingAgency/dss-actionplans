@@ -4,7 +4,6 @@ using System.Threading.Tasks;
 using NCS.DSS.ActionPlan.Cosmos.Provider;
 using NCS.DSS.ActionPlan.Models;
 using NCS.DSS.ActionPlan.ServiceBus;
-using Newtonsoft.Json;
 
 namespace NCS.DSS.ActionPlan.PatchActionPlanHttpTrigger.Service
 {
@@ -18,7 +17,8 @@ namespace NCS.DSS.ActionPlan.PatchActionPlanHttpTrigger.Service
             _actionPlanPatchService = actionPlanPatchService;
             _documentDbProvider = documentDbProvider;
         }
-        public async Task<Models.ActionPlan> UpdateAsync(string actionPlanJson, ActionPlanPatch actionPlanPatch, Guid actionPlanId)
+
+        public Models.ActionPlan PatchResource(string actionPlanJson, ActionPlanPatch actionPlanPatch)
         {
             if (string.IsNullOrEmpty(actionPlanJson))
                 return null;
@@ -28,16 +28,21 @@ namespace NCS.DSS.ActionPlan.PatchActionPlanHttpTrigger.Service
 
             actionPlanPatch.SetDefaultValues();
 
-            var updatedJson = _actionPlanPatchService.Patch(actionPlanJson, actionPlanPatch);
+            var updatedActionPlan = _actionPlanPatchService.Patch(actionPlanJson, actionPlanPatch);
 
-            if (string.IsNullOrEmpty(updatedJson))
+            return updatedActionPlan;
+        }
+
+        public async Task<Models.ActionPlan> UpdateCosmosAsync(Models.ActionPlan actionPlan, Guid actionPlanId)
+        {
+            if (actionPlan == null)
                 return null;
 
-            var response = await _documentDbProvider.UpdateActionPlanAsync(updatedJson, actionPlanId);
+            var response = await _documentDbProvider.UpdateActionPlanAsync(actionPlan, actionPlanId);
 
             var responseStatusCode = response?.StatusCode;
 
-            return responseStatusCode == HttpStatusCode.OK ? JsonConvert.DeserializeObject<Models.ActionPlan>(updatedJson) : null;
+            return responseStatusCode == HttpStatusCode.OK ? (dynamic) response.Resource : null;
         }
 
         public async Task<string> GetActionPlanForCustomerAsync(Guid customerId, Guid actionPlanId)
