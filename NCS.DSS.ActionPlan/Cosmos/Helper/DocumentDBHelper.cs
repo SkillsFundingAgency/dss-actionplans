@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Configuration;
 using Microsoft.Azure.Documents.Client;
 
 namespace NCS.DSS.ActionPlan.Cosmos.Helper
@@ -7,17 +6,16 @@ namespace NCS.DSS.ActionPlan.Cosmos.Helper
     public static class DocumentDBHelper
     {
         private static Uri _documentCollectionUri;
-        private static readonly string DatabaseId = ConfigurationManager.AppSettings["DatabaseId"];
-        private static readonly string CollectionId = ConfigurationManager.AppSettings["CollectionId"];
+        private static readonly string DatabaseId = Environment.GetEnvironmentVariable("DatabaseId");
+        private static readonly string CollectionId = Environment.GetEnvironmentVariable("CollectionId");
 
         private static Uri _customerDocumentCollectionUri;
-        private static readonly string CustomerDatabaseId = ConfigurationManager.AppSettings["CustomerDatabaseId"];
-        private static readonly string CustomerCollectionId = ConfigurationManager.AppSettings["CustomerCollectionId"];
+        private static readonly string CustomerDatabaseId = Environment.GetEnvironmentVariable("CustomerDatabaseId");
+        private static readonly string CustomerCollectionId = Environment.GetEnvironmentVariable("CustomerCollectionId");
 
-        private static Uri _interactionDocumentCollectionUri;
-        private static readonly string InteractionDatabaseId = ConfigurationManager.AppSettings["InteractionDatabaseId"];
-        private static readonly string InteractionCollectionId = ConfigurationManager.AppSettings["InteractionCollectionId"];
-
+        private static Uri _sessionDocumentCollectionUri;
+        private static readonly string SessionDatabaseId = Environment.GetEnvironmentVariable("SessionDatabaseId");
+        private static readonly string SessionCollectionId = Environment.GetEnvironmentVariable("SessionCollectionId");
 
         public static Uri CreateDocumentCollectionUri()
         {
@@ -56,22 +54,22 @@ namespace NCS.DSS.ActionPlan.Cosmos.Helper
 
         #endregion
 
-        #region InteractionDB
+        #region SessionsDB
 
-        public static Uri CreateInteractionDocumentCollectionUri()
+        public static Uri CreateSessionDocumentCollectionUri()
         {
-            if (_interactionDocumentCollectionUri != null)
-                return _interactionDocumentCollectionUri;
+            if (_sessionDocumentCollectionUri != null)
+                return _sessionDocumentCollectionUri;
 
-            _interactionDocumentCollectionUri = UriFactory.CreateDocumentCollectionUri(
-                InteractionDatabaseId, InteractionCollectionId);
+            _sessionDocumentCollectionUri = UriFactory.CreateDocumentCollectionUri(
+                SessionDatabaseId, SessionCollectionId);
 
-            return _interactionDocumentCollectionUri;
+            return _sessionDocumentCollectionUri;
         }
 
-        public static Uri CreateInteractionDocumentUri(Guid interactionId)
+        public static Uri CreateSessionDocumentUri(Guid sessionId)
         {
-            return UriFactory.CreateDocumentUri(InteractionDatabaseId, InteractionCollectionId, interactionId.ToString()); ;
+            return UriFactory.CreateDocumentUri(SessionDatabaseId, SessionCollectionId, sessionId.ToString()); ;
         }
 
         #endregion   

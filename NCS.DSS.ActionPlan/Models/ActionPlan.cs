@@ -1,6 +1,6 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
-using NCS.DSS.ActionPlan.Annotations;
+using DFC.Swagger.Standard.Annotations;
 using NCS.DSS.ActionPlan.ReferenceData;
 
 namespace NCS.DSS.ActionPlan.Models
@@ -19,6 +19,15 @@ namespace NCS.DSS.ActionPlan.Models
         [Display(Description = "Unique identifier to the related interaction resource.")]
         [Example(Description = "2730af9c-fc34-4c2b-a905-c4b584b0f379")]
         public Guid? InteractionId { get; set; }
+
+        [Display(Description = "Unique identifier to the related session resource.")]
+        [Example(Description = "2730af9c-fc34-4c2b-a905-c4b584b0f379")]
+        public Guid? SessionId { get; set; }
+
+        [StringLength(50)]
+        [Display(Description = "Identifier supplied by the touchpoint to indicate their subcontractor")]
+        [Example(Description = "01234567899876543210")]
+        public string SubcontractorId { get; set; }
 
         [Required]
         [DataType(DataType.DateTime)]
@@ -81,6 +90,8 @@ namespace NCS.DSS.ActionPlan.Models
         [Example(Description = "0000000001")]
         public string LastModifiedTouchpointId { get; set; }
 
+
+
         public void SetDefaultValues()
         {
             if (!LastModifiedDate.HasValue)
@@ -93,49 +104,15 @@ namespace NCS.DSS.ActionPlan.Models
                 PriorityCustomer = ReferenceData.PriorityCustomer.NotAPriorityCustomer;
         }
 
-        public void SetIds(ActionPlan actionPlanRequest, Guid customerGuid, Guid interactionGuid, string touchpointId)
+        public void SetIds(Guid customerGuid, Guid interactionGuid, Guid sessionGuid, string touchpointId, string subcontractorId)
         {
             ActionPlanId = Guid.NewGuid();
             CustomerId = customerGuid;
             InteractionId = interactionGuid;
+            SessionId = sessionGuid;
             LastModifiedTouchpointId = touchpointId;
+            SubcontractorId = subcontractorId;
         }
 
-        public void Patch(ActionPlanPatch actionPlanPatch)
-        {
-            if (actionPlanPatch == null)
-                return;
-
-            if(actionPlanPatch.DateActionPlanCreated.HasValue)
-                DateActionPlanCreated = actionPlanPatch.DateActionPlanCreated;
-
-            if (actionPlanPatch.CustomerCharterShownToCustomer.HasValue)
-                CustomerCharterShownToCustomer = actionPlanPatch.CustomerCharterShownToCustomer;
-
-            if (actionPlanPatch.DateAndTimeCharterShown.HasValue)
-                DateAndTimeCharterShown = actionPlanPatch.DateAndTimeCharterShown;
-
-            if (actionPlanPatch.DateActionPlanSentToCustomer.HasValue)
-                DateActionPlanSentToCustomer = actionPlanPatch.DateActionPlanSentToCustomer;
-            
-            if (actionPlanPatch.ActionPlanDeliveryMethod.HasValue)
-                ActionPlanDeliveryMethod = actionPlanPatch.ActionPlanDeliveryMethod.Value;
-
-            if (actionPlanPatch.DateActionPlanAcknowledged.HasValue)
-                DateActionPlanAcknowledged = actionPlanPatch.DateActionPlanAcknowledged;
-
-            if (actionPlanPatch.PriorityCustomer.HasValue)
-                PriorityCustomer = actionPlanPatch.PriorityCustomer.Value;
-
-            if (!string.IsNullOrEmpty(actionPlanPatch.CurrentSituation))
-                CurrentSituation = actionPlanPatch.CurrentSituation;
-
-            if (actionPlanPatch.LastModifiedDate.HasValue)
-                LastModifiedDate = actionPlanPatch.LastModifiedDate;
-
-            if (!string.IsNullOrEmpty(actionPlanPatch.LastModifiedTouchpointId))
-                LastModifiedTouchpointId = actionPlanPatch.LastModifiedTouchpointId;
-
-        }
     }
 }
