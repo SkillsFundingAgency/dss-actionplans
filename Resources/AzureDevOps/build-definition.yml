@@ -4,7 +4,7 @@ resources:
   - repository: dfc-devops
     type: github
     name: dfc-devops
-    ref: refs/heads/NCSD-226-AddInitialAzDevOpsYamlTemplates
+    ref: refs/heads/master
     endpoint: 'GitHub (CDH)'
 
 jobs:
