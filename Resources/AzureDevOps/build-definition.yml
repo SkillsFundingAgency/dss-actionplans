@@ -13,16 +13,10 @@ jobs:
      targetType: 'filePath'
      filePath: 'Resources/PSScripts/Test-BranchName.ps1'
      arguments: '-BranchName $(Build.SourceBranchName) -Verbose'
-  - task: PowerShell@2
-    displayName: Write-BranchName
-    inputs:
-     targetType: 'filePath'
-     filePath: 'Resources/PSScripts/Test-VstsVariable.ps1'
-     arguments: '-VariableValue $(FunctionAppVersion)'
-
 
 - job: Phase_1
   displayName: Build-DotNetFramework
+  dependsOn: TestBranchName
   condition: and(succeeded(), eq(dependencies.TestBranchName.outputs['printvar.FunctionAppVersion'], 'Version1'))
   pool:
     name: Continuous Integration 02 - SSD - 160ACU
@@ -56,6 +50,7 @@ jobs:
 
 - job: Job_1
   displayName: Build-DotNetStandard
+  depdendsOn: TestBranchName
   condition: and(succeeded(), eq(variables['Build.SourceBranchName'], 'master-v2'))
   pool:
     name: Continuous Integration 02 - SSD - 160ACU
