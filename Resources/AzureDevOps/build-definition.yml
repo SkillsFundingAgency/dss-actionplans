@@ -15,7 +15,7 @@ jobs:
      filePath: 'Resources/PSScripts/Test-BranchName.ps1'
      arguments: '-BranchName $(Build.SourceBranchName) -Verbose'
 
-- job: Phase_1
+- job: BuildDotNetFramework
   displayName: Build-DotNetFramework
   dependsOn: TestBranchName
   condition: and(succeeded(), eq(dependencies.TestBranchName.outputs['ExecuteTestBranchNameScript.FunctionAppVersion'], 'Version1'))
@@ -24,30 +24,16 @@ jobs:
     demands:
     - msbuild
     - visualstudio
-#Your build pipeline references an undefined variable named �GitVersion.MajorMinorPatch�. Create or edit the build pipeline for this YAML file, define the variable on the Variables tab. See https://go.microsoft.com/fwlink/?linkid=865972
+#Your build pipeline references an undefined variable named �GitVersion.MajorMinorPatch�.
   variables:
     SolutionBaseName: 'NCS.DSS.ActionPlan'
 
-#Task group has not been exported, task groups are not supported yet
   steps:
-  - task: gittools.gitversion.gitversion-task.GitVersion@4
-    displayName: GitVersion
-    inputs:
-      preferBundledVersion: false
-  - task: NuGetToolInstaller@0
-    displayName: 'Use NuGet 4.3.0'
-  - task: NuGetCommand@2
-    displayName: 'NuGet restore $(SolutionBaseName).sln'
-    inputs:
-      restoreSolution: '$(SolutionBaseName).sln'
-  - task: VSBuild@1
-    displayName: 'Build solution $(SolutionBaseName).sln'
-    inputs:
-      solution: '$(SolutionBaseName).sln'
-      vsVersion: 15.0
-      msbuildArgs: '/p:DeployOnBuild=true /p:WebPublishMethod=Package /p:PackageAsSingleFile=true /p:SkipInvalidConfigurations=true /p:PackageLocation="$(build.artifactstagingdirectory)\DeploymentPackages\\" /p:VersionPrefix="$(GitVersion.MajorMinorPatch)"'
-      platform: '$(BuildPlatform)'
-      configuration: '$(BuildConfiguration)'
+  - template: YamlTemplates/dfc-dotnetframework-build.yaml
+    parameters:
+      SolutionBaseName: $(SolutionBaseName)
+      BuildPlatform: 'any cpu'
+      BuildConfiguration: 'release'
 
 - job: Job_1
   displayName: Build-DotNetStandard
