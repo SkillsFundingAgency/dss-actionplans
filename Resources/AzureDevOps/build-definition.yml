@@ -13,7 +13,9 @@ jobs:
 #Your build pipeline references an undefined variable named ‘GitVersion.MajorMinorPatch’. Create or edit the build pipeline for this YAML file, define the variable on the Variables tab. See https://go.microsoft.com/fwlink/?linkid=865972
   variables:
     SolutionBaseName: 'NCS.DSS.ActionPlan'
+
 #Task group has not been exported, task groups are not supported yet
+  steps:
   - task: gittools.gitversion.gitversion-task.GitVersion@4
     displayName: GitVersion
     inputs:
