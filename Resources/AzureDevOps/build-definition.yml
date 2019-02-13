@@ -15,7 +15,7 @@ jobs:
   - task: PowerShell@2
     inputs:
 	 targetType: 'inline'
-	 script: 'Write-Host $(FunctionAppVersion)'
+     script: 'Write-Host $(FunctionAppVersion)'
 
 
 - job: Phase_1
