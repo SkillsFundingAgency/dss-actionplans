@@ -11,7 +11,7 @@ jobs:
     inputs:
      targetType: 'filePath'
      filePath: 'Resources/PSScripts/Test-BranchName.ps1'
-     arguments: '-BranchName $(Build_SourceBranchName) -Verbose'
+     arguments: '-BranchName $(Build.SourceBranchName) -Verbose'
 
 
 - job: Phase_1
