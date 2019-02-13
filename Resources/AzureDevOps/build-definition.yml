@@ -8,14 +8,17 @@ jobs:
 
   steps:
   - task: PowerShell@2
+    displayName: Test-BranchName
     inputs:
      targetType: 'filePath'
      filePath: 'Resources/PSScripts/Test-BranchName.ps1'
      arguments: '-BranchName $(Build.SourceBranchName) -Verbose'
   - task: PowerShell@2
+    displayName: Write-BranchName
     inputs:
-     targetType: 'inline'
-     script: 'Write-Host $env:FunctionAppVersion'
+     targetType: 'filePath'
+     filePath: 'Resources/PSScripts/Test-VstsVariable.ps1'
+     arguments: '-VariableValue $(FunctionAppVersion)'
 
 
 - job: Phase_1
