@@ -50,7 +50,7 @@ jobs:
 
 - job: Job_1
   displayName: Build-DotNetStandard
-  depdendsOn: TestBranchName
+  dependsOn: TestBranchName
   condition: and(succeeded(), eq(variables['Build.SourceBranchName'], 'master-v2'))
   pool:
     name: Continuous Integration 02 - SSD - 160ACU
