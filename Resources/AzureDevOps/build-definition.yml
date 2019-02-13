@@ -2,9 +2,21 @@ resources:
 - repo: self
 
 jobs:
+- job: ParseBranchName
+  displayName: ParseBranchName
+  pool: Continuous Integration 02 - SSD - 160ACU
+
+  steps:
+  - task: PowerShell@2
+  inputs:
+   targetType: 'filePath'
+   filePath: 'Resources/PSScripts/ParseBranchName.ps1'
+   arguments: '-BranchName $(Build_SourceBranchName) -Verbose'
+
+
 - job: Phase_1
   displayName: Build-DotNetFramework
-  condition: and(succeeded(), eq(variables['Build.SourceBranchName'], 'CDS-1156-YamlBuildDefinition'))
+  condition: and(succeeded(), eq(variables['FunctionAppVersion'], 'CDS-1156-YamlBuildDefinition'))
   pool:
     name: Continuous Integration 02 - SSD - 160ACU
     demands:
