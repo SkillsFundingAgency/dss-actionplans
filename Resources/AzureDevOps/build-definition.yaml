@@ -1,0 +1,46 @@
+resources:
+- repo: self
+
+jobs:
+- job: Phase_1
+  displayName: Build-DotNetFramework
+  condition: and(succeeded(), eq(variables['Build.SourceBranchName'], 'master'))
+  pool:
+    name: Continuous Integration 02 - SSD - 160ACU
+    demands:
+    - msbuild
+    - visualstudio
+#Your build pipeline references an undefined variable named ‘GitVersion.MajorMinorPatch’. Create or edit the build pipeline for this YAML file, define the variable on the Variables tab. See https://go.microsoft.com/fwlink/?linkid=865972
+  variables:
+    SolutionBaseName: 'NCS.DSS.ActionPlan'
+#Task group has not been exported, task groups are not supported yet
+  - task: gittools.gitversion.gitversion-task.GitVersion@4
+    displayName: GitVersion
+    inputs:
+      preferBundledVersion: false
+  - task: NuGetToolInstaller@0
+    displayName: 'Use NuGet 4.3.0'
+  - task: NuGetCommand@2
+    displayName: 'NuGet restore $(SolutionBaseName).sln'
+    inputs:
+      restoreSolution: '$(SolutionBaseName).sln'
+  - task: VSBuild@1
+    displayName: 'Build solution $(SolutionBaseName).sln'
+    inputs:
+      solution: '$(SolutionBaseName).sln'
+      vsVersion: 15.0
+      msbuildArgs: '/p:DeployOnBuild=true /p:WebPublishMethod=Package /p:PackageAsSingleFile=true /p:SkipInvalidConfigurations=true /p:PackageLocation="$(build.artifactstagingdirectory)\DeploymentPackages\\" /p:VersionPrefix="$(GitVersion.MajorMinorPatch)"'
+      platform: '$(BuildPlatform)'
+      configuration: '$(BuildConfiguration)'
+
+- job: Job_1
+  displayName: Build-DotNetStandard
+  condition: and(succeeded(), eq(variables['Build.SourceBranchName'], 'master-v2'))
+  pool:
+    name: Continuous Integration 02 - SSD - 160ACU
+
+#Task group has not been exported, task groups are not supported yet
+
+
+
+
