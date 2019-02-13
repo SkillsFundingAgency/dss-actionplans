@@ -14,7 +14,7 @@ jobs:
      arguments: '-BranchName $(Build.SourceBranchName) -Verbose'
   - task: PowerShell@2
     inputs:
-	 targetType: 'inline'
+     targetType: 'inline'
      script: 'Write-Host $(FunctionAppVersion)'
 
 
@@ -26,7 +26,7 @@ jobs:
     demands:
     - msbuild
     - visualstudio
-#Your build pipeline references an undefined variable named ‘GitVersion.MajorMinorPatch’. Create or edit the build pipeline for this YAML file, define the variable on the Variables tab. See https://go.microsoft.com/fwlink/?linkid=865972
+#Your build pipeline references an undefined variable named ï¿½GitVersion.MajorMinorPatchï¿½. Create or edit the build pipeline for this YAML file, define the variable on the Variables tab. See https://go.microsoft.com/fwlink/?linkid=865972
   variables:
     SolutionBaseName: 'NCS.DSS.ActionPlan'
 
