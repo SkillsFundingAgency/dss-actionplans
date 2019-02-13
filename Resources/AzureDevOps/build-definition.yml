@@ -8,10 +8,10 @@ jobs:
 
   steps:
   - task: PowerShell@2
-   inputs:
-    targetType: 'filePath'
-    filePath: 'Resources/PSScripts/ParseBranchName.ps1'
-    arguments: '-BranchName $(Build_SourceBranchName) -Verbose'
+    inputs:
+     targetType: 'filePath'
+     filePath: 'Resources/PSScripts/ParseBranchName.ps1'
+     arguments: '-BranchName $(Build_SourceBranchName) -Verbose'
 
 
 - job: Phase_1
