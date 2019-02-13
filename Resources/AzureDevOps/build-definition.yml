@@ -1,11 +1,11 @@
 resources:
-- repo: self
   repositories:
-    - repository: dfc-devops
-      type: github
-      name: dfc-devops
-      ref: refs/heads/NCSD-226-AddInitialAzDevOpsYamlTemplates
-      endpoint: 'GitHub (CDH)'
+  - repository: self
+  - repository: dfc-devops
+    type: github
+    name: dfc-devops
+    ref: refs/heads/NCSD-226-AddInitialAzDevOpsYamlTemplates
+    endpoint: 'GitHub (CDH)'
 
 jobs:
 - job: TestBranchName
