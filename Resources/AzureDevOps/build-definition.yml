@@ -8,6 +8,7 @@ jobs:
 
   steps:
   - task: PowerShell@2
+    name: ExecuteTestBranchNameScript
     displayName: Test-BranchName
     inputs:
      targetType: 'filePath'
@@ -17,7 +18,7 @@ jobs:
 - job: Phase_1
   displayName: Build-DotNetFramework
   dependsOn: TestBranchName
-  condition: and(succeeded(), eq(dependencies.TestBranchName.outputs['printvar.FunctionAppVersion'], 'Version1'))
+  condition: and(succeeded(), eq(dependencies.TestBranchName.outputs['ExecuteTestBranchNameScript.FunctionAppVersion'], 'Version1'))
   pool:
     name: Continuous Integration 02 - SSD - 160ACU
     demands:
