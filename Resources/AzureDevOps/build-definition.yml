@@ -3,7 +3,7 @@ resources:
   - repository: self
   - repository: dfc-devops
     type: github
-    name: dfc-devops
+    name: SkillsFundingAgency/dfc-devops
     ref: refs/heads/master
     endpoint: 'GitHub (CDH)'
 
