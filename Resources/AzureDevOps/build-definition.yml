@@ -12,11 +12,15 @@ jobs:
      targetType: 'filePath'
      filePath: 'Resources/PSScripts/Test-BranchName.ps1'
      arguments: '-BranchName $(Build.SourceBranchName) -Verbose'
+  - task: PowerShell@2
+    inputs:
+	 targetType: 'inline'
+	 script: 'Write-Host $(FunctionAppVersion)'
 
 
 - job: Phase_1
   displayName: Build-DotNetFramework
-  condition: and(succeeded(), eq(variables['FunctionAppVersion'], 'Version1'))
+  condition: and(succeeded(), eq($(FunctionAppVersion), 'Version1'))
   pool:
     name: Continuous Integration 02 - SSD - 160ACU
     demands:
