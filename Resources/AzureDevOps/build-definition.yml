@@ -4,7 +4,7 @@ resources:
   - repository: dfc-devops
     type: github
     name: SkillsFundingAgency/dfc-devops
-    ref: refs/heads/master
+    ref: refs/heads/NCSD-226-AddInitialAzDevOpsYamlTemplates
     endpoint: 'GitHub (CDH)'
 
 jobs:
