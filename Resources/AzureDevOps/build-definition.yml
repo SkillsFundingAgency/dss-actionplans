@@ -1,5 +1,11 @@
 resources:
 - repo: self
+  repositories:
+    - repository: dfc-devops
+      type: github
+      name: dfc-devops
+      ref: refs/heads/NCSD-226-AddInitialAzDevOpsYamlTemplates
+      endpoint: 'GitHub (CDH)'
 
 jobs:
 - job: TestBranchName
@@ -29,7 +35,7 @@ jobs:
     SolutionBaseName: 'NCS.DSS.ActionPlan'
 
   steps:
-  - template: YamlTemplates/dfc-dotnetframework-build.yml
+  - template: dfc-dotnetframework-build.yml@dfc-devops
     parameters:
       SolutionBaseName: $(SolutionBaseName)
       BuildPlatform: 'any cpu'
