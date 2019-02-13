@@ -35,7 +35,7 @@ jobs:
     SolutionBaseName: 'NCS.DSS.ActionPlan'
 
   steps:
-  - template: dfc-dotnetframework-build.yml@dfc-devops
+  - template: AzureDevOpsTemplates/Build/dfc-dotnetframework-build.yml@dfc-devops
     parameters:
       SolutionBaseName: $(SolutionBaseName)
       BuildPlatform: 'any cpu'
