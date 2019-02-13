@@ -10,7 +10,7 @@ jobs:
   - task: PowerShell@2
     inputs:
      targetType: 'filePath'
-     filePath: 'Resources/PSScripts/ParseBranchName.ps1'
+     filePath: 'Resources/PSScripts/Test-BranchName.ps1'
      arguments: '-BranchName $(Build_SourceBranchName) -Verbose'
 
 
