@@ -1,3 +1,8 @@
+variables:
+    SolutionBaseName: 'NCS.DSS.ActionPlan'
+    BuildPlatform: 'any cpu'
+    BuildConfiguration: 'release'
+
 resources:
   repositories:
   - repository: self
@@ -8,6 +13,7 @@ resources:
     endpoint: 'GitHub (CDH)'
 
 jobs:
+# Test the branch name, the output of this job will satisfy the condition of one or neither of the subsequent jobs
 - job: TestBranchName
   displayName: TestBranchName
   pool: Continuous Integration 02 - SSD - 160ACU
@@ -21,6 +27,7 @@ jobs:
      filePath: 'Resources/PSScripts/Test-BranchName.ps1'
      arguments: '-BranchName $(Build.SourceBranchName) -Verbose'
 
+# Build the app with the dfc-dotnetframework-build template.  Runs if the output of TestBranchName is Version1
 - job: BuildDotNetFramework
   displayName: Build-DotNetFramework
   dependsOn: TestBranchName
@@ -30,25 +37,24 @@ jobs:
     demands:
     - msbuild
     - visualstudio
-#Your build pipeline references an undefined variable named �GitVersion.MajorMinorPatch�.
-  variables:
-    SolutionBaseName: 'NCS.DSS.ActionPlan'
 
   steps:
   - template: AzureDevOpsTemplates/Build/dfc-dotnetframework-build.yml@dfc-devops
     parameters:
       SolutionBaseName: $(SolutionBaseName)
-      BuildPlatform: 'any cpu'
-      BuildConfiguration: 'release'
+      BuildPlatform: $(BuildPlatform)
+      BuildConfiguration: $(BuildPlatform)
 
-- job: Job_1
+# Build the app with the dfc-dotnetcore-build template.  Runs if the output of TestBranchName is Version2+
+- job: BuildDotNetStandard
   displayName: Build-DotNetStandard
   dependsOn: TestBranchName
-  condition: and(succeeded(), eq(variables['Build.SourceBranchName'], 'master-v2'))
+  condition: and(succeeded(), eq(dependencies.TestBranchName.outputs['ExecuteTestBranchNameScript.FunctionAppVersion'], 'Version2+'))
   pool:
     name: Continuous Integration 02 - SSD - 160ACU
-
-#Task group has not been exported, task groups are not supported yet
+    demands:
+    - msbuild
+    - visualstudio
 
 
 
