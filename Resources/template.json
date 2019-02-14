@@ -23,6 +23,9 @@
       "serviceBusConnectionString": {
         "type": "string"
       },
+      "serviceBusQueueName": {
+        "type": "string"
+      },
       "sharedAppServicePlanName": {
         "type": "string"
       },
@@ -78,6 +81,9 @@
                 },
                 "serviceBusConnectionString": {
                   "value": "[parameters('serviceBusConnectionString')]"
+                },
+                "serviceBusQueueName": {
+                  "value": "[parameters('serviceBusQueueName')]"
                 },
                 "storageAccountName": {
                   "value": "[parameters('storageAccountName')]"
