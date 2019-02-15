@@ -25,7 +25,7 @@ jobs:
     inputs:
      targetType: 'filePath'
      filePath: 'Resources/PSScripts/Test-BranchName.ps1'
-     arguments: '-BranchName $(Build.SourceBranchName) -Verbose'
+     arguments: '-BranchName $(Build.SourceBranchName) -PipelineType Build -Verbose'
 
 # Build the app with the dfc-dotnetframework-build template.  Runs if the output of TestBranchName is Version1
 - job: BuildDotNetFramework
