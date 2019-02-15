@@ -28,25 +28,25 @@ elseif ($PipelineType -eq "Release") {
 if ($BranchName -match $V1MasterBranchRegEx) {
 
     Write-Verbose -Message "$BranchName is a a version 1 master branch"
-    Write-Host "##vso[task.setvariable variable=FunctionAppVersion;isOutput=$IsOutput]Version1"
+    Write-Output "##vso[task.setvariable variable=FunctionAppVersion;isOutput=$IsOutput]Version1"
 
 }
 elseif ($BranchName -match $V1FeatureBranchRegEx) {
 
     Write-Verbose -Message "$BranchName is a version 1 feature branch"
-    Write-Host "##vso[task.setvariable variable=FunctionAppVersion;isOutput=$IsOutput]Version1"
+    Write-Output "##vso[task.setvariable variable=FunctionAppVersion;isOutput=$IsOutput]Version1"
 
 }
 elseif ($BranchName -match $V2OrHigherMasterBranchRegEx) {
     
     Write-Verbose -Message "$BranchName is a version 2 or higher master branch"
-    Write-Host "##vso[task.setvariable variable=FunctionAppVersion;isOutput=$IsOutput]Version2+"
+    Write-Output "##vso[task.setvariable variable=FunctionAppVersion;isOutput=$IsOutput]Version2+"
 
 }
 elseif ($BranchName -match $V2OrHigherFeatureBranchRegEx) {
 
     Write-Verbose -Message "$BranchName is a version 2 or higher feature branch"
-    Write-Host "##vso[task.setvariable variable=FunctionAppVersion;isOutput=$IsOutput]Version2+"
+    Write-Output "##vso[task.setvariable variable=FunctionAppVersion;isOutput=$IsOutput]Version2+"
 
 }
 else {
