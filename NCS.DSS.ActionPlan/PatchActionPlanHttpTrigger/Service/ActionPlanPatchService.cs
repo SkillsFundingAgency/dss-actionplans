@@ -50,7 +50,12 @@ namespace NCS.DSS.ActionPlan.PatchActionPlanHttpTrigger.Service
                 _jsonHelper.UpdatePropertyValue(obj["LastModifiedTouchpointId"], actionPlanPatch.LastModifiedTouchpointId);
 
             if (!string.IsNullOrEmpty(actionPlanPatch.SubcontractorId))
-                _jsonHelper.UpdatePropertyValue(obj["SubcontractorId"], actionPlanPatch.SubcontractorId);
+            {
+                if (obj["SubcontractorId"] == null)
+                    _jsonHelper.CreatePropertyOnJObject(obj, "SubcontractorId", actionPlanPatch.SubcontractorId);
+                else
+                    _jsonHelper.UpdatePropertyValue(obj["SubcontractorId"], actionPlanPatch.SubcontractorId);
+            }
 
             return obj.ToObject<Models.ActionPlan>();
         }
