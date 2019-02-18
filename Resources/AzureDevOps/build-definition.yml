@@ -29,7 +29,7 @@ jobs:
     displayName: Test-BranchName
     inputs:
      targetType: 'filePath'
-     filePath: Scripts/Test-BranchName.ps1@dss-devops
+     filePath: 'https://raw.githubusercontent.com/SkillsFundingAgency/dss-devops/CDS-1156-YamlBuildDefinition/Scripts/Test-BranchName.ps1'
      arguments: '-BranchName $(Build.SourceBranchName) -PipelineType Build -Verbose'
 
 # Build the app with the dfc-dotnetframework-build template.  Runs if the output of TestBranchName is Version1
