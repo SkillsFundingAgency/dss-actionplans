@@ -11,6 +11,11 @@ resources:
     name: SkillsFundingAgency/dfc-devops
     ref: refs/tags/v0.0.3
     endpoint: 'GitHub (CDH)'
+  - repository: dss-devops
+    type: github
+    name: SkillsFundingAgency/dss-devops
+    ref: refs/heads/CDS-1156-YamlBuildDefinition
+    endpoint: 'GitHub (CDH)'
 
 jobs:
 # Test the branch name, the output of this job will satisfy the condition of one or neither of the subsequent jobs
@@ -24,7 +29,7 @@ jobs:
     displayName: Test-BranchName
     inputs:
      targetType: 'filePath'
-     filePath: 'Resources/PSScripts/Test-BranchName.ps1'
+     filePath: Scripts/Test-BranchName.ps1@dss-devops
      arguments: '-BranchName $(Build.SourceBranchName) -PipelineType Build -Verbose'
 
 # Build the app with the dfc-dotnetframework-build template.  Runs if the output of TestBranchName is Version1
