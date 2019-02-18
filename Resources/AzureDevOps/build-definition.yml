@@ -11,11 +11,6 @@ resources:
     name: SkillsFundingAgency/dfc-devops
     ref: refs/tags/v0.0.3
     endpoint: 'GitHub (CDH)'
-  - repository: dss-devops
-    type: github
-    name: SkillsFundingAgency/dss-devops
-    ref: refs/heads/CDS-1156-YamlBuildDefinition
-    endpoint: 'GitHub (CDH)'
 
 jobs:
 # Test the branch name, the output of this job will satisfy the condition of one or neither of the subsequent jobs
@@ -61,7 +56,6 @@ jobs:
       BuildConfiguration: $(BuildPlatform)
 
 # Build the app with the dfc-dotnetcore-build template.  Runs if the output of TestBranchName is Version2+
-# TESTING BAD BRANCH NAME
 - job: BuildDotNetStandard
   displayName: Build-DotNetStandard
   dependsOn: TestBranchName
