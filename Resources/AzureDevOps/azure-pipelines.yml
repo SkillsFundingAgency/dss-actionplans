@@ -67,11 +67,12 @@ jobs:
     - visualstudio
 
   steps:
-  - template: AzureDevOpsTemplates/Build/dfc-dotnetcore-build-notests.yml@dfc-devops
+  - template: AzureDevOpsTemplates/Build/dfc-dotnetcorefunctionapp-build-notests.yml@dfc-devops
     parameters:
       SolutionBaseName: $(SolutionBaseName)
       BuildPlatform: $(BuildPlatform)
       BuildConfiguration: $(BuildPlatform)
+
 
 
 
