@@ -28,7 +28,7 @@ jobs:
     displayName: 'Set PullRequestSourceBranch variable'
     inputs:
      targetType: 'inline'
-     script: if ($(Build.SourceBranchName) -eq "merge") { Write-Output "##vso[task.setvariable variable=PullRequestSourceBranch;isOutput=true]$(System.PullRequest.SourceBranch)" } else { Write-Output "##vso[task.setvariable variable=PullRequestSourceBranch;isOutput=true]NotAPullRequest" }
+     script: if ("$(Build.SourceBranchName)" -eq "merge") { Write-Output "##vso[task.setvariable variable=PullRequestSourceBranch;isOutput=true]$(System.PullRequest.SourceBranch)" } else { Write-Output "##vso[task.setvariable variable=PullRequestSourceBranch;isOutput=true]NotAPullRequest" }
   - task: PowerShell@2
     name: DownloadTestBranchNameScript
     displayName: 'Download Test-BranchName script'
