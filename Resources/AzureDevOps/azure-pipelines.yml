@@ -2,7 +2,6 @@ variables:
     SolutionBaseName: 'NCS.DSS.ActionPlan'
     BuildPlatform: 'any cpu'
     BuildConfiguration: 'release'
-    PullRequestSourceBranch: $(System.PullRequest.SourceBranch)
 
 resources:
   repositories:
@@ -24,6 +23,12 @@ jobs:
     TestBranchNameScriptFilePath: $(System.DefaultWorkingDirectory)\Test-BranchName.ps1
 
   steps:
+  - task: PowerShell@2
+    name: SetPullRequestSourceBranch
+    displayName: 'Set PullRequestSourceBranch variable'
+    inputs:
+     targetType: 'inline'
+     script: if ($(Build.SourceBranchName) -eq "merge") { Write-Output "##vso[task.setvariable variable=PullRequestSourceBranch;isOutput=true]$(System.PullRequest.SourceBranch)" } else { Write-Output "##vso[task.setvariable variable=PullRequestSourceBranch;isOutput=true]NotAPullRequest" }
   - task: PowerShell@2
     name: DownloadTestBranchNameScript
     displayName: 'Download Test-BranchName script'
