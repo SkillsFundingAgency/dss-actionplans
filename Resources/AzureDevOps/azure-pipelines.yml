@@ -24,12 +24,6 @@ jobs:
 
   steps:
   - task: PowerShell@2
-    name: SetPullRequestSourceBranch
-    displayName: 'Set PullRequestSourceBranch variable'
-    inputs:
-     targetType: 'inline'
-     script: if ("$(Build.SourceBranchName)" -eq "merge") { Write-Output $("##vso[task.setvariable variable=PullRequestSourceBranch;isOutput=true]") $(System.PullRequest.SourceBranch) } else { Write-Output $("##vso[task.setvariable variable=PullRequestSourceBranch;isOutput=true]NotAPullRequest") }
-  - task: PowerShell@2
     name: DownloadTestBranchNameScript
     displayName: 'Download Test-BranchName script'
     inputs:
@@ -41,7 +35,7 @@ jobs:
     inputs:
      targetType: 'filePath'
      filePath: $(TestBranchNameScriptFilePath)
-     arguments: '-BranchName $(Build.SourceBranchName) -PullRequestBranchName $(PullRequestSourceBranch) -PipelineType Build -Verbose'
+     arguments: '-BranchName $(Build.SourceBranchName) -PullRequestBranchName $(if ("$(Build.SourceBranchName)" -eq "merge") { $(System.PullRequest.SourceBranch) } else { "NotAPullRequest" } ) -PipelineType Build -Verbose'
 
 # Build the app with the dfc-dotnetframework-build template.  Runs if the output of TestBranchName is Version1
 - job: BuildDotNetFramework
