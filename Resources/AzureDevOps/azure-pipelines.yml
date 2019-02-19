@@ -19,7 +19,7 @@ jobs:
   pool: Continuous Integration 02 - SSD - 160ACU
 
   variables:
-    TestBranchNameScriptUrl: https://raw.githubusercontent.com/SkillsFundingAgency/dss-devops/CDS-1156-YamlBuildDefinition/Scripts/Test-BranchName.ps1
+    TestBranchNameScriptUrl: https://raw.githubusercontent.com/SkillsFundingAgency/dss-devops/master/Scripts/Test-BranchName.ps1
     TestBranchNameScriptFilePath: $(System.DefaultWorkingDirectory)\Test-BranchName.ps1
 
   steps:
