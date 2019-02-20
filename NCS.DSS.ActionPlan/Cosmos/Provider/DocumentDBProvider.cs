@@ -132,6 +132,25 @@ namespace NCS.DSS.ActionPlan.Cosmos.Provider
             return actionPlans?.FirstOrDefault();
         }
 
+        public async Task<string> GetActionPlanForCustomerToUpdateAsync(Guid customerId, Guid actionPlanId)
+        {
+            var collectionUri = DocumentDBHelper.CreateDocumentCollectionUri();
+
+            var client = DocumentDBClient.CreateDocumentClient();
+
+            var actionPlanForCustomerQuery = client
+                ?.CreateDocumentQuery<Models.ActionPlan>(collectionUri, new FeedOptions { MaxItemCount = 1 })
+                .Where(x => x.CustomerId == customerId && x.ActionPlanId == actionPlanId)
+                .AsDocumentQuery();
+
+            if (actionPlanForCustomerQuery == null)
+                return null;
+
+            var actionPlans = await actionPlanForCustomerQuery.ExecuteNextAsync();
+
+            return actionPlans?.FirstOrDefault()?.ToString();
+        }
+
         public async Task<ResourceResponse<Document>> CreateActionPlanAsync(Models.ActionPlan actionPlan)
         {
 

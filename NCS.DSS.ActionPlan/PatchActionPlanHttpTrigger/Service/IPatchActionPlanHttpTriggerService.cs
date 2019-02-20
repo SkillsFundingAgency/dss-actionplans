@@ -6,8 +6,9 @@ namespace NCS.DSS.ActionPlan.PatchActionPlanHttpTrigger.Service
 {
     public interface IPatchActionPlanHttpTriggerService
     {
-        Task<Models.ActionPlan> UpdateAsync(Models.ActionPlan actionPlan, ActionPlanPatch actionPlanPatch);
-        Task<Models.ActionPlan> GetActionPlanForCustomerAsync(Guid customerId, Guid actionPlanId);
+        Models.ActionPlan PatchResource(string actionPlanJson, ActionPlanPatch actionPlanPatch);
+        Task<Models.ActionPlan> UpdateCosmosAsync(Models.ActionPlan actionPlan);
+        Task<string> GetActionPlanForCustomerAsync(Guid customerId, Guid actionPlanId);
         Task SendToServiceBusQueueAsync(Models.ActionPlan actionPlan, Guid customerId, string reqUrl);
     }
 }

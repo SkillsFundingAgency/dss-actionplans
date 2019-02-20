@@ -101,41 +101,5 @@ namespace NCS.DSS.ActionPlan.Models
             LastModifiedTouchpointId = touchpointId;
         }
 
-        public void Patch(ActionPlanPatch actionPlanPatch)
-        {
-            if (actionPlanPatch == null)
-                return;
-
-            if(actionPlanPatch.DateActionPlanCreated.HasValue)
-                DateActionPlanCreated = actionPlanPatch.DateActionPlanCreated;
-
-            if (actionPlanPatch.CustomerCharterShownToCustomer.HasValue)
-                CustomerCharterShownToCustomer = actionPlanPatch.CustomerCharterShownToCustomer;
-
-            if (actionPlanPatch.DateAndTimeCharterShown.HasValue)
-                DateAndTimeCharterShown = actionPlanPatch.DateAndTimeCharterShown;
-
-            if (actionPlanPatch.DateActionPlanSentToCustomer.HasValue)
-                DateActionPlanSentToCustomer = actionPlanPatch.DateActionPlanSentToCustomer;
-            
-            if (actionPlanPatch.ActionPlanDeliveryMethod.HasValue)
-                ActionPlanDeliveryMethod = actionPlanPatch.ActionPlanDeliveryMethod.Value;
-
-            if (actionPlanPatch.DateActionPlanAcknowledged.HasValue)
-                DateActionPlanAcknowledged = actionPlanPatch.DateActionPlanAcknowledged;
-
-            if (actionPlanPatch.PriorityCustomer.HasValue)
-                PriorityCustomer = actionPlanPatch.PriorityCustomer.Value;
-
-            if (!string.IsNullOrEmpty(actionPlanPatch.CurrentSituation))
-                CurrentSituation = actionPlanPatch.CurrentSituation;
-
-            if (actionPlanPatch.LastModifiedDate.HasValue)
-                LastModifiedDate = actionPlanPatch.LastModifiedDate;
-
-            if (!string.IsNullOrEmpty(actionPlanPatch.LastModifiedTouchpointId))
-                LastModifiedTouchpointId = actionPlanPatch.LastModifiedTouchpointId;
-
-        }
     }
 }
