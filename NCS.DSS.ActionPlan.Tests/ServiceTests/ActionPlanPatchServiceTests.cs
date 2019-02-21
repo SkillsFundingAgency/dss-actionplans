@@ -43,7 +43,9 @@ namespace NCS.DSS.ActionPlan.Tests.ServiceTests
         {
             var actionPlanPatch = new ActionPlanPatch() { DateActionPlanCreated = DateTime.MaxValue };
 
-            var actionPlan = _actionPlanPatchService.Patch(_json, actionPlanPatch);
+            var patchedActionPlan = _actionPlanPatchService.Patch(_json, actionPlanPatch);
+
+            var actionPlan = JsonConvert.DeserializeObject<Models.ActionPlan>(patchedActionPlan);
 
             var dateActionPlanCreated = actionPlan.DateActionPlanCreated;
 
@@ -57,7 +59,9 @@ namespace NCS.DSS.ActionPlan.Tests.ServiceTests
         {
             var actionPlanPatch = new ActionPlanPatch { CustomerCharterShownToCustomer = true };
 
-            var actionPlan = _actionPlanPatchService.Patch(_json, actionPlanPatch);
+            var patchedActionPlan = _actionPlanPatchService.Patch(_json, actionPlanPatch);
+
+            var actionPlan = JsonConvert.DeserializeObject<Models.ActionPlan>(patchedActionPlan);
 
             var customerCharterShownToCustomer = actionPlan.CustomerCharterShownToCustomer;
 
@@ -70,7 +74,9 @@ namespace NCS.DSS.ActionPlan.Tests.ServiceTests
         {
             var actionPlanPatch = new Models.ActionPlanPatch { DateAndTimeCharterShown = DateTime.MaxValue };
 
-            var actionPlan = _actionPlanPatchService.Patch(_json, actionPlanPatch);
+            var patchedActionPlan = _actionPlanPatchService.Patch(_json, actionPlanPatch);
+
+            var actionPlan = JsonConvert.DeserializeObject<Models.ActionPlan>(patchedActionPlan);
 
             var dateAndTimeCharterShown = actionPlan.DateAndTimeCharterShown;
 
@@ -83,7 +89,9 @@ namespace NCS.DSS.ActionPlan.Tests.ServiceTests
         {
             var actionPlanPatch = new Models.ActionPlanPatch { DateActionPlanSentToCustomer = DateTime.MaxValue };
 
-            var actionPlan = _actionPlanPatchService.Patch(_json, actionPlanPatch);
+            var patchedActionPlan = _actionPlanPatchService.Patch(_json, actionPlanPatch);
+
+            var actionPlan = JsonConvert.DeserializeObject<Models.ActionPlan>(patchedActionPlan);
 
             var dateActionPlanSentToCustomer = actionPlan.DateActionPlanSentToCustomer;
 
@@ -95,8 +103,10 @@ namespace NCS.DSS.ActionPlan.Tests.ServiceTests
         public void ActionPlanPatchServiceTests_CheckActionPlanDeliveryMethodIsUpdated_WhenPatchIsCalled()
         {
             var actionPlanPatch = new ActionPlanPatch { ActionPlanDeliveryMethod = ActionPlanDeliveryMethod.Paper };
-            
-            var actionPlan = _actionPlanPatchService.Patch(_json, actionPlanPatch);
+
+            var patchedActionPlan = _actionPlanPatchService.Patch(_json, actionPlanPatch);
+
+            var actionPlan = JsonConvert.DeserializeObject<Models.ActionPlan>(patchedActionPlan);
 
             var actionPlanDeliveryMethod = actionPlan.ActionPlanDeliveryMethod;
 
@@ -109,7 +119,9 @@ namespace NCS.DSS.ActionPlan.Tests.ServiceTests
         {
             var actionPlanPatch = new Models.ActionPlanPatch { DateActionPlanAcknowledged = DateTime.MaxValue };
 
-            var actionPlan = _actionPlanPatchService.Patch(_json, actionPlanPatch);
+            var patchedActionPlan = _actionPlanPatchService.Patch(_json, actionPlanPatch);
+
+            var actionPlan = JsonConvert.DeserializeObject<Models.ActionPlan>(patchedActionPlan);
 
             var dateActionPlanAcknowledged = actionPlan.DateActionPlanAcknowledged;
 
@@ -122,7 +134,9 @@ namespace NCS.DSS.ActionPlan.Tests.ServiceTests
         {
             var actionPlanPatch = new Models.ActionPlanPatch { PriorityCustomer = PriorityCustomer.NotAPriorityCustomer };
 
-            var actionPlan = _actionPlanPatchService.Patch(_json, actionPlanPatch);
+            var patchedActionPlan = _actionPlanPatchService.Patch(_json, actionPlanPatch);
+
+            var actionPlan = JsonConvert.DeserializeObject<Models.ActionPlan>(patchedActionPlan);
 
             var priorityCustomer = actionPlan.PriorityCustomer;
             
@@ -135,7 +149,9 @@ namespace NCS.DSS.ActionPlan.Tests.ServiceTests
         {
             var actionPlanPatch = new ActionPlanPatch { CurrentSituation = "Current" };
 
-            var actionPlan = _actionPlanPatchService.Patch(_json, actionPlanPatch);
+            var patchedActionPlan = _actionPlanPatchService.Patch(_json, actionPlanPatch);
+
+            var actionPlan = JsonConvert.DeserializeObject<Models.ActionPlan>(patchedActionPlan);
 
             var currentSituation = actionPlan.CurrentSituation;
 
@@ -147,8 +163,10 @@ namespace NCS.DSS.ActionPlan.Tests.ServiceTests
         public void ActionPlanPatchServiceTests_CheckLastModifiedDateIsUpdated_WhenPatchIsCalled()
         {
             var actionPlanPatch = new ActionPlanPatch { LastModifiedDate = DateTime.MaxValue };
-            
-            var actionPlan = _actionPlanPatchService.Patch(_json, actionPlanPatch);
+
+            var patchedActionPlan = _actionPlanPatchService.Patch(_json, actionPlanPatch);
+
+            var actionPlan = JsonConvert.DeserializeObject<Models.ActionPlan>(patchedActionPlan);
 
             var lastModifiedDate = actionPlan.LastModifiedDate;
 
@@ -161,7 +179,9 @@ namespace NCS.DSS.ActionPlan.Tests.ServiceTests
         {
             var actionPlanPatch = new ActionPlanPatch { LastModifiedTouchpointId = "0000000111" };
 
-            var actionPlan = _actionPlanPatchService.Patch(_json, actionPlanPatch);
+            var patchedActionPlan = _actionPlanPatchService.Patch(_json, actionPlanPatch);
+
+            var actionPlan = JsonConvert.DeserializeObject<Models.ActionPlan>(patchedActionPlan);
 
             var lastModifiedTouchpointId = actionPlan.LastModifiedTouchpointId;
             

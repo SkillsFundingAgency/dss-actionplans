@@ -7,6 +7,7 @@ using Microsoft.Azure.Documents.Client;
 using Microsoft.Azure.Documents.Linq;
 using NCS.DSS.ActionPlan.Cosmos.Client;
 using NCS.DSS.ActionPlan.Cosmos.Helper;
+using Newtonsoft.Json.Linq;
 
 namespace NCS.DSS.ActionPlan.Cosmos.Provider
 {
@@ -167,16 +168,18 @@ namespace NCS.DSS.ActionPlan.Cosmos.Provider
 
         }
 
-        public async Task<ResourceResponse<Document>> UpdateActionPlanAsync(Models.ActionPlan actionPlan)
+        public async Task<ResourceResponse<Document>> UpdateActionPlanAsync(string actionPlanJson, Guid actionPlanId)
         {
-            var documentUri = DocumentDBHelper.CreateDocumentUri(actionPlan.ActionPlanId.GetValueOrDefault());
+            var documentUri = DocumentDBHelper.CreateDocumentUri(actionPlanId);
 
             var client = DocumentDBClient.CreateDocumentClient();
 
             if (client == null)
                 return null;
 
-            var response = await client.ReplaceDocumentAsync(documentUri, actionPlan);
+            var actionPlanDocumentJObject = JObject.Parse(actionPlanJson);
+
+            var response = await client.ReplaceDocumentAsync(documentUri, actionPlanDocumentJObject);
 
             return response;
         }

@@ -54,7 +54,7 @@ namespace NCS.DSS.ActionPlan.Tests.FunctionTests
             _patchActionPlanHttpTriggerService = Substitute.For<IPatchActionPlanHttpTriggerService>();
             _httpRequestMessageHelper.GetTouchpointId(_request).Returns("0000000001");
             _httpRequestMessageHelper.GetApimURL(_request).Returns("http://localhost:7071/");
-            _patchActionPlanHttpTriggerService.PatchResource(Arg.Any<string>(), _actionPlanPatch).Returns(_actionPlan);
+            _patchActionPlanHttpTriggerService.PatchResource(Arg.Any<string>(), _actionPlanPatch).Returns(_actionPlan.ToString());
         }
 
         [Test]
@@ -205,7 +205,7 @@ namespace NCS.DSS.ActionPlan.Tests.FunctionTests
 
             _patchActionPlanHttpTriggerService.GetActionPlanForCustomerAsync(Arg.Any<Guid>(), Arg.Any<Guid>()).Returns(Task.FromResult(_actionPlan.ToString()).Result);
 
-            _patchActionPlanHttpTriggerService.UpdateCosmosAsync(Arg.Any<Models.ActionPlan>()).Returns(Task.FromResult<Models.ActionPlan>(null).Result);
+            _patchActionPlanHttpTriggerService.UpdateCosmosAsync(Arg.Any<string>(), Arg.Any<Guid>()).Returns(Task.FromResult<Models.ActionPlan>(null).Result);
 
             var result = await RunFunction(ValidCustomerId, ValidInteractionId, ValidActionPlanId);
 
@@ -224,7 +224,7 @@ namespace NCS.DSS.ActionPlan.Tests.FunctionTests
 
             _patchActionPlanHttpTriggerService.GetActionPlanForCustomerAsync(Arg.Any<Guid>(), Arg.Any<Guid>()).Returns(Task.FromResult(_actionPlan.ToString()).Result);
 
-            _patchActionPlanHttpTriggerService.UpdateCosmosAsync(Arg.Any<Models.ActionPlan>()).Returns(Task.FromResult<Models.ActionPlan>(null).Result);
+            _patchActionPlanHttpTriggerService.UpdateCosmosAsync(Arg.Any<string>(), Arg.Any<Guid>()).Returns(Task.FromResult<Models.ActionPlan>(null).Result);
 
             var result = await RunFunction(ValidCustomerId, ValidInteractionId, ValidActionPlanId);
 
@@ -243,7 +243,7 @@ namespace NCS.DSS.ActionPlan.Tests.FunctionTests
 
             _patchActionPlanHttpTriggerService.GetActionPlanForCustomerAsync(Arg.Any<Guid>(), Arg.Any<Guid>()).Returns(Task.FromResult(_actionPlan.ToString()).Result);
 
-            _patchActionPlanHttpTriggerService.UpdateCosmosAsync(Arg.Any<Models.ActionPlan>()).Returns(Task.FromResult(_actionPlan).Result);
+            _patchActionPlanHttpTriggerService.UpdateCosmosAsync(Arg.Any<string>(), Arg.Any<Guid>()).Returns(Task.FromResult(_actionPlan).Result);
 
             var result = await RunFunction(ValidCustomerId, ValidInteractionId, ValidActionPlanId);
 

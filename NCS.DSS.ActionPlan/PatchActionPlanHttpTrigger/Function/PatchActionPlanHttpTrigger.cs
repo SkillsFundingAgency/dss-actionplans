@@ -106,7 +106,7 @@ namespace NCS.DSS.ActionPlan.PatchActionPlanHttpTrigger.Function
             if (patchedActionPlan == null)
                 return HttpResponseMessageHelper.NoContent(actionPlanGuid);
             
-            var updatedActionPlan = await actionPlanPatchService.UpdateCosmosAsync(patchedActionPlan);
+            var updatedActionPlan = await actionPlanPatchService.UpdateCosmosAsync(patchedActionPlan, actionPlanGuid);
 
             if (updatedActionPlan != null)
                 await actionPlanPatchService.SendToServiceBusQueueAsync(updatedActionPlan, customerGuid,  ApimURL);

@@ -15,6 +15,6 @@ namespace NCS.DSS.ActionPlan.Cosmos.Provider
         Task<Models.ActionPlan> GetActionPlanForCustomerAsync(Guid customerId, Guid actionPlanId);
         Task<string> GetActionPlanForCustomerToUpdateAsync(Guid customerId, Guid actionPlanId);
         Task<ResourceResponse<Document>> CreateActionPlanAsync(Models.ActionPlan actionPlan);
-        Task<ResourceResponse<Document>> UpdateActionPlanAsync(Models.ActionPlan actionPlan);
+        Task<ResourceResponse<Document>> UpdateActionPlanAsync(string actionPlanJson, Guid actionPlanId);
     }
 }

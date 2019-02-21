@@ -6,7 +6,7 @@ namespace NCS.DSS.ActionPlan.PatchActionPlanHttpTrigger.Service
 {
     public class ActionPlanPatchService : IActionPlanPatchService
     {
-        public Models.ActionPlan Patch(string actionPlanJson, ActionPlanPatch actionPlanPatch)
+        public string Patch(string actionPlanJson, ActionPlanPatch actionPlanPatch)
         {
             if (string.IsNullOrEmpty(actionPlanJson))
                 return null;
@@ -43,7 +43,7 @@ namespace NCS.DSS.ActionPlan.PatchActionPlanHttpTrigger.Service
             if (!string.IsNullOrEmpty(actionPlanPatch.LastModifiedTouchpointId))
                 JsonHelper.UpdatePropertyValue(obj["LastModifiedTouchpointId"], actionPlanPatch.LastModifiedTouchpointId);
 
-            return obj.ToObject<Models.ActionPlan>();
+            return obj.ToString();
         }
     }
 }
