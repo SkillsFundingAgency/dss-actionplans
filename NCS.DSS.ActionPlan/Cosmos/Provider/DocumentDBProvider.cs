@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using DFC.Common.Standard.Logging;
-using DFC.JSON.Standard;
 using Microsoft.Azure.Documents;
 using Microsoft.Azure.Documents.Client;
 using Microsoft.Azure.Documents.Linq;
@@ -202,16 +201,22 @@ namespace NCS.DSS.ActionPlan.Cosmos.Provider
 
         }
 
-        public async Task<ResourceResponse<Document>> UpdateActionPlanAsync(Models.ActionPlan actionPlan)
+        public async Task<ResourceResponse<Document>> UpdateActionPlanAsync(string actionPlanJson, Guid actionPlanId)
         {
-            var documentUri = DocumentDBHelper.CreateDocumentUri(actionPlan.ActionPlanId.GetValueOrDefault());
+
+            if (string.IsNullOrEmpty(actionPlanJson))
+                return null;
+
+            var documentUri = DocumentDBHelper.CreateDocumentUri(actionPlanId);
 
             var client = DocumentDBClient.CreateDocumentClient();
 
             if (client == null)
                 return null;
 
-            var response = await client.ReplaceDocumentAsync(documentUri, actionPlan);
+            var actionPlanDocumentObject = JObject.Parse(actionPlanJson);
+
+            var response = await client.ReplaceDocumentAsync(documentUri, actionPlanDocumentObject);
 
             return response;
         }

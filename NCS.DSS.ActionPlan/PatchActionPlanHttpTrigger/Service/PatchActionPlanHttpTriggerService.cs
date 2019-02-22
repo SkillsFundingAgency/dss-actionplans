@@ -18,7 +18,7 @@ namespace NCS.DSS.ActionPlan.PatchActionPlanHttpTrigger.Service
             _documentDbProvider = documentDbProvider;
         }
 
-        public Models.ActionPlan PatchResource(string actionPlanJson, ActionPlanPatch actionPlanPatch)
+        public string PatchResource(string actionPlanJson, ActionPlanPatch actionPlanPatch)
         {
             if (string.IsNullOrEmpty(actionPlanJson))
                 return null;
@@ -33,12 +33,12 @@ namespace NCS.DSS.ActionPlan.PatchActionPlanHttpTrigger.Service
             return updatedActionPlan;
         }
 
-        public async Task<Models.ActionPlan> UpdateCosmosAsync(Models.ActionPlan actionPlan)
+        public async Task<Models.ActionPlan> UpdateCosmosAsync(string actionPlanJson, Guid actionPlanId)
         {
-            if (actionPlan == null)
+            if (string.IsNullOrEmpty(actionPlanJson))
                 return null;
 
-            var response = await _documentDbProvider.UpdateActionPlanAsync(actionPlan);
+            var response = await _documentDbProvider.UpdateActionPlanAsync(actionPlanJson, actionPlanId);
 
             var responseStatusCode = response?.StatusCode;
 
