@@ -121,7 +121,7 @@ namespace NCS.DSS.ActionPlan.PatchActionPlanHttpTrigger.Function
             }
 
             loggerHelper.LogInformationMessage(log, correlationGuid, "Attempt to set id's for action plan patch");
-            actionPlanPatchRequest.SetIds(touchpointId, subcontractorId);
+            actionPlanPatchRequest.SetIds(sessionGuid, touchpointId, subcontractorId);
 
             loggerHelper.LogInformationMessage(log, correlationGuid, string.Format("Attempting to see if customer exists {0}", customerGuid));
             var doesCustomerExist = await resourceHelper.DoesCustomerExist(customerGuid);
