@@ -7,6 +7,7 @@ using Microsoft.Azure.Documents.Client;
 using Microsoft.Azure.Documents.Linq;
 using NCS.DSS.ActionPlan.Cosmos.Client;
 using NCS.DSS.ActionPlan.Cosmos.Helper;
+using Newtonsoft.Json.Linq;
 
 namespace NCS.DSS.ActionPlan.Cosmos.Provider
 {
@@ -132,6 +133,25 @@ namespace NCS.DSS.ActionPlan.Cosmos.Provider
             return actionPlans?.FirstOrDefault();
         }
 
+        public async Task<string> GetActionPlanForCustomerToUpdateAsync(Guid customerId, Guid actionPlanId)
+        {
+            var collectionUri = DocumentDBHelper.CreateDocumentCollectionUri();
+
+            var client = DocumentDBClient.CreateDocumentClient();
+
+            var actionPlanForCustomerQuery = client
+                ?.CreateDocumentQuery<Models.ActionPlan>(collectionUri, new FeedOptions { MaxItemCount = 1 })
+                .Where(x => x.CustomerId == customerId && x.ActionPlanId == actionPlanId)
+                .AsDocumentQuery();
+
+            if (actionPlanForCustomerQuery == null)
+                return null;
+
+            var actionPlans = await actionPlanForCustomerQuery.ExecuteNextAsync();
+
+            return actionPlans?.FirstOrDefault()?.ToString();
+        }
+
         public async Task<ResourceResponse<Document>> CreateActionPlanAsync(Models.ActionPlan actionPlan)
         {
 
@@ -148,16 +168,18 @@ namespace NCS.DSS.ActionPlan.Cosmos.Provider
 
         }
 
-        public async Task<ResourceResponse<Document>> UpdateActionPlanAsync(Models.ActionPlan actionPlan)
+        public async Task<ResourceResponse<Document>> UpdateActionPlanAsync(string actionPlanJson, Guid actionPlanId)
         {
-            var documentUri = DocumentDBHelper.CreateDocumentUri(actionPlan.ActionPlanId.GetValueOrDefault());
+            var documentUri = DocumentDBHelper.CreateDocumentUri(actionPlanId);
 
             var client = DocumentDBClient.CreateDocumentClient();
 
             if (client == null)
                 return null;
 
-            var response = await client.ReplaceDocumentAsync(documentUri, actionPlan);
+            var actionPlanDocumentJObject = JObject.Parse(actionPlanJson);
+
+            var response = await client.ReplaceDocumentAsync(documentUri, actionPlanDocumentJObject);
 
             return response;
         }

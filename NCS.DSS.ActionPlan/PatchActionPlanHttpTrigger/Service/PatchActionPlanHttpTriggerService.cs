@@ -9,27 +9,45 @@ namespace NCS.DSS.ActionPlan.PatchActionPlanHttpTrigger.Service
 {
     public class PatchActionPlanHttpTriggerService : IPatchActionPlanHttpTriggerService
     {
-        public async Task<Models.ActionPlan> UpdateAsync(Models.ActionPlan actionPlan, ActionPlanPatch actionPlanPatch)
+        private readonly IActionPlanPatchService _actionPlanPatchService;
+        private readonly IDocumentDBProvider _documentDbProvider;
+
+        public PatchActionPlanHttpTriggerService(IActionPlanPatchService actionPlanPatchService, IDocumentDBProvider documentDbProvider)
         {
-            if (actionPlan == null)
+            _actionPlanPatchService = actionPlanPatchService;
+            _documentDbProvider = documentDbProvider;
+        }
+
+        public string PatchResource(string actionPlanJson, ActionPlanPatch actionPlanPatch)
+        {
+            if (string.IsNullOrEmpty(actionPlanJson))
+                return null;
+
+            if (actionPlanPatch == null)
                 return null;
 
             actionPlanPatch.SetDefaultValues();
 
-            actionPlan.Patch(actionPlanPatch);
+            var updatedActionPlan = _actionPlanPatchService.Patch(actionPlanJson, actionPlanPatch);
 
-            var documentDbProvider = new DocumentDBProvider();
-            var response = await documentDbProvider.UpdateActionPlanAsync(actionPlan);
-
-            var responseStatusCode = response.StatusCode;
-
-            return responseStatusCode == HttpStatusCode.OK ? actionPlan : null;
+            return updatedActionPlan;
         }
 
-        public async Task<Models.ActionPlan> GetActionPlanForCustomerAsync(Guid customerId, Guid actionPlanId)
+        public async Task<Models.ActionPlan> UpdateCosmosAsync(string actionPlanJson, Guid actionPlanId)
         {
-            var documentDbProvider = new DocumentDBProvider();
-            var actionPlan = await documentDbProvider.GetActionPlanForCustomerAsync(customerId, actionPlanId);
+            if (string.IsNullOrEmpty(actionPlanJson))
+                return null;
+
+            var response = await _documentDbProvider.UpdateActionPlanAsync(actionPlanJson, actionPlanId);
+
+            var responseStatusCode = response?.StatusCode;
+
+            return responseStatusCode == HttpStatusCode.OK ? (dynamic)response.Resource : null;
+        }
+
+        public async Task<string> GetActionPlanForCustomerAsync(Guid customerId, Guid actionPlanId)
+        {
+            var actionPlan = await _documentDbProvider.GetActionPlanForCustomerToUpdateAsync(customerId, actionPlanId);
 
             return actionPlan;
         }

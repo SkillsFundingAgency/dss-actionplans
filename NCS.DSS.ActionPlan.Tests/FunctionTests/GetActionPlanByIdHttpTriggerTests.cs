@@ -9,7 +9,7 @@ using NCS.DSS.ActionPlan.Helpers;
 using NSubstitute;
 using NUnit.Framework;
 
-namespace NCS.DSS.ActionPlan.Tests
+namespace NCS.DSS.ActionPlan.Tests.FunctionTests
 {
     [TestFixture]
     public class GetActionPlanByIdHttpTriggerTests

@@ -96,12 +96,17 @@ namespace NCS.DSS.ActionPlan.PatchActionPlanHttpTrigger.Function
             if (!doesInteractionExist)
                 return HttpResponseMessageHelper.NoContent(interactionGuid);
         
-            var actionPlan = await actionPlanPatchService.GetActionPlanForCustomerAsync(customerGuid, actionPlanGuid);
+            var actionPlanForCustomer = await actionPlanPatchService.GetActionPlanForCustomerAsync(customerGuid, actionPlanGuid);
 
-            if (actionPlan == null)
+            if (actionPlanForCustomer == null)
                 return HttpResponseMessageHelper.NoContent(actionPlanGuid);
 
-            var updatedActionPlan = await actionPlanPatchService.UpdateAsync(actionPlan, actionPlanPatchRequest);
+            var patchedActionPlan = actionPlanPatchService.PatchResource(actionPlanForCustomer, actionPlanPatchRequest);
+
+            if (patchedActionPlan == null)
+                return HttpResponseMessageHelper.NoContent(actionPlanGuid);
+            
+            var updatedActionPlan = await actionPlanPatchService.UpdateCosmosAsync(patchedActionPlan, actionPlanGuid);
 
             if (updatedActionPlan != null)
                 await actionPlanPatchService.SendToServiceBusQueueAsync(updatedActionPlan, customerGuid,  ApimURL);

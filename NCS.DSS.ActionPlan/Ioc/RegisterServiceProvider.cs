@@ -1,6 +1,7 @@
 ﻿using System;
 using Microsoft.Extensions.DependencyInjection;
 using NCS.DSS.ActionPlan.Cosmos.Helper;
+using NCS.DSS.ActionPlan.Cosmos.Provider;
 using NCS.DSS.ActionPlan.GetActionPlanByIdHttpTrigger.Service;
 using NCS.DSS.ActionPlan.GetActionPlanHttpTrigger.Service;
 using NCS.DSS.ActionPlan.Helpers;
@@ -20,9 +21,11 @@ namespace NCS.DSS.ActionPlan.Ioc
             services.AddTransient<IGetActionPlanByIdHttpTriggerService, GetActionPlanByIdHttpTriggerService>();
             services.AddTransient<IPostActionPlanHttpTriggerService, PostActionPlanHttpTriggerService>();
             services.AddTransient<IPatchActionPlanHttpTriggerService, PatchActionPlanHttpTriggerService>();
+            services.AddTransient<IActionPlanPatchService, ActionPlanPatchService>();
             services.AddTransient<IResourceHelper, ResourceHelper>();
             services.AddTransient<IValidate, Validate>();
             services.AddTransient<IHttpRequestMessageHelper, HttpRequestMessageHelper>();
+            services.AddTransient<IDocumentDBProvider, DocumentDBProvider>();
             return services.BuildServiceProvider(true);
         }
     }
