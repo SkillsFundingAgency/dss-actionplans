@@ -12,7 +12,7 @@ namespace NCS.DSS.ActionPlan.PatchActionPlanHttpTrigger.Service
         {
             _jsonHelper = jsonHelper;
         }
-        public Models.ActionPlan Patch(string actionPlanJson, ActionPlanPatch actionPlanPatch)
+        public string Patch(string actionPlanJson, ActionPlanPatch actionPlanPatch)
         {
             if (string.IsNullOrEmpty(actionPlanJson))
                 return null;
@@ -50,9 +50,14 @@ namespace NCS.DSS.ActionPlan.PatchActionPlanHttpTrigger.Service
                 _jsonHelper.UpdatePropertyValue(obj["LastModifiedTouchpointId"], actionPlanPatch.LastModifiedTouchpointId);
 
             if (!string.IsNullOrEmpty(actionPlanPatch.SubcontractorId))
-                _jsonHelper.UpdatePropertyValue(obj["SubcontractorId"], actionPlanPatch.SubcontractorId);
+            {
+                if (obj["SubcontractorId"] == null)
+                    _jsonHelper.CreatePropertyOnJObject(obj, "SubcontractorId", actionPlanPatch.SubcontractorId);
+                else
+                    _jsonHelper.UpdatePropertyValue(obj["SubcontractorId"], actionPlanPatch.SubcontractorId);
+            }
 
-            return obj.ToObject<Models.ActionPlan>();
+            return obj.ToString();
         }
     }
 }

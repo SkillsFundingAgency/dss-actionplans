@@ -4,6 +4,6 @@ namespace NCS.DSS.ActionPlan.PatchActionPlanHttpTrigger.Service
 {
     public interface IActionPlanPatchService
     {
-        Models.ActionPlan Patch(string actionPlanJson, ActionPlanPatch actionPlanPatch);
+        string Patch(string actionPlanJson, ActionPlanPatch actionPlanPatch);
     }
 }

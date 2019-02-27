@@ -42,6 +42,7 @@ namespace NCS.DSS.ActionPlan.Tests.FunctionTests
         private IJsonHelper _jsonHelper;
         private Models.ActionPlan _actionPlan;
         private ActionPlanPatch _actionPlanPatch;
+        string _actionPlanString = string.Empty;
 
         [SetUp]
         public void Setup()
@@ -61,6 +62,8 @@ namespace NCS.DSS.ActionPlan.Tests.FunctionTests
             _validate = Substitute.For<IValidate>();
             _patchActionPlanHttpTriggerService = Substitute.For<IPatchActionPlanHttpTriggerService>();
 
+            _actionPlanString = JsonConvert.SerializeObject(_actionPlan);
+
             _resourceHelper.DoesCustomerExist(Arg.Any<Guid>()).ReturnsForAnyArgs(true);
             _resourceHelper.IsCustomerReadOnly(Arg.Any<Guid>()).ReturnsForAnyArgs(false);
             _resourceHelper.DoesSessionExistAndBelongToCustomer(Arg.Any<Guid>(), Arg.Any<Guid>(), Arg.Any<Guid>()).Returns(true);
@@ -70,8 +73,7 @@ namespace NCS.DSS.ActionPlan.Tests.FunctionTests
             _httpRequestHelper.GetDssTouchpointId(_request).Returns("0000000001");
             _httpRequestHelper.GetDssApimUrl(_request).Returns("http://localhost:");
             _httpRequestHelper.GetResourceFromRequest<ActionPlanPatch>(_request).Returns(Task.FromResult(_actionPlanPatch).Result);
-            _patchActionPlanHttpTriggerService.PatchResource(Arg.Any<string>(), _actionPlanPatch).Returns(_actionPlan);
-
+            _patchActionPlanHttpTriggerService.PatchResource(_actionPlanString, _actionPlanPatch).Returns(_actionPlanString);
         }
 
         [Test]
@@ -244,7 +246,7 @@ namespace NCS.DSS.ActionPlan.Tests.FunctionTests
         {
             _patchActionPlanHttpTriggerService.GetActionPlanForCustomerAsync(Arg.Any<Guid>(), Arg.Any<Guid>()).Returns(Task.FromResult("actionplan").Result);
 
-            _patchActionPlanHttpTriggerService.PatchResource(Arg.Any<string>(), Arg.Any<Models.ActionPlanPatch>()).Returns((Models.ActionPlan) null);
+            _patchActionPlanHttpTriggerService.PatchResource(Arg.Any<string>(), Arg.Any<Models.ActionPlanPatch>()).Returns((string) null);
 
             _httpResponseMessageHelper
                 .NoContent(Arg.Any<Guid>()).Returns(x => new HttpResponseMessage(HttpStatusCode.NoContent));
@@ -260,6 +262,8 @@ namespace NCS.DSS.ActionPlan.Tests.FunctionTests
         [Test]
         public async Task PatchActionPlanHttpTrigger_ReturnsStatusCodeUnprocessableEntity_WhenActionPlanHasFailedValidation()
         {
+            _patchActionPlanHttpTriggerService.GetActionPlanForCustomerAsync(Arg.Any<Guid>(), Arg.Any<Guid>()).Returns(Task.FromResult(_actionPlanString).Result);
+
             var validationResults = new List<ValidationResult> { new ValidationResult("interaction Id is Required") };
             _validate.ValidateResource(Arg.Any<ActionPlanPatch>(), Arg.Any<DateTime>()).ReturnsForAnyArgs(validationResults);
 
@@ -276,9 +280,9 @@ namespace NCS.DSS.ActionPlan.Tests.FunctionTests
         [Test]
         public async Task PatchActionPlanHttpTrigger_ReturnsStatusCodeBadRequest_WhenUnableToUpdateActionPlanRecord()
         {
-            _patchActionPlanHttpTriggerService.GetActionPlanForCustomerAsync(Arg.Any<Guid>(), Arg.Any<Guid>()).Returns(Task.FromResult("actionplan").Result);
+            _patchActionPlanHttpTriggerService.GetActionPlanForCustomerAsync(Arg.Any<Guid>(), Arg.Any<Guid>()).Returns(Task.FromResult(_actionPlanString).Result);
 
-            _patchActionPlanHttpTriggerService.UpdateCosmosAsync(Arg.Any<Models.ActionPlan>()).Returns(Task.FromResult<Models.ActionPlan>(null).Result);
+            _patchActionPlanHttpTriggerService.UpdateCosmosAsync(Arg.Any<string>(), Arg.Any<Guid>()).Returns(Task.FromResult<Models.ActionPlan>(null).Result);
 
             _httpResponseMessageHelper
                 .BadRequest(Arg.Any<Guid>()).Returns(x => new HttpResponseMessage(HttpStatusCode.BadRequest));
@@ -295,7 +299,7 @@ namespace NCS.DSS.ActionPlan.Tests.FunctionTests
         {
             _patchActionPlanHttpTriggerService.GetActionPlanForCustomerAsync(Arg.Any<Guid>(), Arg.Any<Guid>()).Returns(Task.FromResult<string>(null).Result);
 
-            _patchActionPlanHttpTriggerService.UpdateCosmosAsync(Arg.Any<Models.ActionPlan>()).Returns(Task.FromResult(_actionPlan).Result);
+            _patchActionPlanHttpTriggerService.UpdateCosmosAsync(Arg.Any<string>(), Arg.Any<Guid>()).Returns(Task.FromResult(_actionPlan).Result);
 
             _httpResponseMessageHelper
                 .NoContent(Arg.Any<Guid>()).Returns(x => new HttpResponseMessage(HttpStatusCode.NoContent));
@@ -310,9 +314,9 @@ namespace NCS.DSS.ActionPlan.Tests.FunctionTests
         [Test]
         public async Task PatchActionPlanHttpTrigger_ReturnsStatusCodeOK_WhenRequestIsValid()
         {
-            _patchActionPlanHttpTriggerService.GetActionPlanForCustomerAsync(Arg.Any<Guid>(), Arg.Any<Guid>()).Returns(Task.FromResult("actionPlan").Result);
+            _patchActionPlanHttpTriggerService.GetActionPlanForCustomerAsync(Arg.Any<Guid>(), Arg.Any<Guid>()).Returns(Task.FromResult(_actionPlanString).Result);
 
-            _patchActionPlanHttpTriggerService.UpdateCosmosAsync(Arg.Any<Models.ActionPlan>()).Returns(Task.FromResult(_actionPlan).Result);
+            _patchActionPlanHttpTriggerService.UpdateCosmosAsync(Arg.Any<string>(), Arg.Any<Guid>()).Returns(Task.FromResult(_actionPlan).Result);
 
             _httpResponseMessageHelper
                 .Ok(Arg.Any<string>()).Returns(x => new HttpResponseMessage(HttpStatusCode.OK));

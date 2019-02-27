@@ -121,7 +121,7 @@ namespace NCS.DSS.ActionPlan.PatchActionPlanHttpTrigger.Function
             }
 
             loggerHelper.LogInformationMessage(log, correlationGuid, "Attempt to set id's for action plan patch");
-            actionPlanPatchRequest.SetIds(touchpointId, subcontractorId);
+            actionPlanPatchRequest.SetIds(sessionGuid, touchpointId, subcontractorId);
 
             loggerHelper.LogInformationMessage(log, correlationGuid, string.Format("Attempting to see if customer exists {0}", customerGuid));
             var doesCustomerExist = await resourceHelper.DoesCustomerExist(customerGuid);
@@ -168,16 +168,34 @@ namespace NCS.DSS.ActionPlan.PatchActionPlanHttpTrigger.Function
                 return httpResponseMessageHelper.NoContent(actionPlanGuid);
             }
 
-            var actionPlan = actionPlanPatchService.PatchResource(actionPlanForCustomer, actionPlanPatchRequest);
+            var patchedActionPlan = actionPlanPatchService.PatchResource(actionPlanForCustomer, actionPlanPatchRequest);
 
-            if (actionPlan == null)
+            if (patchedActionPlan == null)
             {
                 loggerHelper.LogInformationMessage(log, correlationGuid, string.Format("ActionPlan does not exist {0}", actionPlanGuid));
                 return httpResponseMessageHelper.NoContent(actionPlanGuid);
             }
 
+            Models.ActionPlan actionPlanValidationObject;
+
+            try
+            {
+                actionPlanValidationObject = JsonConvert.DeserializeObject<Models.ActionPlan>(patchedActionPlan);
+            }
+            catch (JsonException ex)
+            {
+                loggerHelper.LogError(log, correlationGuid, "Unable to retrieve body from req", ex);
+                throw;
+            }
+
+            if (actionPlanValidationObject == null)
+            {
+                loggerHelper.LogInformationMessage(log, correlationGuid, "Action Plan Validation Object is null");
+                return httpResponseMessageHelper.UnprocessableEntity(req);
+            }
+
             loggerHelper.LogInformationMessage(log, correlationGuid, "Attempt to validate resource");
-            var errors = validate.ValidateResource(actionPlan, dateAndTimeOfSession.Value);
+            var errors = validate.ValidateResource(actionPlanValidationObject, dateAndTimeOfSession.Value);
 
             if (errors != null && errors.Any())
             {
@@ -186,7 +204,7 @@ namespace NCS.DSS.ActionPlan.PatchActionPlanHttpTrigger.Function
             }
 
             loggerHelper.LogInformationMessage(log, correlationGuid, string.Format("Attempting to update action plan {0}", actionPlanGuid));
-            var updatedActionPlan = await actionPlanPatchService.UpdateCosmosAsync(actionPlan);
+            var updatedActionPlan = await actionPlanPatchService.UpdateCosmosAsync(patchedActionPlan, actionPlanGuid);
 
             if (updatedActionPlan != null)
             {
