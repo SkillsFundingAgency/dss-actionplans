@@ -55,6 +55,7 @@ jobs:
       BuildPlatform: $(BuildPlatform)
       BuildConfiguration: $(BuildConfiguration)
 
+
 # Build the app with the dfc-dotnetcore-build template.  Runs if the output of TestBranchName is Version2+
 - job: BuildDotNetStandard
   displayName: Build-DotNetStandard
@@ -72,3 +73,4 @@ jobs:
       SolutionBaseName: $(SolutionBaseName)
       BuildPlatform: $(BuildPlatform)
       BuildConfiguration: $(BuildConfiguration)
+
