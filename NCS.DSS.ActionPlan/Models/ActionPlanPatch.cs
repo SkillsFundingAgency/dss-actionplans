@@ -8,7 +8,8 @@ namespace NCS.DSS.ActionPlan.Models
     
     public class ActionPlanPatch : IActionPlan
     {
-        [Display(Description = "Unique identifier to the related session resource.")]
+        [Display(Description = "Unique identifier to the related session resource. " +
+                               "This will need to be provided the first time on a Patch Request for V2")]
         [Example(Description = "2730af9c-fc34-4c2b-a905-c4b584b0f379")]
         public Guid? SessionId { get; set; }
 
@@ -83,9 +84,8 @@ namespace NCS.DSS.ActionPlan.Models
                 LastModifiedDate = DateTime.UtcNow;
         }
 
-        public void SetIds(Guid sessionId, string touchpointId, string subcontractorId)
+        public void SetIds(string touchpointId, string subcontractorId)
         {
-            SessionId = sessionId;
             LastModifiedTouchpointId = touchpointId;
             SubcontractorId = subcontractorId;
         }

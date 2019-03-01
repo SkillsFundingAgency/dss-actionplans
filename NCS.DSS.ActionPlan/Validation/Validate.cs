@@ -8,7 +8,7 @@ namespace NCS.DSS.ActionPlan.Validation
 {
     public class Validate : IValidate
     {
-        public List<ValidationResult> ValidateResource(IActionPlan resource, DateTime dateAndTimeSessionCreated)
+        public List<ValidationResult> ValidateResource(IActionPlan resource, DateTime? dateAndTimeSessionCreated)
         {
             var context = new ValidationContext(resource, null, null);
             var results = new List<ValidationResult>();
@@ -19,7 +19,7 @@ namespace NCS.DSS.ActionPlan.Validation
             return results;
         }
 
-        private void ValidateActionPlanRules(IActionPlan actionPlanResource, List<ValidationResult> results, DateTime dateAndTimeSessionCreated)
+        private void ValidateActionPlanRules(IActionPlan actionPlanResource, List<ValidationResult> results, DateTime? dateAndTimeSessionCreated)
         {
             if (actionPlanResource == null)
                 return;
@@ -28,9 +28,12 @@ namespace NCS.DSS.ActionPlan.Validation
             {
                 if (actionPlanResource.DateActionPlanCreated.Value > DateTime.UtcNow)
                     results.Add(new ValidationResult("Date ActionPlan Created must be less the current date/time", new[] { "DateActionPlanCreated" }));
-
-                if (!(actionPlanResource.DateActionPlanCreated.Value >= dateAndTimeSessionCreated))
-                    results.Add(new ValidationResult("Date ActionPlan Created must be greater than Date And Time Session Created", new[] { "DateActionPlanCreated" }));
+                
+                if (dateAndTimeSessionCreated.HasValue)
+                {
+                    if (!(actionPlanResource.DateActionPlanCreated.Value >= dateAndTimeSessionCreated.Value))
+                        results.Add(new ValidationResult("Date ActionPlan Created must be greater than Date And Time Session Created", new[] { "DateActionPlanCreated" }));
+                }
             }
 
             if (actionPlanResource.DateAndTimeCharterShown.HasValue)

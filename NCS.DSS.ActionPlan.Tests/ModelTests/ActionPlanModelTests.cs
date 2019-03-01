@@ -59,7 +59,7 @@ namespace NCS.DSS.ActionPlan.Tests.ModelTests
         {
             var actionPlan = new Models.ActionPlan();
 
-            actionPlan.SetIds(Arg.Any<Guid>(), Arg.Any<Guid>(), Arg.Any<Guid>(), Arg.Any<string>(), Arg.Any<string>());
+            actionPlan.SetIds(Arg.Any<Guid>(), Arg.Any<Guid>(), Arg.Any<string>(), Arg.Any<string>());
 
             // Assert
             Assert.AreNotSame(Guid.Empty, actionPlan.ActionPlanId);
@@ -71,7 +71,7 @@ namespace NCS.DSS.ActionPlan.Tests.ModelTests
             var actionPlan = new Models.ActionPlan();
 
             var customerId = Guid.NewGuid();
-            actionPlan.SetIds(customerId, Arg.Any<Guid>(), Arg.Any<Guid>(), Arg.Any<string>(), Arg.Any<string>());
+            actionPlan.SetIds(customerId, Arg.Any<Guid>(), Arg.Any<string>(), Arg.Any<string>());
 
             // Assert
             Assert.AreEqual(customerId, actionPlan.CustomerId);
@@ -83,22 +83,10 @@ namespace NCS.DSS.ActionPlan.Tests.ModelTests
             var actionPlan = new Models.ActionPlan();
 
             var interactionId = Guid.NewGuid();
-            actionPlan.SetIds(Arg.Any<Guid>(), interactionId, Arg.Any<Guid>(), Arg.Any<string>(), Arg.Any<string>());
+            actionPlan.SetIds(Arg.Any<Guid>(), interactionId, Arg.Any<string>(), Arg.Any<string>());
 
             // Assert
             Assert.AreEqual(interactionId, actionPlan.InteractionId);
-        }
-
-        [Test]
-        public void ActionPlanTests_CheckSessionIdIsSet_WhenSetIdsIsCalled()
-        {
-            var actionPlan = new Models.ActionPlan();
-
-            var sessionId = Guid.NewGuid();
-            actionPlan.SetIds(Arg.Any<Guid>(), Arg.Any<Guid>(), sessionId,  Arg.Any<string>(), Arg.Any<string>());
-
-            // Assert
-            Assert.AreEqual(sessionId, actionPlan.SessionId);
         }
 
         [Test]
@@ -106,7 +94,7 @@ namespace NCS.DSS.ActionPlan.Tests.ModelTests
         {
             var actionPlan = new Models.ActionPlan();
 
-            actionPlan.SetIds(Arg.Any<Guid>(), Arg.Any<Guid>(), Arg.Any<Guid>(), "0000000000", Arg.Any<string>());
+            actionPlan.SetIds(Arg.Any<Guid>(), Arg.Any<Guid>(), "0000000000", Arg.Any<string>());
 
             // Assert
             Assert.AreEqual("0000000000", actionPlan.LastModifiedTouchpointId);
@@ -117,7 +105,7 @@ namespace NCS.DSS.ActionPlan.Tests.ModelTests
         {
             var actionPlan = new Models.ActionPlan();
 
-            actionPlan.SetIds(Arg.Any<Guid>(), Arg.Any<Guid>(), Arg.Any<Guid>(), Arg.Any<string>(), "0000000000");
+            actionPlan.SetIds(Arg.Any<Guid>(), Arg.Any<Guid>(), Arg.Any<string>(), "0000000000");
 
             // Assert
             Assert.AreEqual("0000000000", actionPlan.SubcontractorId);
