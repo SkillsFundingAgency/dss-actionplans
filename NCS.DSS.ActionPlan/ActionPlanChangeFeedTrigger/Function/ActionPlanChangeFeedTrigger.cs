@@ -48,7 +48,7 @@ namespace NCS.DSS.ActionPlan.ActionPlanChangeFeedTrigger.Function
             }
             catch (Exception ex)
             {
-                loggerHelper.LogException(log, Guid.NewGuid(), "Error when trying to upsert into SQL", ex);
+                loggerHelper.LogException(log, Guid.NewGuid(), "Error when trying to send message to service bus queue", ex);
             }
 
             loggerHelper.LogMethodExit(log);
