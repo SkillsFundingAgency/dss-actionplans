@@ -19,6 +19,14 @@ namespace NCS.DSS.ActionPlan.PatchActionPlanHttpTrigger.Service
 
             var obj = JObject.Parse(actionPlanJson);
 
+            if (actionPlanPatch.SessionId.HasValue)
+            {
+                if (obj["SessionId"] == null)
+                    _jsonHelper.CreatePropertyOnJObject(obj, "SessionId", actionPlanPatch.SessionId);
+                else
+                    _jsonHelper.UpdatePropertyValue(obj["SessionId"], actionPlanPatch.SessionId);
+            }
+
             if (actionPlanPatch.DateActionPlanCreated.HasValue)
                 _jsonHelper.UpdatePropertyValue(obj["DateActionPlanCreated"], actionPlanPatch.DateActionPlanCreated);
 

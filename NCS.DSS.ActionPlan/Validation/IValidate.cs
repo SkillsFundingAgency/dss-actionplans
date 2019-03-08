@@ -7,6 +7,6 @@ namespace NCS.DSS.ActionPlan.Validation
 {
     public interface IValidate
     {
-        List<ValidationResult> ValidateResource(IActionPlan resource, DateTime dateAndTimeSessionCreated);
+        List<ValidationResult> ValidateResource(IActionPlan resource, DateTime? dateAndTimeSessionCreated);
     }
 }

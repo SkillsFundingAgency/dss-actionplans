@@ -42,10 +42,10 @@ namespace NCS.DSS.ActionPlan.Cosmos.Provider
 
             return false;
         }
-        
-        public bool DoesSessionResourceExistAndBelongToCustomer(Guid sessionId, Guid interactionId, Guid customerId)
+
+        public bool DoesInteractionResourceExistAndBelongToCustomer(Guid interactionId, Guid customerId)
         {
-            var collectionUri = DocumentDBHelper.CreateSessionDocumentCollectionUri();
+            var collectionUri = DocumentDBHelper.CreateInteractionDocumentCollectionUri();
 
             var client = DocumentDBClient.CreateDocumentClient();
 
@@ -56,14 +56,12 @@ namespace NCS.DSS.ActionPlan.Cosmos.Provider
             {
                 var query = client.CreateDocumentQuery<long>(collectionUri, new SqlQuerySpec()
                 {
-                    QueryText = "SELECT VALUE COUNT(1) FROM sessions s " +
-                                "WHERE s.id = @sessionId " +
-                                "AND s.InteractionId = @interactionId " +
-                                "AND s.CustomerId = @customerId",
+                    QueryText = "SELECT VALUE COUNT(1) FROM interactions i " +
+                                "WHERE i.id = @interactionId " +
+                                "AND i.CustomerId = @customerId",
 
                     Parameters = new SqlParameterCollection()
                     {
-                        new SqlParameter("@sessionId", sessionId),
                         new SqlParameter("@interactionId", interactionId),
                         new SqlParameter("@customerId", customerId)
                     }
@@ -77,7 +75,6 @@ namespace NCS.DSS.ActionPlan.Cosmos.Provider
             }
 
         }
-
         public async Task<DateTime?> GetDateAndTimeOfSessionFromSessionResource(Guid sessionId)
         {
             var documentUri = DocumentDBHelper.CreateSessionDocumentUri(sessionId);

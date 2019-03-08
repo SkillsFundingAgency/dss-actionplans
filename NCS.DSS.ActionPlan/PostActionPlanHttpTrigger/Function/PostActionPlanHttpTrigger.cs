@@ -32,7 +32,7 @@ namespace NCS.DSS.ActionPlan.PostActionPlanHttpTrigger.Function
         [Response(HttpStatusCode = (int)HttpStatusCode.Forbidden, Description = "Insufficient access", ShowSchema = false)]
         [Response(HttpStatusCode = 422, Description = "Action Plan validation error(s)", ShowSchema = false)]
         [Display(Name = "Post", Description = "Ability to create a new action plan for a customer.")]
-        public static async Task<HttpResponseMessage> Run([HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "Customers/{customerId}/Interactions/{interactionId}/Sessions/{sessionId}/ActionPlans")]HttpRequest req, ILogger log, string customerId, string interactionId, string sessionId,
+        public static async Task<HttpResponseMessage> Run([HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "Customers/{customerId}/Interactions/{interactionId}/ActionPlans")]HttpRequest req, ILogger log, string customerId, string interactionId,
             [Inject]IResourceHelper resourceHelper,
             [Inject]IValidate validate,
             [Inject]IPostActionPlanHttpTriggerService actionPlanPostService,
@@ -86,12 +86,6 @@ namespace NCS.DSS.ActionPlan.PostActionPlanHttpTrigger.Function
                 return httpResponseMessageHelper.BadRequest(interactionGuid);
             }
 
-            if (!Guid.TryParse(sessionId, out var sessionGuid))
-            {
-                loggerHelper.LogInformationMessage(log, correlationGuid, string.Format("Unable to parse 'sessionId' to a Guid: {0}", sessionGuid));
-                return httpResponseMessageHelper.BadRequest(sessionGuid);
-            }
-
             Models.ActionPlan actionPlanRequest;
 
             try
@@ -112,7 +106,7 @@ namespace NCS.DSS.ActionPlan.PostActionPlanHttpTrigger.Function
             }
 
             loggerHelper.LogInformationMessage(log, correlationGuid, "Attempt to set id's for action plan");
-            actionPlanRequest.SetIds(customerGuid, interactionGuid, sessionGuid, touchpointId, subcontractorId);
+            actionPlanRequest.SetIds(customerGuid, interactionGuid, touchpointId, subcontractorId);
 
             loggerHelper.LogInformationMessage(log, correlationGuid, string.Format("Attempting to see if customer exists {0}", customerGuid));
             var doesCustomerExist = await resourceHelper.DoesCustomerExist(customerGuid);
@@ -132,26 +126,20 @@ namespace NCS.DSS.ActionPlan.PostActionPlanHttpTrigger.Function
                 return httpResponseMessageHelper.Forbidden(customerGuid);
             }
 
-            loggerHelper.LogInformationMessage(log, correlationGuid, string.Format("Attempting to get Session {0} for customer {1}", sessionGuid, customerGuid));
-            var doesSessionExist = resourceHelper.DoesSessionExistAndBelongToCustomer(sessionGuid, interactionGuid, customerGuid);
+            loggerHelper.LogInformationMessage(log, correlationGuid, string.Format("Attempting to get Interaction {0} for customer {1}", interactionGuid, customerGuid));
+            var doesInteractionExist = resourceHelper.DoesInteractionExistAndBelongToCustomer(interactionGuid, customerGuid);
 
-            if (!doesSessionExist)
+            if (!doesInteractionExist)
             {
-                loggerHelper.LogInformationMessage(log, correlationGuid, string.Format("Session does not exist {0}", sessionGuid));
-                return httpResponseMessageHelper.NoContent(sessionGuid);
+                loggerHelper.LogInformationMessage(log, correlationGuid, string.Format("Interaction does not exist {0}", interactionGuid));
+                return httpResponseMessageHelper.NoContent(interactionGuid);
             }
 
-            loggerHelper.LogInformationMessage(log, correlationGuid, string.Format("Attempting to get GetDateAndTimeOfSession for Session {0}", sessionGuid));
-            var dateAndTimeOfSession = await resourceHelper.GetDateAndTimeOfSession(sessionGuid);
+            loggerHelper.LogInformationMessage(log, correlationGuid, string.Format("Attempting to get GetDateAndTimeOfSession for Session {0}", actionPlanRequest.SessionId));
+            var dateAndTimeOfSession = await resourceHelper.GetDateAndTimeOfSession(actionPlanRequest.SessionId.GetValueOrDefault());
 
-            if (!dateAndTimeOfSession.HasValue)
-            {
-                loggerHelper.LogInformationMessage(log, correlationGuid, string.Format("Unable to get GetDateAndTimeOfSession{0}", sessionGuid));
-                return httpResponseMessageHelper.NoContent(sessionGuid);
-            }
-
-            loggerHelper.LogInformationMessage(log, correlationGuid, "Attempt to validate resource");
-            var errors = validate.ValidateResource(actionPlanRequest, dateAndTimeOfSession.Value);
+            loggerHelper.LogInformationMessage(log, correlationGuid, "Attempt to validate Action Plan resource");
+            var errors = validate.ValidateResource(actionPlanRequest, dateAndTimeOfSession);
 
             if (errors != null && errors.Any())
             {

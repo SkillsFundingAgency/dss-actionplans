@@ -20,7 +20,9 @@ namespace NCS.DSS.ActionPlan.Models
         [Example(Description = "2730af9c-fc34-4c2b-a905-c4b584b0f379")]
         public Guid? InteractionId { get; set; }
 
-        [Display(Description = "Unique identifier to the related session resource.")]
+        [Required]
+        [Display(Description = "Unique identifier to the related session resource. " +
+                               "This will need to be provided the first time on a Patch Request for V2")]
         [Example(Description = "2730af9c-fc34-4c2b-a905-c4b584b0f379")]
         public Guid? SessionId { get; set; }
 
@@ -104,12 +106,11 @@ namespace NCS.DSS.ActionPlan.Models
                 PriorityCustomer = ReferenceData.PriorityCustomer.NotAPriorityCustomer;
         }
 
-        public void SetIds(Guid customerGuid, Guid interactionGuid, Guid sessionGuid, string touchpointId, string subcontractorId)
+        public void SetIds(Guid customerGuid, Guid interactionGuid, string touchpointId, string subcontractorId)
         {
             ActionPlanId = Guid.NewGuid();
             CustomerId = customerGuid;
             InteractionId = interactionGuid;
-            SessionId = sessionGuid;
             LastModifiedTouchpointId = touchpointId;
             SubcontractorId = subcontractorId;
         }
