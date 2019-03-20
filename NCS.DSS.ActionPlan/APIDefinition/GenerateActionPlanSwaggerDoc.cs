@@ -11,16 +11,20 @@ namespace NCS.DSS.ActionPlan.APIDefinition
 {
     public static class ApiDefinition
     {
-        public const string APITitle = "ActionPlans";
-        public const string APIDefinitionName = "API-Definition";
-        public const string APIDefRoute = APITitle + "/" + APIDefinitionName;
-        public const string APIDescription = "Basic details of a National Careers Service " + APITitle + " Resource";
+        public const string ApiTitle = "ActionPlans";
+        public const string ApiDefinitionName = "API-Definition";
+        public const string ApiDefRoute = ApiTitle + "/" + ApiDefinitionName;
+        public const string ApiDescription = "To support the Data Collections integration with DSS, SessionId and SubcontractorId " +
+                                             "attributes have been added and DateActionPlanCreated, DateAndTimeCharterShown, " +
+                                             "DateActionPlanSentToCustomer, DateActionPlanAcknowledged have new validation rules.";
+
+        public const string ApiVersion = "2.0.0";
       
-        [FunctionName(APIDefinitionName)]
-        public static HttpResponseMessage Run([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = APIDefRoute)]HttpRequest req,
+        [FunctionName(ApiDefinitionName)]
+        public static HttpResponseMessage Run([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = ApiDefRoute)]HttpRequest req,
             [Inject]ISwaggerDocumentGenerator swaggerDocumentGenerator)
         {
-           var swagger = swaggerDocumentGenerator.GenerateSwaggerDocument(req, APITitle, APIDescription, APIDefinitionName, Assembly.GetExecutingAssembly());
+           var swagger = swaggerDocumentGenerator.GenerateSwaggerDocument(req, ApiTitle, ApiDescription, ApiDefinitionName, ApiVersion, Assembly.GetExecutingAssembly());
 
             return new HttpResponseMessage(HttpStatusCode.OK)
             {
