@@ -16,12 +16,7 @@ namespace NCS.DSS.ActionPlan.APIDefinition
         public const string ApiDefRoute = ApiTitle + "/" + ApiDefinitionName;
         public const string ApiDescription = "To support the Data Collections integration with DSS, SessionId and SubcontractorId " +
                                              "attributes have been added and DateActionPlanCreated, DateAndTimeCharterShown, " +
-                                             "DateActionPlanSentToCustomer, DateActionPlanAcknowledged have new validation rules. <br>" + 
-                                             "<br><b>Validation Rules:</b> <br>" +
-                                             "<br><b>DateActionPlanCreated:</b> DateActionPlanCreated >= Session.DateAndTimeOfSession <br>" +
-                                             "<br><b>DateAndTimeCharterShown:</b> DateAndTimeCharterShown >= DateActionPlanCreated <br>" +
-                                             "<br><b>DateActionPlanSentToCustomer:</b> DateActionPlanSentToCustomer >= DateActionPlanCreated <br>" +
-                                             "<br><b>DateActionPlanAcknowledged:</b> DateActionPlanAcknowledged >= DateActionPlanCreated";
+                                             "DateActionPlanSentToCustomer, DateActionPlanAcknowledged have new validation rules.";
 
         public const string ApiVersion = "2.0.0";
       
