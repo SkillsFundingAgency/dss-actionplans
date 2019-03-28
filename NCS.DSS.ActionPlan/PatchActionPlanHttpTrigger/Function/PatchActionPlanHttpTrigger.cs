@@ -32,7 +32,12 @@ namespace NCS.DSS.ActionPlan.PatchActionPlanHttpTrigger.Function
         [Response(HttpStatusCode = (int)HttpStatusCode.Unauthorized, Description = "API key is unknown or invalid", ShowSchema = false)]
         [Response(HttpStatusCode = (int)HttpStatusCode.Forbidden, Description = "Insufficient access", ShowSchema = false)]
         [Response(HttpStatusCode = 422, Description = "Action Plan validation error(s)", ShowSchema = false)]
-        [Display(Name = "Patch", Description = "Ability to modify/update a customers action plan record.")]
+        [Display(Name = "Patch", Description = "Ability to modify/update a customers action plan record. <br>" +
+                                               "<br><b>Validation Rules:</b> <br>" +
+                                               "<br><b>DateActionPlanCreated:</b> DateActionPlanCreated >= Session.DateAndTimeOfSession <br>" +
+                                               "<br><b>DateAndTimeCharterShown:</b> DateAndTimeCharterShown >= DateActionPlanCreated <br>" +
+                                               "<br><b>DateActionPlanSentToCustomer:</b> DateActionPlanSentToCustomer >= DateActionPlanCreated <br>" +
+                                               "<br><b>DateActionPlanAcknowledged:</b> DateActionPlanAcknowledged >= DateActionPlanCreated")]
         public static async Task<HttpResponseMessage> Run([HttpTrigger(AuthorizationLevel.Anonymous, "patch", Route = "Customers/{customerId}/Interactions/{interactionId}/ActionPlans/{actionPlanId}")]HttpRequest req, ILogger log, string customerId, string interactionId, string actionPlanId,
             [Inject]IResourceHelper resourceHelper,
             [Inject]IValidate validate,
