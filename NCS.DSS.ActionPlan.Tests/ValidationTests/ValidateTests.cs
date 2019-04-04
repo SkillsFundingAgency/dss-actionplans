@@ -131,26 +131,6 @@ namespace NCS.DSS.ActionPlan.Tests.ValidationTests
         }
 
         [Test]
-        public void ValidateTests_ReturnValidationResult_WhenDateAndTimeCharterShownIsNotGreaterThanDateActionPlanCreated()
-        {
-            var actionPlan = new Models.ActionPlan { DateActionPlanCreated = DateTime.UtcNow.AddDays(2),
-                PriorityCustomer = PriorityCustomer.NotAPriorityCustomer,
-                SessionId = Guid.Empty,
-                CustomerCharterShownToCustomer = true,
-                DateAndTimeCharterShown = DateTime.UtcNow
-            };
-
-            var validation = new Validate();
-
-            var result = validation.ValidateResource(actionPlan, Arg.Any<DateTime>());
-
-            // Assert
-            Assert.IsInstanceOf<List<ValidationResult>>(result);
-            Assert.IsNotNull(result);
-            Assert.AreEqual(2, result.Count);
-        }
-
-        [Test]
         public void ValidateTests_ReturnValidationResult_WhenDateAndTimeCharterShownIsInTheFuture()
         {
             var actionPlan = new Models.ActionPlan { DateActionPlanCreated = DateTime.UtcNow,
