@@ -35,7 +35,6 @@ namespace NCS.DSS.ActionPlan.PatchActionPlanHttpTrigger.Function
         [Display(Name = "Patch", Description = "Ability to modify/update a customers action plan record. <br>" +
                                                "<br><b>Validation Rules:</b> <br>" +
                                                "<br><b>DateActionPlanCreated:</b> DateActionPlanCreated >= Session.DateAndTimeOfSession <br>" +
-                                               "<br><b>DateAndTimeCharterShown:</b> DateAndTimeCharterShown >= DateActionPlanCreated <br>" +
                                                "<br><b>DateActionPlanSentToCustomer:</b> DateActionPlanSentToCustomer >= DateActionPlanCreated <br>" +
                                                "<br><b>DateActionPlanAcknowledged:</b> DateActionPlanAcknowledged >= DateActionPlanCreated")]
         public static async Task<HttpResponseMessage> Run([HttpTrigger(AuthorizationLevel.Anonymous, "patch", Route = "Customers/{customerId}/Interactions/{interactionId}/ActionPlans/{actionPlanId}")]HttpRequest req, ILogger log, string customerId, string interactionId, string actionPlanId,

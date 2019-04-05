@@ -34,7 +34,6 @@ namespace NCS.DSS.ActionPlan.PostActionPlanHttpTrigger.Function
         [Display(Name = "Post", Description = "Ability to create a new action plan for a customer. <br>" +
                                               "<br><b>Validation Rules:</b> <br>" +
                                               "<br><b>DateActionPlanCreated:</b> DateActionPlanCreated >= Session.DateAndTimeOfSession <br>" +
-                                              "<br><b>DateAndTimeCharterShown:</b> DateAndTimeCharterShown >= DateActionPlanCreated <br>" +
                                               "<br><b>DateActionPlanSentToCustomer:</b> DateActionPlanSentToCustomer >= DateActionPlanCreated <br>" +
                                               "<br><b>DateActionPlanAcknowledged:</b> DateActionPlanAcknowledged >= DateActionPlanCreated")]
         public static async Task<HttpResponseMessage> Run([HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "Customers/{customerId}/Interactions/{interactionId}/ActionPlans")]HttpRequest req, ILogger log, string customerId, string interactionId,
