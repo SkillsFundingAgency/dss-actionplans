@@ -40,9 +40,6 @@ namespace NCS.DSS.ActionPlan.Validation
             {
                 if (actionPlanResource.DateAndTimeCharterShown.Value > DateTime.UtcNow)
                     results.Add(new ValidationResult("Date And Time Charter Shown must be less the current date/time", new[] { "DateAndTimeCharterShown" }));
-
-                if (!(actionPlanResource.DateAndTimeCharterShown.Value >= actionPlanResource.DateActionPlanCreated.GetValueOrDefault()))
-                    results.Add(new ValidationResult("Date And Time Charter Shown must be greater than Date Action Plan Created", new[] { "DateAndTimeCharterShown" }));
             }
 
             if (actionPlanResource.DateActionPlanSentToCustomer.HasValue)
