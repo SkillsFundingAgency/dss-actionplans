@@ -6,7 +6,6 @@ using DFC.Swagger.Standard;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Hosting;
 using Microsoft.Extensions.DependencyInjection;
-using NCS.DSS.ActionPlan.ActionPlanChangeFeedTrigger.Service;
 using NCS.DSS.ActionPlan.Cosmos.Helper;
 using NCS.DSS.ActionPlan.Cosmos.Provider;
 using NCS.DSS.ActionPlan.GetActionPlanByIdHttpTrigger.Service;
@@ -40,7 +39,6 @@ namespace NCS.DSS.ActionPlan.Ioc
             builder.Services.AddScoped<IGetActionPlanByIdHttpTriggerService, GetActionPlanByIdHttpTriggerService>();
             builder.Services.AddScoped<IPostActionPlanHttpTriggerService, PostActionPlanHttpTriggerService>();
             builder.Services.AddScoped<IPatchActionPlanHttpTriggerService, PatchActionPlanHttpTriggerService>();
-            builder.Services.AddScoped<IActionPlanChangeFeedTriggerService, ActionPlanChangeFeedTriggerService>();
         }
     }
 }
