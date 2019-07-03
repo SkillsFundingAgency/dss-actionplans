@@ -78,10 +78,6 @@
               "value": "[concat('AccountEndpoint=', parameters('cosmosDbEndpoint'), '/;AccountKey=', parameters('cosmosDbKey'), ';')]"
             },
             {
-              "name": "ChangeFeedQueueName",
-              "value": "dss.changefeedqueue"
-            },
-            {
               "name": "CollectionId",
               "value": "[parameters('cosmosDbCollectionId')]"
             },
@@ -104,14 +100,6 @@
             {
               "name": "InteractionDatabaseId",
               "value": "interactions"
-            },
-            {
-              "name": "LeaseCollectionName",
-              "value": "actionplan-lease"
-            },
-            {
-              "name": "LeaseCollectionPrefix",
-              "value": "actionplanChangeFeedPrefix"
             },
             {
               "name": "SessionCollectionId",
