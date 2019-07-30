@@ -14,11 +14,16 @@ namespace NCS.DSS.ActionPlan.Cosmos.Provider
 {
     public class DocumentDBProvider : IDocumentDBProvider
     {
-        private readonly ILoggerHelper _loggerHelper;
+        private string _customerJson;
+        private string _sessionForCustomerJson;
 
-        public DocumentDBProvider(ILoggerHelper loggerHelper)
+        public string GetCustomerJson()
         {
-            _loggerHelper = loggerHelper;
+            return _customerJson;
+        }
+        public string GetSessionForCustomerJson()
+        {
+            return _sessionForCustomerJson;
         }
 
         public async Task<bool> DoesCustomerResourceExist(Guid customerId)
@@ -33,7 +38,10 @@ namespace NCS.DSS.ActionPlan.Cosmos.Provider
             {
                 var response = await client.ReadDocumentAsync(documentUri);
                 if (response.Resource != null)
+                {
+                    _customerJson = response.Resource.ToString();
                     return true;
+                }
             }
             catch (DocumentClientException)
             {
@@ -75,32 +83,10 @@ namespace NCS.DSS.ActionPlan.Cosmos.Provider
             }
 
         }
-        public async Task<DateTime?> GetDateAndTimeOfSessionFromSessionResource(Guid sessionId)
+
+        public bool DoesSessionResourceExistAndBelongToCustomer(Guid sessionId, Guid interactionId, Guid customerId)
         {
-            var documentUri = DocumentDBHelper.CreateSessionDocumentUri(sessionId);
-
-            var client = DocumentDBClient.CreateDocumentClient();
-
-            if (client == null)
-                return null;
-
-            try
-            {
-                var response = await client.ReadDocumentAsync(documentUri);
-
-                var dateAndTimeOfSession = response.Resource?.GetPropertyValue<DateTime?>("DateandTimeOfSession");
-
-                return dateAndTimeOfSession.GetValueOrDefault();
-            }
-            catch (DocumentClientException)
-            {
-                return null;
-            }
-        }
-
-        public async Task<bool> DoesCustomerHaveATerminationDate(Guid customerId)
-        {
-            var documentUri = DocumentDBHelper.CreateCustomerDocumentUri(customerId);
+            var collectionUri = DocumentDBHelper.CreateSessionDocumentCollectionUri();
 
             var client = DocumentDBClient.CreateDocumentClient();
 
@@ -109,16 +95,33 @@ namespace NCS.DSS.ActionPlan.Cosmos.Provider
 
             try
             {
-                var response = await client.ReadDocumentAsync(documentUri);
+                var query = client.CreateDocumentQuery<Document>(collectionUri, new SqlQuerySpec()
+                {
+                    QueryText = "SELECT * FROM sessions s " +
+                                "WHERE s.id = @sessionId " +
+                                "AND s.InteractionId = @interactionId " +
+                                "AND s.CustomerId = @customerId",
 
-                var dateOfTermination = response.Resource?.GetPropertyValue<DateTime?>("DateOfTermination");
+                    Parameters = new SqlParameterCollection()
+                    {
+                        new SqlParameter("@sessionId", sessionId),
+                        new SqlParameter("@interactionId", interactionId),
+                        new SqlParameter("@customerId", customerId)
+                    }
+                }).AsEnumerable().FirstOrDefault();
 
-                return dateOfTermination.HasValue;
+                if (query == null)
+                    return false;
+
+                _sessionForCustomerJson = query.ToString();
+
+                return true;
             }
-            catch (DocumentClientException)
+            catch (DocumentQueryException)
             {
                 return false;
             }
+
         }
 
         public async Task<List<Models.ActionPlan>> GetActionPlansForCustomerAsync(Guid customerId)
