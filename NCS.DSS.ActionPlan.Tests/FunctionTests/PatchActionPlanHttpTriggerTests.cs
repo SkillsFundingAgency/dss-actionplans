@@ -65,8 +65,9 @@ namespace NCS.DSS.ActionPlan.Tests.FunctionTests
             _actionPlanString = JsonConvert.SerializeObject(_actionPlan);
 
             _resourceHelper.DoesCustomerExist(Arg.Any<Guid>()).ReturnsForAnyArgs(true);
-            _resourceHelper.IsCustomerReadOnly(Arg.Any<Guid>()).ReturnsForAnyArgs(false);
+            _resourceHelper.IsCustomerReadOnly().ReturnsForAnyArgs(false);
             _resourceHelper.DoesInteractionExistAndBelongToCustomer(Arg.Any<Guid>(), Arg.Any<Guid>()).Returns(true);
+            _resourceHelper.DoesSessionExistAndBelongToCustomer(Arg.Any<Guid>(), Arg.Any<Guid>(), Arg.Any<Guid>()).Returns(true);
             _resourceHelper.GetDateAndTimeOfSession(Arg.Any<Guid>()).Returns(DateTime.Now);
 
             _httpRequestHelper.GetDssCorrelationId(_request).Returns(ValidDssCorrelationId);
@@ -74,14 +75,14 @@ namespace NCS.DSS.ActionPlan.Tests.FunctionTests
             _httpRequestHelper.GetDssApimUrl(_request).Returns("http://localhost:");
             _httpRequestHelper.GetResourceFromRequest<ActionPlanPatch>(_request).Returns(Task.FromResult(_actionPlanPatch).Result);
             _patchActionPlanHttpTriggerService.PatchResource(_actionPlanString, _actionPlanPatch).Returns(_actionPlanString);
+
+            SetUpHttpResponseMessageHelper();
         }
 
         [Test]
         public async Task PatchActionPlanHttpTrigger_ReturnsStatusCodeBadRequest_WhenTouchpointIdIsNotProvided()
         {
             _httpRequestHelper.GetDssTouchpointId(_request).Returns((string)null);
-
-            _httpResponseMessageHelper.BadRequest().Returns(x => new HttpResponseMessage(HttpStatusCode.BadRequest));
 
             // Act
             var result = await RunFunction(InValidId, ValidInteractionId, ValidActionPlanId);
@@ -96,8 +97,6 @@ namespace NCS.DSS.ActionPlan.Tests.FunctionTests
         {
             _httpRequestHelper.GetDssApimUrl(_request).Returns((string)null);
 
-            _httpResponseMessageHelper.BadRequest().Returns(x => new HttpResponseMessage(HttpStatusCode.BadRequest));
-
             // Act
             var result = await RunFunction(InValidId, ValidInteractionId, ValidActionPlanId);
 
@@ -108,10 +107,7 @@ namespace NCS.DSS.ActionPlan.Tests.FunctionTests
 
         [Test]
         public async Task PatchActionPlanHttpTrigger_ReturnsStatusCodeBadRequest_WhenCustomerIdIsInvalid()
-        {
-            _httpResponseMessageHelper
-                .BadRequest(Arg.Any<Guid>()).Returns(x => new HttpResponseMessage(HttpStatusCode.BadRequest));
-
+        { 
             // Act
             var result = await RunFunction(InValidId, ValidInteractionId, ValidActionPlanId);
 
@@ -123,9 +119,6 @@ namespace NCS.DSS.ActionPlan.Tests.FunctionTests
         [Test]
         public async Task PatchActionPlanHttpTrigger_ReturnsStatusCodeBadRequest_WhenInteractionIdIsInvalid()
         {
-            _httpResponseMessageHelper
-                .BadRequest(Arg.Any<Guid>()).Returns(x => new HttpResponseMessage(HttpStatusCode.BadRequest));
-
             // Act
             var result = await RunFunction(ValidCustomerId, InValidId, ValidActionPlanId);
 
@@ -137,9 +130,6 @@ namespace NCS.DSS.ActionPlan.Tests.FunctionTests
         [Test]
         public async Task PatchActionPlanHttpTrigger_ReturnsStatusCodeBadRequest_WhenActionPlanIdIsInvalid()
         {
-            _httpResponseMessageHelper
-                .BadRequest(Arg.Any<Guid>()).Returns(x => new HttpResponseMessage(HttpStatusCode.BadRequest));
-
             // Act
             var result = await RunFunction(ValidCustomerId, ValidInteractionId, InValidId);
 
@@ -153,9 +143,6 @@ namespace NCS.DSS.ActionPlan.Tests.FunctionTests
         {
             _httpRequestHelper.GetResourceFromRequest<ActionPlanPatch>(_request).Throws(new JsonException());
 
-            _httpResponseMessageHelper
-                .UnprocessableEntity(Arg.Any<JsonException>()).Returns(x => new HttpResponseMessage((HttpStatusCode)422));
-
             var result = await RunFunction(ValidCustomerId, ValidInteractionId, ValidActionPlanId);
 
             // Assert
@@ -168,9 +155,19 @@ namespace NCS.DSS.ActionPlan.Tests.FunctionTests
         {
             _resourceHelper.DoesCustomerExist(Arg.Any<Guid>()).Returns(false);
 
-            _httpResponseMessageHelper
-                .NoContent(Arg.Any<Guid>()).Returns(x => new HttpResponseMessage(HttpStatusCode.NoContent));
+            var result = await RunFunction(ValidCustomerId, ValidInteractionId, ValidActionPlanId);
 
+            // Assert
+            Assert.IsInstanceOf<HttpResponseMessage>(result);
+            Assert.AreEqual(HttpStatusCode.NoContent, result.StatusCode);
+        }
+
+        [Test]
+        public async Task PatchActionPlanHttpTrigger_ReturnsStatusCodeNoContent_WhenInteractionDoesNotExist()
+        {
+            _resourceHelper.DoesInteractionExistAndBelongToCustomer(Arg.Any<Guid>(), Arg.Any<Guid>()).Returns(false);
+
+            // Act
             var result = await RunFunction(ValidCustomerId, ValidInteractionId, ValidActionPlanId);
 
             // Assert
@@ -181,10 +178,11 @@ namespace NCS.DSS.ActionPlan.Tests.FunctionTests
         [Test]
         public async Task PatchActionPlanHttpTrigger_ReturnsStatusCodeNoContent_WhenSessionDoesNotExist()
         {
-            _resourceHelper.DoesInteractionExistAndBelongToCustomer(Arg.Any<Guid>(), Arg.Any<Guid>()).Returns(false);
+            _patchActionPlanHttpTriggerService.GetActionPlanForCustomerAsync(Arg.Any<Guid>(), Arg.Any<Guid>()).Returns(Task.FromResult("actionplan").Result);
 
-            _httpResponseMessageHelper
-                .NoContent(Arg.Any<Guid>()).Returns(x => new HttpResponseMessage(HttpStatusCode.NoContent));
+            _patchActionPlanHttpTriggerService.PatchResource(Arg.Any<string>(), Arg.Any<Models.ActionPlanPatch>()).Returns((string)null);
+
+            _resourceHelper.DoesSessionExistAndBelongToCustomer(Arg.Any<Guid>(), Arg.Any<Guid>(), Arg.Any<Guid>()).Returns(false);
 
             // Act
             var result = await RunFunction(ValidCustomerId, ValidInteractionId, ValidActionPlanId);
@@ -198,9 +196,6 @@ namespace NCS.DSS.ActionPlan.Tests.FunctionTests
         public async Task PatchActionPlanHttpTrigger_ReturnsStatusCodeNoContent_WhenActionPlanDoesNotExist()
         {
             _patchActionPlanHttpTriggerService.GetActionPlanForCustomerAsync(Arg.Any<Guid>(), Arg.Any<Guid>()).Returns(Task.FromResult<string>(null).Result);
-
-            _httpResponseMessageHelper
-                .NoContent(Arg.Any<Guid>()).Returns(x => new HttpResponseMessage(HttpStatusCode.NoContent));
 
             // Act
             var result = await RunFunction(ValidCustomerId, ValidInteractionId, ValidActionPlanId);
@@ -216,9 +211,6 @@ namespace NCS.DSS.ActionPlan.Tests.FunctionTests
             _patchActionPlanHttpTriggerService.GetActionPlanForCustomerAsync(Arg.Any<Guid>(), Arg.Any<Guid>()).Returns(Task.FromResult("actionplan").Result);
 
             _patchActionPlanHttpTriggerService.PatchResource(Arg.Any<string>(), Arg.Any<Models.ActionPlanPatch>()).Returns((string) null);
-
-            _httpResponseMessageHelper
-                .NoContent(Arg.Any<Guid>()).Returns(x => new HttpResponseMessage(HttpStatusCode.NoContent));
 
             // Act
             var result = await RunFunction(ValidCustomerId, ValidInteractionId, ValidActionPlanId);
@@ -236,9 +228,6 @@ namespace NCS.DSS.ActionPlan.Tests.FunctionTests
             var validationResults = new List<ValidationResult> { new ValidationResult("interaction Id is Required") };
             _validate.ValidateResource(Arg.Any<ActionPlanPatch>(), Arg.Any<DateTime>()).ReturnsForAnyArgs(validationResults);
 
-            _httpResponseMessageHelper
-                .UnprocessableEntity(Arg.Any<List<ValidationResult>>()).Returns(x => new HttpResponseMessage((HttpStatusCode)422));
-
             var result = await RunFunction(ValidCustomerId, ValidInteractionId, ValidActionPlanId);
 
             // Assert
@@ -252,9 +241,6 @@ namespace NCS.DSS.ActionPlan.Tests.FunctionTests
             _patchActionPlanHttpTriggerService.GetActionPlanForCustomerAsync(Arg.Any<Guid>(), Arg.Any<Guid>()).Returns(Task.FromResult(_actionPlanString).Result);
 
             _patchActionPlanHttpTriggerService.UpdateCosmosAsync(Arg.Any<string>(), Arg.Any<Guid>()).Returns(Task.FromResult<Models.ActionPlan>(null).Result);
-
-            _httpResponseMessageHelper
-                .BadRequest(Arg.Any<Guid>()).Returns(x => new HttpResponseMessage(HttpStatusCode.BadRequest));
 
             var result = await RunFunction(ValidCustomerId, ValidInteractionId, ValidActionPlanId);
 
@@ -270,9 +256,6 @@ namespace NCS.DSS.ActionPlan.Tests.FunctionTests
 
             _patchActionPlanHttpTriggerService.UpdateCosmosAsync(Arg.Any<string>(), Arg.Any<Guid>()).Returns(Task.FromResult(_actionPlan).Result);
 
-            _httpResponseMessageHelper
-                .NoContent(Arg.Any<Guid>()).Returns(x => new HttpResponseMessage(HttpStatusCode.NoContent));
-
             var result = await RunFunction(ValidCustomerId, ValidInteractionId, ValidActionPlanId);
 
             // Assert
@@ -286,9 +269,6 @@ namespace NCS.DSS.ActionPlan.Tests.FunctionTests
             _patchActionPlanHttpTriggerService.GetActionPlanForCustomerAsync(Arg.Any<Guid>(), Arg.Any<Guid>()).Returns(Task.FromResult(_actionPlanString).Result);
 
             _patchActionPlanHttpTriggerService.UpdateCosmosAsync(Arg.Any<string>(), Arg.Any<Guid>()).Returns(Task.FromResult(_actionPlan).Result);
-
-            _httpResponseMessageHelper
-                .Ok(Arg.Any<string>()).Returns(x => new HttpResponseMessage(HttpStatusCode.OK));
 
             var result = await RunFunction(ValidCustomerId, ValidInteractionId, ValidActionPlanId);
 
@@ -312,6 +292,27 @@ namespace NCS.DSS.ActionPlan.Tests.FunctionTests
                 _httpRequestHelper,
                 _httpResponseMessageHelper,
                 _jsonHelper).ConfigureAwait(false);
+        }
+
+        private void SetUpHttpResponseMessageHelper()
+        {
+            _httpResponseMessageHelper.BadRequest().Returns(x => new HttpResponseMessage(HttpStatusCode.BadRequest));
+
+            _httpResponseMessageHelper
+                .UnprocessableEntity(Arg.Any<List<ValidationResult>>()).Returns(x => new HttpResponseMessage((HttpStatusCode)422));
+
+            _httpResponseMessageHelper
+                .UnprocessableEntity(Arg.Any<JsonException>()).Returns(x => new HttpResponseMessage((HttpStatusCode)422));
+
+            _httpResponseMessageHelper
+                .NoContent(Arg.Any<Guid>()).Returns(x => new HttpResponseMessage(HttpStatusCode.NoContent));
+
+            _httpResponseMessageHelper
+                .BadRequest(Arg.Any<Guid>()).Returns(x => new HttpResponseMessage(HttpStatusCode.BadRequest));
+
+            _httpResponseMessageHelper
+                .Ok(Arg.Any<string>()).Returns(x => new HttpResponseMessage(HttpStatusCode.OK));
+
         }
     }
 }

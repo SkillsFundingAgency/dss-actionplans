@@ -6,8 +6,9 @@ namespace NCS.DSS.ActionPlan.Cosmos.Helper
     public interface IResourceHelper
     {
         Task<bool> DoesCustomerExist(Guid customerId);
-        Task<bool> IsCustomerReadOnly(Guid customerId);
+        bool IsCustomerReadOnly();
         bool DoesInteractionExistAndBelongToCustomer(Guid interactionGuid, Guid customerGuid);
-        Task<DateTime?> GetDateAndTimeOfSession(Guid sessionId);
+        bool DoesSessionExistAndBelongToCustomer(Guid sessionId, Guid interactionId, Guid customerId);
+        DateTime? GetDateAndTimeOfSession(Guid sessionId);
     }
 }

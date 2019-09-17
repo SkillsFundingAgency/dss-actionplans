@@ -8,10 +8,11 @@ namespace NCS.DSS.ActionPlan.Cosmos.Provider
 {
     public interface IDocumentDBProvider
     {
+        string GetCustomerJson();
+        string GetSessionForCustomerJson();
         Task<bool> DoesCustomerResourceExist(Guid customerId);
         bool DoesInteractionResourceExistAndBelongToCustomer(Guid interactionId, Guid customerId);
-        Task<DateTime?> GetDateAndTimeOfSessionFromSessionResource(Guid sessionId);
-        Task<bool> DoesCustomerHaveATerminationDate(Guid customerId);
+        bool DoesSessionResourceExistAndBelongToCustomer(Guid sessionId, Guid interactionId, Guid customerId);
         Task<List<Models.ActionPlan>> GetActionPlansForCustomerAsync(Guid customerId);
         Task<string> GetActionPlanForCustomerToUpdateAsync(Guid customerId, Guid actionPlanId);
         Task<Models.ActionPlan> GetActionPlanForCustomerAsync(Guid customerId, Guid actionPlanId);
