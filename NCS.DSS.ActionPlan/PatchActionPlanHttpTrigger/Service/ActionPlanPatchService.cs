@@ -48,6 +48,9 @@ namespace NCS.DSS.ActionPlan.PatchActionPlanHttpTrigger.Service
 
             if (actionPlanPatch.PriorityCustomer != null && (!actionPlanPatch.PriorityCustomer.Any()))
                 _jsonHelper.UpdatePropertyValue(obj["PriorityCustomer"], actionPlanPatch.PriorityCustomer);
+            //New multi value PriorityCustomer
+            if (actionPlanPatch.PriorityCustomer != null && actionPlanPatch.PriorityCustomer.Count > 0)
+                _jsonHelper.UpdatePropertyValue(obj["PriorityCustomer"], actionPlanPatch.PriorityCustomer);
 
             if (!string.IsNullOrEmpty(actionPlanPatch.CurrentSituation))
                 _jsonHelper.UpdatePropertyValue(obj["CurrentSituation"], actionPlanPatch.CurrentSituation);
