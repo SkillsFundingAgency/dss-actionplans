@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using NCS.DSS.ActionPlan.ReferenceData;
 
 namespace NCS.DSS.ActionPlan.Models
@@ -11,7 +12,7 @@ namespace NCS.DSS.ActionPlan.Models
         DateTime? DateActionPlanSentToCustomer { get; set; }
         ActionPlanDeliveryMethod? ActionPlanDeliveryMethod { get; set; }
         DateTime? DateActionPlanAcknowledged { get; set; }
-        PriorityCustomer? PriorityCustomer { get; set; }
+        List<PriorityCustomer> PriorityCustomer { get; set; }
         string CurrentSituation { get; set; }
         DateTime? LastModifiedDate { get; set; }
         string LastModifiedTouchpointId { get; set; }

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using DFC.JSON.Standard;
 using NCS.DSS.ActionPlan.Models;
 using NCS.DSS.ActionPlan.PatchActionPlanHttpTrigger.Service;
@@ -120,14 +121,16 @@ namespace NCS.DSS.ActionPlan.Tests.ServiceTests
         [Test]
         public void ActionPlanPatchServiceTests_CheckPriorityCustomerIsUpdated_WhenPatchIsCalled()
         {
-            var actionPlanPatch = new Models.ActionPlanPatch { PriorityCustomer = PriorityCustomer.NotAPriorityCustomer };
+            List<PriorityCustomer> pList = new List<PriorityCustomer> { PriorityCustomer.NotAPriorityCustomer };
+            var actionPlanPatch = new Models.ActionPlanPatch { PriorityCustomer = pList };
 
             var patchedActionPlan = _actionPlanPatchService.Patch(_json, actionPlanPatch);
 
             var actionPlan = JsonConvert.DeserializeObject<Models.ActionPlan>(patchedActionPlan);
             
             // Assert
-            Assert.AreEqual(PriorityCustomer.NotAPriorityCustomer, actionPlan.PriorityCustomer);
+            //Assert.AreEqual(PriorityCustomer.NotAPriorityCustomer, actionPlan.PriorityCustomer);
+            Assert.IsTrue(actionPlan.PriorityCustomer.Contains(PriorityCustomer.NotAPriorityCustomer));
         }
 
         [Test]

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Linq;
 using NCS.DSS.ActionPlan.Models;
 using NCS.DSS.ActionPlan.ReferenceData;
 
@@ -63,8 +64,16 @@ namespace NCS.DSS.ActionPlan.Validation
             if (actionPlanResource.LastModifiedDate.HasValue && actionPlanResource.LastModifiedDate.Value > DateTime.UtcNow)
                 results.Add(new ValidationResult("Last Modified Date must be less the current date/time", new[] { "LastModifiedDate" }));
 
-            if (actionPlanResource.PriorityCustomer.HasValue && !Enum.IsDefined(typeof(PriorityCustomer), actionPlanResource.PriorityCustomer.Value))
-                results.Add(new ValidationResult("Please supply a valid Priority Customer", new[] { "PriorityCustomer" }));
+            if (actionPlanResource.PriorityCustomer != null && (!actionPlanResource.PriorityCustomer.Any()))
+            {
+                foreach (var priorityCustomer in actionPlanResource.PriorityCustomer)
+                {
+                    if(!Enum.IsDefined(typeof(PriorityCustomer), priorityCustomer))
+                    {
+                        results.Add(new ValidationResult("Please supply a valid Priority Customer", new[] { "PriorityCustomer" }));
+                    }
+                }
+            }
 
             if (actionPlanResource.ActionPlanDeliveryMethod.HasValue && !Enum.IsDefined(typeof(ActionPlanDeliveryMethod), actionPlanResource.ActionPlanDeliveryMethod.Value))
                 results.Add(new ValidationResult("Please supply a valid Action Plan Delivery Method", new[] { "ActionPlanDeliveryMethod" }));

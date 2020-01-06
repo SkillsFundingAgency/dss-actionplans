@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using DFC.Swagger.Standard.Annotations;
 using NCS.DSS.ActionPlan.ReferenceData;
@@ -42,7 +43,7 @@ namespace NCS.DSS.ActionPlan.Models
 
         [Display(Description = "Priority Customer reference data.")]
         [Example(Description = "1")]
-        public PriorityCustomer? PriorityCustomer { get; set; }
+        public List<PriorityCustomer> PriorityCustomer { get; set; }
 
         [StringLength(4000)]
         [Display(Description = "Summary of a customer current situation and how it affects their career.")]

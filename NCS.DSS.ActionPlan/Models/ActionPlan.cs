@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using DFC.JSON.Standard.Attributes;
 using DFC.Swagger.Standard.Annotations;
@@ -65,7 +66,7 @@ namespace NCS.DSS.ActionPlan.Models
         [Required]
         [Display(Description = "Priority Customer reference data.")]
         [Example(Description = "1")]
-        public PriorityCustomer? PriorityCustomer { get; set; }
+        public List<PriorityCustomer> PriorityCustomer { get; set; }
 
         [StringLength(4000)]
         [Display(Description = "Summary of a customer current situation and how it affects their career.")]
@@ -95,7 +96,10 @@ namespace NCS.DSS.ActionPlan.Models
                 CustomerCharterShownToCustomer = false;
 
             if (PriorityCustomer == null)
-                PriorityCustomer = ReferenceData.PriorityCustomer.NotAPriorityCustomer;
+            {
+                PriorityCustomer = new List<PriorityCustomer>();
+                PriorityCustomer.Add(ReferenceData.PriorityCustomer.NotAPriorityCustomer);
+            }
         }
 
         public void SetIds(Guid customerGuid, Guid interactionGuid, string touchpointId, string subcontractorId)

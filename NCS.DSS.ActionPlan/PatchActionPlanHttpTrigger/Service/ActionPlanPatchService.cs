@@ -1,6 +1,7 @@
 ﻿using DFC.JSON.Standard;
 using NCS.DSS.ActionPlan.Models;
 using Newtonsoft.Json.Linq;
+using System.Linq;
 
 namespace NCS.DSS.ActionPlan.PatchActionPlanHttpTrigger.Service
 {
@@ -45,7 +46,7 @@ namespace NCS.DSS.ActionPlan.PatchActionPlanHttpTrigger.Service
             if (actionPlanPatch.DateActionPlanAcknowledged.HasValue)
                 _jsonHelper.UpdatePropertyValue(obj["DateActionPlanAcknowledged"], actionPlanPatch.DateActionPlanAcknowledged);
 
-            if (actionPlanPatch.PriorityCustomer.HasValue)
+            if (actionPlanPatch.PriorityCustomer != null && (!actionPlanPatch.PriorityCustomer.Any()))
                 _jsonHelper.UpdatePropertyValue(obj["PriorityCustomer"], actionPlanPatch.PriorityCustomer);
 
             if (!string.IsNullOrEmpty(actionPlanPatch.CurrentSituation))
