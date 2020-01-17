@@ -41,10 +41,6 @@ namespace NCS.DSS.ActionPlan.Models
         [Example(Description = "2018-06-22T07:55:00")]
         public DateTime? DateActionPlanAcknowledged { get; set; }
 
-        [Display(Description = "Priority Customer reference data.")]
-        [Example(Description = "1")]
-        public List<PriorityCustomer> PriorityCustomer { get; set; }
-
         [StringLength(4000)]
         [Display(Description = "Summary of a customer current situation and how it affects their career.")]
         [Example(Description = "this is some text")]

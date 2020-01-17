@@ -12,7 +12,6 @@ namespace NCS.DSS.ActionPlan.Models
         DateTime? DateActionPlanSentToCustomer { get; set; }
         ActionPlanDeliveryMethod? ActionPlanDeliveryMethod { get; set; }
         DateTime? DateActionPlanAcknowledged { get; set; }
-        List<PriorityCustomer> PriorityCustomer { get; set; }
         string CurrentSituation { get; set; }
         DateTime? LastModifiedDate { get; set; }
         string LastModifiedTouchpointId { get; set; }

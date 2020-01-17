@@ -23,9 +23,9 @@ namespace NCS.DSS.ActionPlan.Tests.FunctionTests
     [TestFixture]
     public class PostActionPlanHttpTriggerTests
     {
-        private const string ValidCustomerId = "7E467BDB-213F-407A-B86A-1954053D3C24";
-        private const string ValidInteractionId = "1e1a555c-9633-4e12-ab28-09ed60d51cb3";
-        private const string ValidSessionId = "58b43e3f-4a50-4900-9c82-a14682ee90fa";
+        private const string ValidCustomerId = "f72c07d6-e3a6-4dc2-9e62-2e91f09e484e";//"7E467BDB-213F-407A-B86A-1954053D3C24";
+        private const string ValidInteractionId = "00f9f801-5c58-495d-a7c4-491057919455"; //"1e1a555c-9633-4e12-ab28-09ed60d51cb3";
+        private const string ValidSessionId = "1e17d2dd-f48c-4488-a3e8-1c4889763604";//"58b43e3f-4a50-4900-9c82-a14682ee90fa";
         private const string ValidDssCorrelationId = "452d8e8c-2516-4a6b-9fc1-c85e578ac066";
         private const string InValidId = "1111111-2222-3333-4444-555555555555";
 
@@ -239,6 +239,9 @@ namespace NCS.DSS.ActionPlan.Tests.FunctionTests
 
             _httpResponseMessageHelper
                 .UnprocessableEntity(Arg.Any<JsonException>()).Returns(x => new HttpResponseMessage((HttpStatusCode)422));
+
+            _httpResponseMessageHelper
+                .NoContent(Arg.Any<string>()).Returns(x => new HttpResponseMessage(HttpStatusCode.NoContent));
 
             _httpResponseMessageHelper
                 .NoContent(Arg.Any<Guid>()).Returns(x => new HttpResponseMessage(HttpStatusCode.NoContent));

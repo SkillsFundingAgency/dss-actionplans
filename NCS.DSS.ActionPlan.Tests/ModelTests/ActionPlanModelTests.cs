@@ -19,8 +19,6 @@ namespace NCS.DSS.ActionPlan.Tests.ModelTests
             // Assert
             Assert.IsNotNull(actionPlan.LastModifiedDate);
             Assert.AreEqual(false, actionPlan.CustomerCharterShownToCustomer);
-            //Assert.AreEqual(PriorityCustomer.NotAPriorityCustomer, actionPlan.PriorityCustomer);
-            Assert.IsTrue(actionPlan.PriorityCustomer.Contains(PriorityCustomer.NotAPriorityCustomer));
         }
 
         [Test]
@@ -43,19 +41,6 @@ namespace NCS.DSS.ActionPlan.Tests.ModelTests
 
             // Assert
             Assert.AreEqual(true, actionPlan.CustomerCharterShownToCustomer);
-        }
-
-        [Test]
-        public void ActionPlanTests_CheckNotAPriorityCustomerToCustomerDoesNotGetPopulated_WhenSetDefaultValuesIsCalled()
-        {
-            List<PriorityCustomer> pList = new List<PriorityCustomer> { PriorityCustomer.NotAPriorityCustomer };
-            //var actionPlan = new Models.ActionPlan { PriorityCustomer = PriorityCustomer.NotAPriorityCustomer };
-            var actionPlan = new Models.ActionPlan { PriorityCustomer = pList };
-            actionPlan.SetDefaultValues();
-
-            // Assert
-            //Assert.AreEqual(PriorityCustomer.NotAPriorityCustomer, actionPlan.PriorityCustomer);
-            Assert.IsTrue(actionPlan.PriorityCustomer.Contains(PriorityCustomer.NotAPriorityCustomer));
         }
 
         [Test]

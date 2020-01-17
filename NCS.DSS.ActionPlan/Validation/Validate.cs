@@ -64,17 +64,6 @@ namespace NCS.DSS.ActionPlan.Validation
             if (actionPlanResource.LastModifiedDate.HasValue && actionPlanResource.LastModifiedDate.Value > DateTime.UtcNow)
                 results.Add(new ValidationResult("Last Modified Date must be less the current date/time", new[] { "LastModifiedDate" }));
 
-            if (actionPlanResource.PriorityCustomer != null && (!actionPlanResource.PriorityCustomer.Any()))
-            {
-                foreach (var priorityCustomer in actionPlanResource.PriorityCustomer)
-                {
-                    if(!Enum.IsDefined(typeof(PriorityCustomer), priorityCustomer))
-                    {
-                        results.Add(new ValidationResult("Please supply a valid Priority Customer", new[] { "PriorityCustomer" }));
-                    }
-                }
-            }
-
             if (actionPlanResource.ActionPlanDeliveryMethod.HasValue && !Enum.IsDefined(typeof(ActionPlanDeliveryMethod), actionPlanResource.ActionPlanDeliveryMethod.Value))
                 results.Add(new ValidationResult("Please supply a valid Action Plan Delivery Method", new[] { "ActionPlanDeliveryMethod" }));
             

@@ -64,12 +64,12 @@ namespace NCS.DSS.ActionPlan.PostActionPlanHttpTrigger.Function
                 return httpResponseMessageHelper.BadRequest();
             }
 
-            /*var ApimURL = httpRequestHelper.GetDssApimUrl(req);
+            var ApimURL = httpRequestHelper.GetDssApimUrl(req);
             if (string.IsNullOrEmpty(ApimURL))
             {
                 loggerHelper.LogInformationMessage(log, correlationGuid, "Unable to locate 'apimurl' in request header");
                 return httpResponseMessageHelper.BadRequest();
-            }*/
+            }
 
             var subcontractorId = httpRequestHelper.GetDssSubcontractorId(req);
             if (string.IsNullOrEmpty(subcontractorId))
@@ -145,7 +145,7 @@ namespace NCS.DSS.ActionPlan.PostActionPlanHttpTrigger.Function
             if (!doesSessionExist)
             {
                 loggerHelper.LogInformationMessage(log, correlationGuid, string.Format("Session does not exist {0}", actionPlanRequest.SessionId.GetValueOrDefault()));
-                return httpResponseMessageHelper.UnprocessableEntity(string.Format("Session ({0}) is not valid for interaction ({1}).", actionPlanRequest.SessionId.GetValueOrDefault(), interactionGuid));
+                return httpResponseMessageHelper.NoContent(string.Format("Session ({0}) is not valid for interaction ({1}).", actionPlanRequest.SessionId.GetValueOrDefault(), interactionGuid));
             }
             
             loggerHelper.LogInformationMessage(log, correlationGuid, string.Format("Attempting to get GetDateAndTimeOfSession for Session {0}", actionPlanRequest.SessionId));
@@ -166,7 +166,7 @@ namespace NCS.DSS.ActionPlan.PostActionPlanHttpTrigger.Function
             if (actionPlan != null)
             {
                 loggerHelper.LogInformationMessage(log, correlationGuid, string.Format("attempting to send to service bus {0}", actionPlan.ActionPlanId));
-                //await actionPlanPostService.SendToServiceBusQueueAsync(actionPlan, ApimURL);
+                await actionPlanPostService.SendToServiceBusQueueAsync(actionPlan, ApimURL);
             }
 
             loggerHelper.LogMethodExit(log);
