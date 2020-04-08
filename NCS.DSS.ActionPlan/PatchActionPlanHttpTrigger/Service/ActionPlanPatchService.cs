@@ -46,7 +46,16 @@ namespace NCS.DSS.ActionPlan.PatchActionPlanHttpTrigger.Service
                 _jsonHelper.UpdatePropertyValue(obj["DateActionPlanAcknowledged"], actionPlanPatch.DateActionPlanAcknowledged);
 
             if (actionPlanPatch.PriorityCustomer.HasValue)
-                _jsonHelper.UpdatePropertyValue(obj["PriorityCustomer"], actionPlanPatch.PriorityCustomer);
+            {
+                if (obj["PriorityCustomer"] == null)
+                {
+                    _jsonHelper.CreatePropertyOnJObject(obj, "PriorityCustomer", actionPlanPatch.PriorityCustomer);
+                }
+                else
+                {
+                    _jsonHelper.UpdatePropertyValue(obj["PriorityCustomer"], actionPlanPatch.PriorityCustomer);
+                }
+            }
 
             if (!string.IsNullOrEmpty(actionPlanPatch.CurrentSituation))
                 _jsonHelper.UpdatePropertyValue(obj["CurrentSituation"], actionPlanPatch.CurrentSituation);
