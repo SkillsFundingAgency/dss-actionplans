@@ -140,7 +140,7 @@ namespace NCS.DSS.ActionPlan.PostActionPlanHttpTrigger.Function
             }
             
             loggerHelper.LogInformationMessage(log, correlationGuid, string.Format("Attempting to get GetDateAndTimeOfSession for Session {0}", actionPlanRequest.SessionId));
-            var dateAndTimeOfSession = resourceHelper.GetDateAndTimeOfSession(actionPlanRequest.SessionId.GetValueOrDefault());
+            var dateAndTimeOfSession = await resourceHelper.GetDateAndTimeOfSession(actionPlanRequest.SessionId.GetValueOrDefault());
 
             loggerHelper.LogInformationMessage(log, correlationGuid, "Attempt to validate Action Plan resource");
             var errors = validate.ValidateResource(actionPlanRequest, dateAndTimeOfSession);
