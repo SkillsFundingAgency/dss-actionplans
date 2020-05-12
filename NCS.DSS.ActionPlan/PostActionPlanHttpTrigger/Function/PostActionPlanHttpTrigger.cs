@@ -138,15 +138,6 @@ namespace NCS.DSS.ActionPlan.PostActionPlanHttpTrigger.Function
                 loggerHelper.LogInformationMessage(log, correlationGuid, string.Format("Interaction does not exist {0}", interactionGuid));
                 return httpResponseMessageHelper.NoContent(interactionGuid);
             }
-
-            loggerHelper.LogInformationMessage(log, correlationGuid, string.Format("Attempting to get Session {0} for customer {1}", actionPlanRequest.SessionId.GetValueOrDefault(), customerGuid));
-            var doesSessionExist = resourceHelper.DoesSessionExistAndBelongToCustomer(actionPlanRequest.SessionId.GetValueOrDefault(), interactionGuid, customerGuid);
-
-            if (!doesSessionExist)
-            {
-                loggerHelper.LogInformationMessage(log, correlationGuid, string.Format("Session does not exist {0}", actionPlanRequest.SessionId.GetValueOrDefault()));
-                return httpResponseMessageHelper.UnprocessableEntity(string.Format("Session ({0}) is not valid for interaction ({1}).", actionPlanRequest.SessionId.GetValueOrDefault(), interactionGuid));
-            }
             
             loggerHelper.LogInformationMessage(log, correlationGuid, string.Format("Attempting to get GetDateAndTimeOfSession for Session {0}", actionPlanRequest.SessionId));
             var dateAndTimeOfSession = resourceHelper.GetDateAndTimeOfSession(actionPlanRequest.SessionId.GetValueOrDefault());
