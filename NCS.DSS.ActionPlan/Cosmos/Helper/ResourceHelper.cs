@@ -42,7 +42,7 @@ namespace NCS.DSS.ActionPlan.Cosmos.Helper
         {
             return _documentDbProvider.DoesSessionResourceExistAndBelongToCustomer(sessionId, interactionId, customerId);
         }
-
+        //This was changed for old rules to work
         public async Task<DateTime?> GetDateAndTimeOfSession(Guid sessionId)
         {
             var dateAndTimeOfSession = await _documentDbProvider.GetDateAndTimeOfSessionFromSessionResource(sessionId);
