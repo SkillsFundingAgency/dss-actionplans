@@ -164,7 +164,7 @@ namespace NCS.DSS.ActionPlan.Tests.FunctionTests
             Assert.IsInstanceOf<HttpResponseMessage>(result);
             Assert.AreEqual(HttpStatusCode.NoContent, result.StatusCode);
         }
-
+        //Session validation test removed from here
         [Test]
         public async Task PostActionPlanHttpTrigger_ReturnsStatusCodeBadRequest_WhenUnableToCreateActionPlanRecord()
         {
