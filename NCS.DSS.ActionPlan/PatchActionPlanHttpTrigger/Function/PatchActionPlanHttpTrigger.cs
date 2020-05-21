@@ -183,18 +183,8 @@ namespace NCS.DSS.ActionPlan.PatchActionPlanHttpTrigger.Function
                 return httpResponseMessageHelper.UnprocessableEntity(req);
             }
 
-
-            loggerHelper.LogInformationMessage(log, correlationGuid, string.Format("Attempting to get Session {0} for customer {1}", actionPlanValidationObject.SessionId.GetValueOrDefault(), customerGuid));
-            var doesSessionExist = resourceHelper.DoesSessionExistAndBelongToCustomer(actionPlanValidationObject.SessionId.GetValueOrDefault(), interactionGuid, customerGuid);
-
-            if (!doesSessionExist)
-            {
-                loggerHelper.LogInformationMessage(log, correlationGuid, string.Format("Session does not exist {0}", actionPlanValidationObject.SessionId.GetValueOrDefault()));
-                return httpResponseMessageHelper.UnprocessableEntity(string.Format("Session ({0}) is not valid for interaction ({1}).", actionPlanValidationObject.SessionId.GetValueOrDefault(), interactionGuid));
-            }
-
             loggerHelper.LogInformationMessage(log, correlationGuid, string.Format("Attempting to get GetDateAndTimeOfSession for Session {0}", actionPlanValidationObject.SessionId));
-            var dateAndTimeOfSession = resourceHelper.GetDateAndTimeOfSession(actionPlanValidationObject.SessionId.GetValueOrDefault());
+            var dateAndTimeOfSession = await resourceHelper.GetDateAndTimeOfSession(actionPlanValidationObject.SessionId.GetValueOrDefault());
             
             loggerHelper.LogInformationMessage(log, correlationGuid, "Attempt to validate resource");
             var errors = validate.ValidateResource(actionPlanValidationObject, dateAndTimeOfSession);
