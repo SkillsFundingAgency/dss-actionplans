@@ -1,104 +1,102 @@
-﻿//using System;
-//using System.Collections.Generic;
-//using NCS.DSS.ActionPlan.ReferenceData;
-//using NSubstitute;
-//using NUnit.Framework;
+﻿using Moq;
+using NUnit.Framework;
+using System;
 
-//namespace NCS.DSS.ActionPlan.Tests.ModelTests
-//{
-//    [TestFixture]
-//    public class ActionPlanModelTests
-//    {
+namespace NCS.DSS.ActionPlan.Tests.ModelTests
+{
+    [TestFixture]
+    public class ActionPlanModelTests
+    {
 
-//        [Test]
-//        public void ActionPlanTests_PopulatesDefaultValues_WhenSetDefaultValuesIsCalled()
-//        {
-//            var actionPlan = new Models.ActionPlan();
-//            actionPlan.SetDefaultValues();
+        [Test]
+        public void ActionPlanTests_PopulatesDefaultValues_WhenSetDefaultValuesIsCalled()
+        {
+            var actionPlan = new Models.ActionPlan();
+            actionPlan.SetDefaultValues();
 
-//            // Assert
-//            Assert.IsNotNull(actionPlan.LastModifiedDate);
-//            Assert.AreEqual(false, actionPlan.CustomerCharterShownToCustomer);
-//        }
+            // Assert
+            Assert.IsNotNull(actionPlan.LastModifiedDate);
+            Assert.AreEqual(false, actionPlan.CustomerCharterShownToCustomer);
+        }
 
-//        [Test]
-//        public void ActionPlanTests_CheckLastModifiedDateDoesNotGetPopulated_WhenSetDefaultValuesIsCalled()
-//        {
-//            var actionPlan = new Models.ActionPlan { LastModifiedDate = DateTime.MaxValue };
+        [Test]
+        public void ActionPlanTests_CheckLastModifiedDateDoesNotGetPopulated_WhenSetDefaultValuesIsCalled()
+        {
+            var actionPlan = new Models.ActionPlan { LastModifiedDate = DateTime.MaxValue };
 
-//            actionPlan.SetDefaultValues();
+            actionPlan.SetDefaultValues();
 
-//            // Assert
-//            Assert.AreEqual(DateTime.MaxValue, actionPlan.LastModifiedDate);
-//        }
+            // Assert
+            Assert.AreEqual(DateTime.MaxValue, actionPlan.LastModifiedDate);
+        }
 
-//        [Test]
-//        public void ActionPlanTests_CheckCustomerCharterShownToCustomerDoesNotGetPopulated_WhenSetDefaultValuesIsCalled()
-//        {
-//            var actionPlan = new Models.ActionPlan { CustomerCharterShownToCustomer = true };
+        [Test]
+        public void ActionPlanTests_CheckCustomerCharterShownToCustomerDoesNotGetPopulated_WhenSetDefaultValuesIsCalled()
+        {
+            var actionPlan = new Models.ActionPlan { CustomerCharterShownToCustomer = true };
 
-//            actionPlan.SetDefaultValues();
+            actionPlan.SetDefaultValues();
 
-//            // Assert
-//            Assert.AreEqual(true, actionPlan.CustomerCharterShownToCustomer);
-//        }
+            // Assert
+            Assert.AreEqual(true, actionPlan.CustomerCharterShownToCustomer);
+        }
 
-//        [Test]
-//        public void ActionPlanTests_CheckActionPlanIdIsSet_WhenSetIdsIsCalled()
-//        {
-//            var actionPlan = new Models.ActionPlan();
+        [Test]
+        public void ActionPlanTests_CheckActionPlanIdIsSet_WhenSetIdsIsCalled()
+        {
+            var actionPlan = new Models.ActionPlan();
 
-//            actionPlan.SetIds(Arg.Any<Guid>(), Arg.Any<Guid>(), Arg.Any<string>(), Arg.Any<string>());
+            actionPlan.SetIds(It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<string>(), It.IsAny<string>());
 
-//            // Assert
-//            Assert.AreNotSame(Guid.Empty, actionPlan.ActionPlanId);
-//        }
+            // Assert
+            Assert.AreNotSame(Guid.Empty, actionPlan.ActionPlanId);
+        }
 
-//        [Test]
-//        public void ActionPlanTests_CheckCustomerIdIsSet_WhenSetIdsIsCalled()
-//        {
-//            var actionPlan = new Models.ActionPlan();
+        [Test]
+        public void ActionPlanTests_CheckCustomerIdIsSet_WhenSetIdsIsCalled()
+        {
+            var actionPlan = new Models.ActionPlan();
 
-//            var customerId = Guid.NewGuid();
-//            actionPlan.SetIds(customerId, Arg.Any<Guid>(), Arg.Any<string>(), Arg.Any<string>());
+            var customerId = Guid.NewGuid();
+            actionPlan.SetIds(customerId, It.IsAny<Guid>(), It.IsAny<string>(), It.IsAny<string>());
 
-//            // Assert
-//            Assert.AreEqual(customerId, actionPlan.CustomerId);
-//        }
+            // Assert
+            Assert.AreEqual(customerId, actionPlan.CustomerId);
+        }
 
-//        [Test]
-//        public void ActionPlanTests_CheckInteractionIdIsSet_WhenSetIdsIsCalled()
-//        {
-//            var actionPlan = new Models.ActionPlan();
+        [Test]
+        public void ActionPlanTests_CheckInteractionIdIsSet_WhenSetIdsIsCalled()
+        {
+            var actionPlan = new Models.ActionPlan();
 
-//            var interactionId = Guid.NewGuid();
-//            actionPlan.SetIds(Arg.Any<Guid>(), interactionId, Arg.Any<string>(), Arg.Any<string>());
+            var interactionId = Guid.NewGuid();
+            actionPlan.SetIds(It.IsAny<Guid>(), interactionId, It.IsAny<string>(), It.IsAny<string>());
 
-//            // Assert
-//            Assert.AreEqual(interactionId, actionPlan.InteractionId);
-//        }
+            // Assert
+            Assert.AreEqual(interactionId, actionPlan.InteractionId);
+        }
 
-//        [Test]
-//        public void ActionPlanTests_CheckTouchpointIdIsSet_WhenSetIdsIsCalled()
-//        {
-//            var actionPlan = new Models.ActionPlan();
+        [Test]
+        public void ActionPlanTests_CheckTouchpointIdIsSet_WhenSetIdsIsCalled()
+        {
+            var actionPlan = new Models.ActionPlan();
 
-//            actionPlan.SetIds(Arg.Any<Guid>(), Arg.Any<Guid>(), "0000000000", Arg.Any<string>());
+            actionPlan.SetIds(It.IsAny<Guid>(), It.IsAny<Guid>(), "0000000000", It.IsAny<string>());
 
-//            // Assert
-//            Assert.AreEqual("0000000000", actionPlan.LastModifiedTouchpointId);
-//        }
+            // Assert
+            Assert.AreEqual("0000000000", actionPlan.LastModifiedTouchpointId);
+        }
 
-//        [Test]
-//        public void ActionPlanTests_CheckSubcontractorIdIsSet_WhenSetIdsIsCalled()
-//        {
-//            var actionPlan = new Models.ActionPlan();
+        [Test]
+        public void ActionPlanTests_CheckSubcontractorIdIsSet_WhenSetIdsIsCalled()
+        {
+            var actionPlan = new Models.ActionPlan();
 
-//            actionPlan.SetIds(Arg.Any<Guid>(), Arg.Any<Guid>(), Arg.Any<string>(), "0000000000");
+            actionPlan.SetIds(It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<string>(), "0000000000");
 
-//            // Assert
-//            Assert.AreEqual("0000000000", actionPlan.SubcontractorId);
-//        }
-        
-//    }
-//}
+            // Assert
+            Assert.AreEqual("0000000000", actionPlan.SubcontractorId);
+        }
+
+    }
+}

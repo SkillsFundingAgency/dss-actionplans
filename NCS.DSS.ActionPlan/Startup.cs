@@ -20,7 +20,6 @@ namespace NCS.DSS.ActionPlan
     {
         public override void Configure(IFunctionsHostBuilder builder)
         {
-
             builder.Services.AddSingleton<IResourceHelper, ResourceHelper>();
             builder.Services.AddSingleton<IValidate, Validate>();
             builder.Services.AddSingleton<ILoggerHelper, LoggerHelper>();
@@ -28,7 +27,6 @@ namespace NCS.DSS.ActionPlan
             builder.Services.AddSingleton<IHttpResponseMessageHelper, HttpResponseMessageHelper>();
             builder.Services.AddSingleton<IJsonHelper, JsonHelper>();
             builder.Services.AddSingleton<IDocumentDBProvider, DocumentDBProvider>();
-
             builder.Services.AddScoped<IActionPlanPatchService, ActionPlanPatchService>();
             builder.Services.AddScoped<ISwaggerDocumentGenerator, SwaggerDocumentGenerator>();
             builder.Services.AddScoped<IGetActionPlanHttpTriggerService, GetActionPlanHttpTriggerService>();

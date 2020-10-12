@@ -1,161 +1,159 @@
-﻿//using System;
-//using System.Collections.Generic;
-//using DFC.JSON.Standard;
-//using NCS.DSS.ActionPlan.Models;
-//using NCS.DSS.ActionPlan.PatchActionPlanHttpTrigger.Service;
-//using NCS.DSS.ActionPlan.ReferenceData;
-//using Newtonsoft.Json;
-//using Newtonsoft.Json.Linq;
-//using NSubstitute;
-//using NUnit.Framework;
+﻿using DFC.JSON.Standard;
+using Moq;
+using NCS.DSS.ActionPlan.Models;
+using NCS.DSS.ActionPlan.PatchActionPlanHttpTrigger.Service;
+using NCS.DSS.ActionPlan.ReferenceData;
+using Newtonsoft.Json;
+using NUnit.Framework;
+using System;
 
-//namespace NCS.DSS.ActionPlan.Tests.ServiceTests
-//{
-//    [TestFixture]
-//    public class ActionPlanPatchServiceTests
-//    {
-//        private IJsonHelper _jsonHelper;
-//        private IActionPlanPatchService _actionPlanPatchService;
-//        private ActionPlanPatch _actionPlanPatch;
-//        private string _json;
+namespace NCS.DSS.ActionPlan.Tests.ServiceTests
+{
+    [TestFixture]
+    public class ActionPlanPatchServiceTests
+    {
+        private IJsonHelper _jsonHelper;
+        private IActionPlanPatchService _actionPlanPatchService;
+        private ActionPlanPatch _actionPlanPatch;
+        private string _json;
 
 
-//        [SetUp]
-//        public void Setup()
-//        {
-//            _jsonHelper = Substitute.For<JsonHelper>();
-//            _actionPlanPatchService = Substitute.For<ActionPlanPatchService>(_jsonHelper);
-//            _actionPlanPatch = Substitute.For<ActionPlanPatch>();
+        [SetUp]
+        public void Setup()
+        {
+            _jsonHelper = new JsonHelper();
+            _actionPlanPatchService = new ActionPlanPatchService(_jsonHelper);
+            _actionPlanPatch = new ActionPlanPatch();
 
-//            _json = JsonConvert.SerializeObject(_actionPlanPatch);
-//        }
+            _json = JsonConvert.SerializeObject(_actionPlanPatch);
+        }
 
-//        [Test]
-//        public void ActionPlanPatchServiceTests_ReturnsNull_WhenActionPlanPatchIsNull()
-//        {
-//            var result = _actionPlanPatchService.Patch(string.Empty, Arg.Any<ActionPlanPatch>());
+        [Test]
+        public void ActionPlanPatchServiceTests_ReturnsNull_WhenActionPlanPatchIsNull()
+        {
+            var result = _actionPlanPatchService.Patch(string.Empty, It.IsAny<ActionPlanPatch>());
 
-//            // Assert
-//            Assert.IsNull(result);
-//        }
+            // Assert
+            Assert.IsNull(result);
+        }
 
-//        [Test]
-//        public void ActionPlanPatchServiceTests_CheckDateActionPlanCreatedIsUpdated_WhenPatchIsCalled()
-//        {
-//            var actionPlanPatch = new ActionPlanPatch() { DateActionPlanCreated = DateTime.MaxValue };
+        [Test]
+        public void ActionPlanPatchServiceTests_CheckDateActionPlanCreatedIsUpdated_WhenPatchIsCalled()
+        {
+            var actionPlanPatch = new ActionPlanPatch() { DateActionPlanCreated = DateTime.MaxValue };
 
-//            var patchedActionPlan = _actionPlanPatchService.Patch(_json, actionPlanPatch);
+            var patchedActionPlan = _actionPlanPatchService.Patch(_json, actionPlanPatch);
 
-//            var actionPlan = JsonConvert.DeserializeObject<Models.ActionPlan>(patchedActionPlan);
+            var actionPlan = JsonConvert.DeserializeObject<Models.ActionPlan>(patchedActionPlan);
 
-//            // Assert
-//            Assert.AreEqual(DateTime.MaxValue, actionPlan.DateActionPlanCreated);
-//        }
+            // Assert
+            Assert.AreEqual(DateTime.MaxValue, actionPlan.DateActionPlanCreated);
+        }
 
 
-//        [Test]
-//        public void ActionPlanPatchServiceTests_CheckCustomerCharterShownToCustomerIsUpdated_WhenPatchIsCalled()
-//        {
-//            var actionPlanPatch = new ActionPlanPatch { CustomerCharterShownToCustomer = true };
+        [Test]
+        public void ActionPlanPatchServiceTests_CheckCustomerCharterShownToCustomerIsUpdated_WhenPatchIsCalled()
+        {
+            var actionPlanPatch = new ActionPlanPatch { CustomerCharterShownToCustomer = true };
 
-//            var patchedActionPlan = _actionPlanPatchService.Patch(_json, actionPlanPatch);
+            var patchedActionPlan = _actionPlanPatchService.Patch(_json, actionPlanPatch);
 
-//            var actionPlan = JsonConvert.DeserializeObject<Models.ActionPlan>(patchedActionPlan);
+            var actionPlan = JsonConvert.DeserializeObject<Models.ActionPlan>(patchedActionPlan);
 
-//            // Assert
-//            Assert.AreEqual(true, actionPlan.CustomerCharterShownToCustomer);
-//        }
+            // Assert
+            Assert.AreEqual(true, actionPlan.CustomerCharterShownToCustomer);
+        }
 
-//        [Test]
-//        public void ActionPlanPatchServiceTests_CheckDateAndTimeCharterShownIsUpdated_WhenPatchIsCalled()
-//        {
-//            var actionPlanPatch = new Models.ActionPlanPatch { DateAndTimeCharterShown = DateTime.MaxValue };
+        [Test]
+        public void ActionPlanPatchServiceTests_CheckDateAndTimeCharterShownIsUpdated_WhenPatchIsCalled()
+        {
+            var actionPlanPatch = new Models.ActionPlanPatch { DateAndTimeCharterShown = DateTime.MaxValue };
 
-//            var patchedActionPlan = _actionPlanPatchService.Patch(_json, actionPlanPatch);
+            var patchedActionPlan = _actionPlanPatchService.Patch(_json, actionPlanPatch);
 
-//            var actionPlan = JsonConvert.DeserializeObject<Models.ActionPlan>(patchedActionPlan);
+            var actionPlan = JsonConvert.DeserializeObject<Models.ActionPlan>(patchedActionPlan);
 
-//            // Assert
-//            Assert.AreEqual(DateTime.MaxValue, actionPlan.DateAndTimeCharterShown);
-//        }
+            // Assert
+            Assert.AreEqual(DateTime.MaxValue, actionPlan.DateAndTimeCharterShown);
+        }
 
-//        [Test]
-//        public void ActionPlanPatchServiceTests_CheckDateActionPlanSentToCustomerIsUpdated_WhenPatchIsCalled()
-//        {
-//            var actionPlanPatch = new Models.ActionPlanPatch { DateActionPlanSentToCustomer = DateTime.MaxValue };
+        [Test]
+        public void ActionPlanPatchServiceTests_CheckDateActionPlanSentToCustomerIsUpdated_WhenPatchIsCalled()
+        {
+            var actionPlanPatch = new Models.ActionPlanPatch { DateActionPlanSentToCustomer = DateTime.MaxValue };
 
-//            var patchedActionPlan = _actionPlanPatchService.Patch(_json, actionPlanPatch);
+            var patchedActionPlan = _actionPlanPatchService.Patch(_json, actionPlanPatch);
 
-//            var actionPlan = JsonConvert.DeserializeObject<Models.ActionPlan>(patchedActionPlan);
+            var actionPlan = JsonConvert.DeserializeObject<Models.ActionPlan>(patchedActionPlan);
 
-//            // Assert
-//            Assert.AreEqual(DateTime.MaxValue, actionPlan.DateActionPlanSentToCustomer);
-//        }
+            // Assert
+            Assert.AreEqual(DateTime.MaxValue, actionPlan.DateActionPlanSentToCustomer);
+        }
 
-//        [Test]
-//        public void ActionPlanPatchServiceTests_CheckActionPlanDeliveryMethodIsUpdated_WhenPatchIsCalled()
-//        {
-//            var actionPlanPatch = new ActionPlanPatch { ActionPlanDeliveryMethod = ActionPlanDeliveryMethod.Paper };
+        [Test]
+        public void ActionPlanPatchServiceTests_CheckActionPlanDeliveryMethodIsUpdated_WhenPatchIsCalled()
+        {
+            var actionPlanPatch = new ActionPlanPatch { ActionPlanDeliveryMethod = ActionPlanDeliveryMethod.Paper };
 
-//            var patchedActionPlan = _actionPlanPatchService.Patch(_json, actionPlanPatch);
+            var patchedActionPlan = _actionPlanPatchService.Patch(_json, actionPlanPatch);
 
-//            var actionPlan = JsonConvert.DeserializeObject<Models.ActionPlan>(patchedActionPlan);
+            var actionPlan = JsonConvert.DeserializeObject<Models.ActionPlan>(patchedActionPlan);
 
-//            // Assert
-//            Assert.AreEqual(ActionPlanDeliveryMethod.Paper, actionPlan.ActionPlanDeliveryMethod);
-//        }
+            // Assert
+            Assert.AreEqual(ActionPlanDeliveryMethod.Paper, actionPlan.ActionPlanDeliveryMethod);
+        }
 
-//        [Test]
-//        public void ActionPlanPatchServiceTests_CheckDateActionPlanAcknowledgedIsUpdated_WhenPatchIsCalled()
-//        {
-//            var actionPlanPatch = new Models.ActionPlanPatch { DateActionPlanAcknowledged = DateTime.MaxValue };
+        [Test]
+        public void ActionPlanPatchServiceTests_CheckDateActionPlanAcknowledgedIsUpdated_WhenPatchIsCalled()
+        {
+            var actionPlanPatch = new Models.ActionPlanPatch { DateActionPlanAcknowledged = DateTime.MaxValue };
 
-//            var patchedActionPlan = _actionPlanPatchService.Patch(_json, actionPlanPatch);
+            var patchedActionPlan = _actionPlanPatchService.Patch(_json, actionPlanPatch);
 
-//            var actionPlan = JsonConvert.DeserializeObject<Models.ActionPlan>(patchedActionPlan);
+            var actionPlan = JsonConvert.DeserializeObject<Models.ActionPlan>(patchedActionPlan);
 
-//            // Assert
-//            Assert.AreEqual(DateTime.MaxValue, actionPlan.DateActionPlanAcknowledged);
-//        }
+            // Assert
+            Assert.AreEqual(DateTime.MaxValue, actionPlan.DateActionPlanAcknowledged);
+        }
 
-//        [Test]
-//        public void ActionPlanPatchServiceTests_CheckCurrentSituationIsUpdated_WhenPatchIsCalled()
-//        {
-//            var actionPlanPatch = new ActionPlanPatch { CurrentSituation = "Current" };
+        [Test]
+        public void ActionPlanPatchServiceTests_CheckCurrentSituationIsUpdated_WhenPatchIsCalled()
+        {
+            var actionPlanPatch = new ActionPlanPatch { CurrentSituation = "Current" };
 
-//            var patchedActionPlan = _actionPlanPatchService.Patch(_json, actionPlanPatch);
+            var patchedActionPlan = _actionPlanPatchService.Patch(_json, actionPlanPatch);
 
-//            var actionPlan = JsonConvert.DeserializeObject<Models.ActionPlan>(patchedActionPlan);
+            var actionPlan = JsonConvert.DeserializeObject<Models.ActionPlan>(patchedActionPlan);
 
-//            // Assert
-//            Assert.AreEqual("Current", actionPlan.CurrentSituation);
-//        }
+            // Assert
+            Assert.AreEqual("Current", actionPlan.CurrentSituation);
+        }
 
-//        [Test]
-//        public void ActionPlanPatchServiceTests_CheckLastModifiedDateIsUpdated_WhenPatchIsCalled()
-//        {
-//            var actionPlanPatch = new ActionPlanPatch { LastModifiedDate = DateTime.MaxValue };
+        [Test]
+        public void ActionPlanPatchServiceTests_CheckLastModifiedDateIsUpdated_WhenPatchIsCalled()
+        {
+            var actionPlanPatch = new ActionPlanPatch { LastModifiedDate = DateTime.MaxValue };
 
-//            var patchedActionPlan = _actionPlanPatchService.Patch(_json, actionPlanPatch);
+            var patchedActionPlan = _actionPlanPatchService.Patch(_json, actionPlanPatch);
 
-//            var actionPlan = JsonConvert.DeserializeObject<Models.ActionPlan>(patchedActionPlan);
+            var actionPlan = JsonConvert.DeserializeObject<Models.ActionPlan>(patchedActionPlan);
 
-//            // Assert
-//            Assert.AreEqual(DateTime.MaxValue, actionPlan.LastModifiedDate);
-//        }
+            // Assert
+            Assert.AreEqual(DateTime.MaxValue, actionPlan.LastModifiedDate);
+        }
 
-//        [Test]
-//        public void ActionPlanPatchServiceTests_CheckLastModifiedTouchpointIdIsUpdated_WhenPatchIsCalled()
-//        {
-//            var actionPlanPatch = new ActionPlanPatch { LastModifiedTouchpointId = "0000000111" };
+        [Test]
+        public void ActionPlanPatchServiceTests_CheckLastModifiedTouchpointIdIsUpdated_WhenPatchIsCalled()
+        {
+            var actionPlanPatch = new ActionPlanPatch { LastModifiedTouchpointId = "0000000111" };
 
-//            var patchedActionPlan = _actionPlanPatchService.Patch(_json, actionPlanPatch);
+            var patchedActionPlan = _actionPlanPatchService.Patch(_json, actionPlanPatch);
 
-//            var actionPlan = JsonConvert.DeserializeObject<Models.ActionPlan>(patchedActionPlan);
-            
-//            // Assert
-//            Assert.AreEqual("0000000111", actionPlan.LastModifiedTouchpointId);
-//        }
+            var actionPlan = JsonConvert.DeserializeObject<Models.ActionPlan>(patchedActionPlan);
 
-//    }
-//}
+            // Assert
+            Assert.AreEqual("0000000111", actionPlan.LastModifiedTouchpointId);
+        }
+
+    }
+}
