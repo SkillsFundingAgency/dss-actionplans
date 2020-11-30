@@ -1,13 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using DFC.JSON.Standard;
+﻿using DFC.JSON.Standard;
+using Moq;
 using NCS.DSS.ActionPlan.Models;
 using NCS.DSS.ActionPlan.PatchActionPlanHttpTrigger.Service;
 using NCS.DSS.ActionPlan.ReferenceData;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using NSubstitute;
 using NUnit.Framework;
+using System;
 
 namespace NCS.DSS.ActionPlan.Tests.ServiceTests
 {
@@ -23,9 +21,9 @@ namespace NCS.DSS.ActionPlan.Tests.ServiceTests
         [SetUp]
         public void Setup()
         {
-            _jsonHelper = Substitute.For<JsonHelper>();
-            _actionPlanPatchService = Substitute.For<ActionPlanPatchService>(_jsonHelper);
-            _actionPlanPatch = Substitute.For<ActionPlanPatch>();
+            _jsonHelper = new JsonHelper();
+            _actionPlanPatchService = new ActionPlanPatchService(_jsonHelper);
+            _actionPlanPatch = new ActionPlanPatch();
 
             _json = JsonConvert.SerializeObject(_actionPlanPatch);
         }
@@ -33,7 +31,7 @@ namespace NCS.DSS.ActionPlan.Tests.ServiceTests
         [Test]
         public void ActionPlanPatchServiceTests_ReturnsNull_WhenActionPlanPatchIsNull()
         {
-            var result = _actionPlanPatchService.Patch(string.Empty, Arg.Any<ActionPlanPatch>());
+            var result = _actionPlanPatchService.Patch(string.Empty, It.IsAny<ActionPlanPatch>());
 
             // Assert
             Assert.IsNull(result);
@@ -152,7 +150,7 @@ namespace NCS.DSS.ActionPlan.Tests.ServiceTests
             var patchedActionPlan = _actionPlanPatchService.Patch(_json, actionPlanPatch);
 
             var actionPlan = JsonConvert.DeserializeObject<Models.ActionPlan>(patchedActionPlan);
-            
+
             // Assert
             Assert.AreEqual("0000000111", actionPlan.LastModifiedTouchpointId);
         }

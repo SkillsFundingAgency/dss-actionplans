@@ -1,10 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
+﻿using Moq;
 using NCS.DSS.ActionPlan.ReferenceData;
 using NCS.DSS.ActionPlan.Validation;
-using NSubstitute;
 using NUnit.Framework;
+using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 
 namespace NCS.DSS.ActionPlan.Tests.ValidationTests
 {
@@ -15,7 +15,7 @@ namespace NCS.DSS.ActionPlan.Tests.ValidationTests
         [Test]
         public void ValidateTests_ReturnValidationResult_WhenDateActionPlanCreatedIsNotSupplied()
         {
-            
+
             var actionPlan = new Models.ActionPlan
             {
                 CustomerCharterShownToCustomer = false,
@@ -24,7 +24,7 @@ namespace NCS.DSS.ActionPlan.Tests.ValidationTests
 
             var validation = new Validate();
 
-            var result = validation.ValidateResource(actionPlan, Arg.Any<DateTime>());
+            var result = validation.ValidateResource(actionPlan, It.IsAny<DateTime>());
 
             // Assert
             Assert.IsInstanceOf<List<ValidationResult>>(result);
@@ -35,7 +35,7 @@ namespace NCS.DSS.ActionPlan.Tests.ValidationTests
         [Test]
         public void ValidateTests_ReturnValidationResult_WhenSessionIdIsNotSupplied()
         {
-            
+
             var actionPlan = new Models.ActionPlan
             {
                 DateActionPlanCreated = DateTime.UtcNow,
@@ -44,7 +44,7 @@ namespace NCS.DSS.ActionPlan.Tests.ValidationTests
 
             var validation = new Validate();
 
-            var result = validation.ValidateResource(actionPlan, Arg.Any<DateTime>());
+            var result = validation.ValidateResource(actionPlan, It.IsAny<DateTime>());
 
             // Assert
             Assert.IsInstanceOf<List<ValidationResult>>(result);
@@ -55,8 +55,9 @@ namespace NCS.DSS.ActionPlan.Tests.ValidationTests
         [Test]
         public void ValidateTests_ReturnValidationResult_WhenDateActionPlanCreatedIsNotGreaterThanDateAndTimeOfSession()
         {
-            
-            var actionPlan = new Models.ActionPlan {
+
+            var actionPlan = new Models.ActionPlan
+            {
                 DateActionPlanCreated = DateTime.UtcNow,
                 CustomerCharterShownToCustomer = false,
                 SessionId = Guid.Empty
@@ -75,7 +76,7 @@ namespace NCS.DSS.ActionPlan.Tests.ValidationTests
         [Test]
         public void ValidateTests_ReturnValidationResult_WhenDateActionPlanCreatedIsInTheFuture()
         {
-            
+
             var actionPlan = new Models.ActionPlan
             {
                 CustomerCharterShownToCustomer = false,
@@ -85,7 +86,7 @@ namespace NCS.DSS.ActionPlan.Tests.ValidationTests
 
             var validation = new Validate();
 
-            var result = validation.ValidateResource(actionPlan, Arg.Any<DateTime>());
+            var result = validation.ValidateResource(actionPlan, It.IsAny<DateTime>());
 
             // Assert
             Assert.IsInstanceOf<List<ValidationResult>>(result);
@@ -96,14 +97,16 @@ namespace NCS.DSS.ActionPlan.Tests.ValidationTests
         [Test]
         public void ValidateTests_ReturnValidationResult_WhenCustomerCharterShownToCustomerIsNotSupplied()
         {
-            
-            var actionPlan = new Models.ActionPlan { DateActionPlanCreated = DateTime.UtcNow,
+
+            var actionPlan = new Models.ActionPlan
+            {
+                DateActionPlanCreated = DateTime.UtcNow,
                 SessionId = Guid.Empty
             };
 
             var validation = new Validate();
 
-            var result = validation.ValidateResource(actionPlan, Arg.Any<DateTime>());
+            var result = validation.ValidateResource(actionPlan, It.IsAny<DateTime>());
 
             // Assert
             Assert.IsInstanceOf<List<ValidationResult>>(result);
@@ -114,15 +117,18 @@ namespace NCS.DSS.ActionPlan.Tests.ValidationTests
         [Test]
         public void ValidateTests_ReturnValidationResult_WhenDateAndTimeCharterShownIsInTheFuture()
         {
-            
-            var actionPlan = new Models.ActionPlan { DateActionPlanCreated = DateTime.UtcNow,
+
+            var actionPlan = new Models.ActionPlan
+            {
+                DateActionPlanCreated = DateTime.UtcNow,
                 SessionId = Guid.Empty,
                 CustomerCharterShownToCustomer = false,
-                DateAndTimeCharterShown = DateTime.MaxValue };
+                DateAndTimeCharterShown = DateTime.MaxValue
+            };
 
             var validation = new Validate();
 
-            var result = validation.ValidateResource(actionPlan, Arg.Any<DateTime>());
+            var result = validation.ValidateResource(actionPlan, It.IsAny<DateTime>());
 
             // Assert
             Assert.IsInstanceOf<List<ValidationResult>>(result);
@@ -133,15 +139,18 @@ namespace NCS.DSS.ActionPlan.Tests.ValidationTests
         [Test]
         public void ValidateTests_ReturnValidationResult_WhenDateActionPlanSentToCustomerIsInTheFuture()
         {
-            
-            var actionPlan = new Models.ActionPlan { DateActionPlanCreated = DateTime.UtcNow,
+
+            var actionPlan = new Models.ActionPlan
+            {
+                DateActionPlanCreated = DateTime.UtcNow,
                 CustomerCharterShownToCustomer = false,
                 SessionId = Guid.Empty,
-                DateActionPlanSentToCustomer = DateTime.MaxValue };
+                DateActionPlanSentToCustomer = DateTime.MaxValue
+            };
 
             var validation = new Validate();
 
-            var result = validation.ValidateResource(actionPlan, Arg.Any<DateTime>());
+            var result = validation.ValidateResource(actionPlan, It.IsAny<DateTime>());
 
             // Assert
             Assert.IsInstanceOf<List<ValidationResult>>(result);
@@ -152,7 +161,7 @@ namespace NCS.DSS.ActionPlan.Tests.ValidationTests
         [Test]
         public void ValidateTests_ReturnValidationResult_WhenDateActionPlanSentToCustomerIsNotGreaterThanDateActionPlanCreated()
         {
-            
+
             var actionPlan = new Models.ActionPlan
             {
                 DateActionPlanCreated = DateTime.UtcNow.AddDays(2),
@@ -163,7 +172,7 @@ namespace NCS.DSS.ActionPlan.Tests.ValidationTests
 
             var validation = new Validate();
 
-            var result = validation.ValidateResource(actionPlan, Arg.Any<DateTime>());
+            var result = validation.ValidateResource(actionPlan, It.IsAny<DateTime>());
 
             // Assert
             Assert.IsInstanceOf<List<ValidationResult>>(result);
@@ -174,14 +183,18 @@ namespace NCS.DSS.ActionPlan.Tests.ValidationTests
         [Test]
         public void ValidateTests_ReturnValidationResult_WhenDateActionPlanAcknowledgedIsInTheFuture()
         {
-            
-            var actionPlan = new Models.ActionPlan { DateActionPlanCreated = DateTime.UtcNow,
+
+            var actionPlan = new Models.ActionPlan
+            {
+                DateActionPlanCreated = DateTime.UtcNow,
                 SessionId = Guid.Empty,
-                CustomerCharterShownToCustomer = false, DateActionPlanAcknowledged = DateTime.MaxValue };
+                CustomerCharterShownToCustomer = false,
+                DateActionPlanAcknowledged = DateTime.MaxValue
+            };
 
             var validation = new Validate();
 
-            var result = validation.ValidateResource(actionPlan, Arg.Any<DateTime>());
+            var result = validation.ValidateResource(actionPlan, It.IsAny<DateTime>());
 
             // Assert
             Assert.IsInstanceOf<List<ValidationResult>>(result);
@@ -192,7 +205,7 @@ namespace NCS.DSS.ActionPlan.Tests.ValidationTests
         [Test]
         public void ValidateTests_ReturnValidationResult_WhenDateActionPlanAcknowledgedIsNotGreaterThanDateActionPlanCreated()
         {
-            
+
             var actionPlan = new Models.ActionPlan
             {
                 DateActionPlanCreated = DateTime.MaxValue,
@@ -202,7 +215,7 @@ namespace NCS.DSS.ActionPlan.Tests.ValidationTests
 
             var validation = new Validate();
 
-            var result = validation.ValidateResource(actionPlan, Arg.Any<DateTime>());
+            var result = validation.ValidateResource(actionPlan, It.IsAny<DateTime>());
 
             // Assert
             Assert.IsInstanceOf<List<ValidationResult>>(result);
@@ -213,15 +226,18 @@ namespace NCS.DSS.ActionPlan.Tests.ValidationTests
         [Test]
         public void ValidateTests_ReturnValidationResult_WhenLastModifiedDateIsInTheFuture()
         {
-            
-            var actionPlan = new Models.ActionPlan { DateActionPlanCreated = DateTime.UtcNow,
+
+            var actionPlan = new Models.ActionPlan
+            {
+                DateActionPlanCreated = DateTime.UtcNow,
                 CustomerCharterShownToCustomer = false,
                 SessionId = Guid.Empty,
-                LastModifiedDate = DateTime.MaxValue };
+                LastModifiedDate = DateTime.MaxValue
+            };
 
             var validation = new Validate();
 
-            var result = validation.ValidateResource(actionPlan, Arg.Any<DateTime>());
+            var result = validation.ValidateResource(actionPlan, It.IsAny<DateTime>());
 
             // Assert
             Assert.IsInstanceOf<List<ValidationResult>>(result);
@@ -232,15 +248,18 @@ namespace NCS.DSS.ActionPlan.Tests.ValidationTests
         [Test]
         public void ValidateTests_ReturnValidationResult_WhenActionPlanDeliveryMethodIsNotValid()
         {
-            
-            var actionPlan = new Models.ActionPlan { DateActionPlanCreated = DateTime.UtcNow,
+
+            var actionPlan = new Models.ActionPlan
+            {
+                DateActionPlanCreated = DateTime.UtcNow,
                 CustomerCharterShownToCustomer = false,
                 SessionId = Guid.Empty,
-                ActionPlanDeliveryMethod = (ActionPlanDeliveryMethod)100 };
+                ActionPlanDeliveryMethod = (ActionPlanDeliveryMethod)100
+            };
 
             var validation = new Validate();
 
-            var result = validation.ValidateResource(actionPlan, Arg.Any<DateTime>());
+            var result = validation.ValidateResource(actionPlan, It.IsAny<DateTime>());
 
             // Assert
             Assert.IsInstanceOf<List<ValidationResult>>(result);
@@ -251,7 +270,7 @@ namespace NCS.DSS.ActionPlan.Tests.ValidationTests
         [Test]
         public void ValidateTests_ReturnValidationResult_WhenDateActionPlanCreatedIsLessThanDateTimeSessionCreated()
         {
-            
+
             var actionPlan = new Models.ActionPlan
             {
                 CustomerCharterShownToCustomer = false,

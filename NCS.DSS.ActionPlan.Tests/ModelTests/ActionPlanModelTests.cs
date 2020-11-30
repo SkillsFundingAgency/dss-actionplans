@@ -1,8 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using NCS.DSS.ActionPlan.ReferenceData;
-using NSubstitute;
+﻿using Moq;
 using NUnit.Framework;
+using System;
 
 namespace NCS.DSS.ActionPlan.Tests.ModelTests
 {
@@ -48,7 +46,7 @@ namespace NCS.DSS.ActionPlan.Tests.ModelTests
         {
             var actionPlan = new Models.ActionPlan();
 
-            actionPlan.SetIds(Arg.Any<Guid>(), Arg.Any<Guid>(), Arg.Any<string>(), Arg.Any<string>());
+            actionPlan.SetIds(It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<string>(), It.IsAny<string>());
 
             // Assert
             Assert.AreNotSame(Guid.Empty, actionPlan.ActionPlanId);
@@ -60,7 +58,7 @@ namespace NCS.DSS.ActionPlan.Tests.ModelTests
             var actionPlan = new Models.ActionPlan();
 
             var customerId = Guid.NewGuid();
-            actionPlan.SetIds(customerId, Arg.Any<Guid>(), Arg.Any<string>(), Arg.Any<string>());
+            actionPlan.SetIds(customerId, It.IsAny<Guid>(), It.IsAny<string>(), It.IsAny<string>());
 
             // Assert
             Assert.AreEqual(customerId, actionPlan.CustomerId);
@@ -72,7 +70,7 @@ namespace NCS.DSS.ActionPlan.Tests.ModelTests
             var actionPlan = new Models.ActionPlan();
 
             var interactionId = Guid.NewGuid();
-            actionPlan.SetIds(Arg.Any<Guid>(), interactionId, Arg.Any<string>(), Arg.Any<string>());
+            actionPlan.SetIds(It.IsAny<Guid>(), interactionId, It.IsAny<string>(), It.IsAny<string>());
 
             // Assert
             Assert.AreEqual(interactionId, actionPlan.InteractionId);
@@ -83,7 +81,7 @@ namespace NCS.DSS.ActionPlan.Tests.ModelTests
         {
             var actionPlan = new Models.ActionPlan();
 
-            actionPlan.SetIds(Arg.Any<Guid>(), Arg.Any<Guid>(), "0000000000", Arg.Any<string>());
+            actionPlan.SetIds(It.IsAny<Guid>(), It.IsAny<Guid>(), "0000000000", It.IsAny<string>());
 
             // Assert
             Assert.AreEqual("0000000000", actionPlan.LastModifiedTouchpointId);
@@ -94,11 +92,11 @@ namespace NCS.DSS.ActionPlan.Tests.ModelTests
         {
             var actionPlan = new Models.ActionPlan();
 
-            actionPlan.SetIds(Arg.Any<Guid>(), Arg.Any<Guid>(), Arg.Any<string>(), "0000000000");
+            actionPlan.SetIds(It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<string>(), "0000000000");
 
             // Assert
             Assert.AreEqual("0000000000", actionPlan.SubcontractorId);
         }
-        
+
     }
 }
