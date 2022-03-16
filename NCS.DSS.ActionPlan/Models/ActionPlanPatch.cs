@@ -62,7 +62,7 @@ namespace NCS.DSS.ActionPlan.Models
         [Example(Description = "01234567899876543210")]
         public string SubcontractorId { get; set; }
 
-        [Display(Description = "Is the customer satisfied with their action plan?")]
+        [Display(Description = "Indentifier of customer satisfaction levels")]
         [Example(Description = "yes/no/not complete")]
         public CustomerSatisfaction? CustomerSatisfaction { get; set; }
 
