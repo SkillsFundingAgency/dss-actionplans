@@ -63,6 +63,9 @@ namespace NCS.DSS.ActionPlan.PatchActionPlanHttpTrigger.Service
                     _jsonHelper.UpdatePropertyValue(obj["SubcontractorId"], actionPlanPatch.SubcontractorId);
             }
 
+            if (actionPlanPatch.CustomerSatisfaction.HasValue)
+                _jsonHelper.UpdatePropertyValue(obj["IntroducedBy"], actionPlanPatch.CustomerSatisfaction);
+
             return obj.ToString();
         }
     }

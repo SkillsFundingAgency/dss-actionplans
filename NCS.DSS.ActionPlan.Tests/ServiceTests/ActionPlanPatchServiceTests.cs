@@ -155,5 +155,19 @@ namespace NCS.DSS.ActionPlan.Tests.ServiceTests
             Assert.AreEqual("0000000111", actionPlan.LastModifiedTouchpointId);
         }
 
+        [Test]
+        public void CustomerPatchServiceTests_CheckCustomerSatisfactionUpdated_WhenPatchIsCalled()
+        {
+            // Arrange
+            var satisfactionPatch = new ActionPlanPatch { CustomerSatisfaction = CustomerSatisfaction.Satisfied };
+
+            // Act
+            var patchedCustomer = _actionPlanPatchService.Patch(_json, satisfactionPatch);
+            var satisfaction = JsonConvert.DeserializeObject<Models.ActionPlanPatch>(patchedCustomer);
+
+            // Assert
+            Assert.AreEqual(CustomerSatisfaction.Satisfied, satisfaction.CustomerSatisfaction);
+        }
+
     }
 }
