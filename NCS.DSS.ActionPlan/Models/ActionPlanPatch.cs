@@ -62,11 +62,17 @@ namespace NCS.DSS.ActionPlan.Models
         [Example(Description = "01234567899876543210")]
         public string SubcontractorId { get; set; }
 
+        [Display(Description = "Is the customer satisfied with their action plan?")]
+        [Example(Description = "yes/no/not complete")]
+        public CustomerSatisfaction? CustomerSatisfaction { get; set; }
 
         public void SetDefaultValues()
         {
             if (!LastModifiedDate.HasValue)
                 LastModifiedDate = DateTime.UtcNow;
+
+            if (!CustomerSatisfaction.HasValue)
+                CustomerSatisfaction = ReferenceData.CustomerSatisfaction.NotChecked;
         }
 
         public void SetIds(string touchpointId, string subcontractorId)
