@@ -9,8 +9,6 @@ namespace NCS.DSS.ActionPlan.ReferenceData
         Satisfied = 1,
         [Description("No")]
         NotSatisfied = 2,
-        [Description("Not complete")]
-        NotChecked = 3,
     }
 }
 

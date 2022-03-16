@@ -96,7 +96,7 @@ namespace NCS.DSS.ActionPlan.Models
                 CustomerCharterShownToCustomer = false;
 
             if (!CustomerSatisfaction.HasValue)
-                CustomerSatisfaction = ReferenceData.CustomerSatisfaction.NotChecked;
+                CustomerSatisfaction = null;
         }
 
         public void SetIds(Guid customerGuid, Guid interactionGuid, string touchpointId, string subcontractorId)

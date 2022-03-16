@@ -41,8 +41,8 @@ namespace NCS.DSS.ActionPlan.Models
         [Example(Description = "2018-06-22T07:55:00")]
         public DateTime? DateActionPlanAcknowledged { get; set; }
 
-        [StringLength(4000)]
         [Display(Description = "Summary of a customer current situation and how it affects their career.")]
+        [StringLength(4000)]
         [Example(Description = "this is some text")]
         public string CurrentSituation { get; set; }
 
@@ -72,7 +72,7 @@ namespace NCS.DSS.ActionPlan.Models
                 LastModifiedDate = DateTime.UtcNow;
 
             if (!CustomerSatisfaction.HasValue)
-                CustomerSatisfaction = ReferenceData.CustomerSatisfaction.NotChecked;
+                CustomerSatisfaction = null;
         }
 
         public void SetIds(string touchpointId, string subcontractorId)
