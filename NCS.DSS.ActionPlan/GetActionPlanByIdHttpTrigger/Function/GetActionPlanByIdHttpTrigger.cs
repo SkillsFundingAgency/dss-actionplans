@@ -74,10 +74,6 @@ namespace NCS.DSS.ActionPlan.GetActionPlanByIdHttpTrigger.Function
                 return _httpResponseMessageHelper.BadRequest();
             }
 
-            _loggerHelper.LogInformationMessage(log, correlationGuid,
-                string.Format("Get Action Plan By Id C# HTTP trigger function  processed a request. By Touchpoint: {0}",
-                    touchpointId));
-
             var subcontractorId = _httpRequestHelper.GetDssSubcontractorId(req);
             if (string.IsNullOrEmpty(subcontractorId))
             {
@@ -86,8 +82,7 @@ namespace NCS.DSS.ActionPlan.GetActionPlanByIdHttpTrigger.Function
             }
 
             _loggerHelper.LogInformationMessage(log, correlationGuid,
-                string.Format("Get Action Plan By Id C# HTTP trigger function  processed a request. By Touchpoint: {0}",
-                    subcontractorId));
+                string.Format($"Get Action Plan By Id C# HTTP trigger function  processed a request. By Touchpoint {touchpointId} and subcontractorId {subcontractorId}"));
 
             if (!Guid.TryParse(customerId, out var customerGuid))
             {

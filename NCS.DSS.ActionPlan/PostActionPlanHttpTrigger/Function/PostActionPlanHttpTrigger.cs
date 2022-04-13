@@ -83,19 +83,19 @@ namespace NCS.DSS.ActionPlan.PostActionPlanHttpTrigger.Function
                 return _httpResponseMessageHelper.BadRequest();
             }
 
+            var subcontractorId = _httpRequestHelper.GetDssSubcontractorId(req);
+            if (string.IsNullOrEmpty(subcontractorId))
+                _loggerHelper.LogInformationMessage(log, correlationGuid, "Unable to locate 'SubcontractorId' in request header");
+
+            _loggerHelper.LogInformationMessage(log, correlationGuid,
+                string.Format($"Post Action Plan C# HTTP trigger function  processed a request. By Touchpoint {touchpointId} and SubcontractorId {subcontractorId}"));
+
             var ApimURL = _httpRequestHelper.GetDssApimUrl(req);
             if (string.IsNullOrEmpty(ApimURL))
             {
                 _loggerHelper.LogInformationMessage(log, correlationGuid, "Unable to locate 'apimurl' in request header");
                 return _httpResponseMessageHelper.BadRequest();
             }
-
-            var subcontractorId = _httpRequestHelper.GetDssSubcontractorId(req);
-            if (string.IsNullOrEmpty(subcontractorId))
-                _loggerHelper.LogInformationMessage(log, correlationGuid, "Unable to locate 'SubcontractorId' in request header");
-
-            _loggerHelper.LogInformationMessage(log, correlationGuid,
-                string.Format("Post Action Plan C# HTTP trigger function  processed a request. By Touchpoint: {0}", touchpointId));
 
             if (!Guid.TryParse(customerId, out var customerGuid))
             {

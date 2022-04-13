@@ -22,7 +22,8 @@ namespace NCS.DSS.ActionPlan.ServiceBus
                 LastModifiedDate = actionPlan.LastModifiedDate,
                 URL = reqUrl + "/" + actionPlan.ActionPlanId,
                 IsNewCustomer = false,
-                TouchpointId = actionPlan.LastModifiedTouchpointId
+                TouchpointId = actionPlan.LastModifiedTouchpointId,
+                SubcontractorId = actionPlan.SubcontractorId
             };
 
             var msg = new Message(Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(messageModel)))
@@ -45,7 +46,8 @@ namespace NCS.DSS.ActionPlan.ServiceBus
                 LastModifiedDate = actionPlan.LastModifiedDate,
                 URL = reqUrl,
                 IsNewCustomer = false,
-                TouchpointId = actionPlan.LastModifiedTouchpointId
+                TouchpointId = actionPlan.LastModifiedTouchpointId,
+                SubcontractorId = actionPlan.SubcontractorId
             };
 
             var msg = new Message(Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(messageModel)))
@@ -67,6 +69,8 @@ namespace NCS.DSS.ActionPlan.ServiceBus
         public string URL { get; set; }
         public bool IsNewCustomer { get; set; }
         public string TouchpointId { get; set; }
+        public string SubcontractorId { get; set; }
+
     }
 
 }
