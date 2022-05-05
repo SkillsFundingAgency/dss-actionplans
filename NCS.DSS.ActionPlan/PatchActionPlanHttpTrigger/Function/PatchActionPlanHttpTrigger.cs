@@ -98,10 +98,6 @@ namespace NCS.DSS.ActionPlan.PatchActionPlanHttpTrigger.Function
                 return _httpResponseMessageHelper.BadRequest();
             }
 
-            var subcontractorId = _httpRequestHelper.GetDssSubcontractorId(req);
-            if (string.IsNullOrEmpty(subcontractorId))
-                _loggerHelper.LogInformationMessage(log, correlationGuid, "Unable to locate 'SubcontractorId' in request header");
-
             _loggerHelper.LogInformationMessage(log, correlationGuid,
                 string.Format("Patch Action Plan C# HTTP trigger function  processed a request. By Touchpoint: {0}",
                     touchpointId));
