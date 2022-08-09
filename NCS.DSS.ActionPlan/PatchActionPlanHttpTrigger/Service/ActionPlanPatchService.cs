@@ -66,7 +66,7 @@ namespace NCS.DSS.ActionPlan.PatchActionPlanHttpTrigger.Service
             if (actionPlanPatch.CustomerSatisfaction.HasValue)
             {
                 if (obj["CustomerSatisfaction"] == null)
-                    _jsonHelper.CreatePropertyOnJObject(obj, "SubcontractorId", actionPlanPatch.SubcontractorId);
+                    _jsonHelper.CreatePropertyOnJObject(obj, "CustomerSatisfaction", actionPlanPatch.SubcontractorId);
                 else
                     _jsonHelper.UpdatePropertyValue(obj["CustomerSatisfaction"], actionPlanPatch.CustomerSatisfaction);
             }
