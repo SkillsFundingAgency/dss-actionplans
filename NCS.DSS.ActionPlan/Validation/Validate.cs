@@ -68,7 +68,7 @@ namespace NCS.DSS.ActionPlan.Validation
                 results.Add(new ValidationResult("Please supply a valid Action Plan Delivery Method", new[] { "ActionPlanDeliveryMethod" }));
 
             if (actionPlanResource.CustomerSatisfaction.HasValue && !Enum.IsDefined(typeof(CustomerSatisfaction), actionPlanResource.CustomerSatisfaction.Value))
-                results.Add(new ValidationResult("Please supply either a value of 1 or 2 for Customer Satisfaction", new[] { "CustomerSatisfaction" }));
+                results.Add(new ValidationResult("Please supply a valid Customer Satisfaction result", new[] { "CustomerSatisfaction" }));
             
         }
     }

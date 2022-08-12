@@ -9,6 +9,8 @@ namespace NCS.DSS.ActionPlan.ReferenceData
         Satisfied = 1,
         [Description("No")]
         NotSatisfied = 2,
+        [Description("N/A")]
+        NotAvailable = 99,
     }
 }
 
