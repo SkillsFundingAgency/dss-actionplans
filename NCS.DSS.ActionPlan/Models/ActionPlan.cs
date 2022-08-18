@@ -83,6 +83,9 @@ namespace NCS.DSS.ActionPlan.Models
         [JsonIgnoreOnSerialize]
         public string CreatedBy { get; set; }
 
+        [Display(Description = "Is the customer satisfied with their action plan?")]
+        [Example(Description = "yes/no/not complete")]
+        public CustomerSatisfaction? CustomerSatisfaction { get; set; }
 
         public void SetDefaultValues()
         {
@@ -91,6 +94,9 @@ namespace NCS.DSS.ActionPlan.Models
 
             if (!CustomerCharterShownToCustomer.HasValue)
                 CustomerCharterShownToCustomer = false;
+
+            if (!CustomerSatisfaction.HasValue)
+                CustomerSatisfaction = null;
         }
 
         public void SetIds(Guid customerGuid, Guid interactionGuid, string touchpointId, string subcontractorId)
