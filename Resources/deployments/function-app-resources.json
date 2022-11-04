@@ -53,6 +53,7 @@
         "serverFarmId": "[parameters('appServicePlanId')]",
         "siteConfig": {
           "alwaysOn": true,
+          "netFrameworkVersion": "v6.0",
           "mintlsVersion": "1.2",
           "appSettings": [
             {
