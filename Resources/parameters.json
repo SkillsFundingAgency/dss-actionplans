@@ -16,6 +16,9 @@
         },
         "sharedAppServicePlanResourceGroup": {
             "value": ""
+        },
+        "workspaceId": {
+          "value": "__sharedLogAnalyticsWorkspace__"
         }
     }
 }
