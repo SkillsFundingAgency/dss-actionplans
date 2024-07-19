@@ -71,8 +71,8 @@ namespace NCS.DSS.ActionPlan.Tests.FunctionTests
             var result = await RunFunction(InValidId, ValidInteractionId);
 
             // Assert
-            Assert.IsInstanceOf<HttpResponseMessage>(result);
-            Assert.AreEqual(HttpStatusCode.BadRequest, result.StatusCode);
+            Assert.That(typeof(HttpResponseMessage) == result.GetType());
+            Assert.That(HttpStatusCode.BadRequest == result.StatusCode);
         }
 
         [Test]
@@ -85,8 +85,8 @@ namespace NCS.DSS.ActionPlan.Tests.FunctionTests
             var result = await RunFunction(InValidId, ValidInteractionId);
 
             // Assert
-            Assert.IsInstanceOf<HttpResponseMessage>(result);
-            Assert.AreEqual(HttpStatusCode.BadRequest, result.StatusCode);
+            Assert.That(typeof(HttpResponseMessage) == result.GetType());
+            Assert.That(HttpStatusCode.BadRequest == result.StatusCode);
         }
 
         [Test]
@@ -100,8 +100,8 @@ namespace NCS.DSS.ActionPlan.Tests.FunctionTests
             var result = await RunFunction(InValidId, ValidInteractionId);
 
             // Assert
-            Assert.IsInstanceOf<HttpResponseMessage>(result);
-            Assert.AreEqual(HttpStatusCode.BadRequest, result.StatusCode);
+            Assert.That(typeof(HttpResponseMessage) == result.GetType());
+            Assert.That(HttpStatusCode.BadRequest == result.StatusCode);
         }
 
         [Test]
@@ -115,8 +115,8 @@ namespace NCS.DSS.ActionPlan.Tests.FunctionTests
             var result = await RunFunction(ValidCustomerId, InValidId);
 
             // Assert
-            Assert.IsInstanceOf<HttpResponseMessage>(result);
-            Assert.AreEqual(HttpStatusCode.BadRequest, result.StatusCode);
+            Assert.That(typeof(HttpResponseMessage) == result.GetType());
+            Assert.That(HttpStatusCode.BadRequest == result.StatusCode);
         }
 
         [Test]
@@ -141,8 +141,8 @@ namespace NCS.DSS.ActionPlan.Tests.FunctionTests
             var result = await RunFunction(ValidCustomerId, ValidInteractionId);
 
             // Assert
-            Assert.IsInstanceOf<HttpResponseMessage>(result);
-            Assert.AreEqual((HttpStatusCode)422, result.StatusCode);
+            Assert.That(typeof(HttpResponseMessage) == result.GetType());
+            Assert.That(HttpStatusCode.UnprocessableEntity == result.StatusCode);
         }
 
         [Test]
@@ -157,8 +157,8 @@ namespace NCS.DSS.ActionPlan.Tests.FunctionTests
             var result = await RunFunction(ValidCustomerId, ValidInteractionId);
 
             // Assert
-            Assert.IsInstanceOf<HttpResponseMessage>(result);
-            Assert.AreEqual((HttpStatusCode)422, result.StatusCode);
+            Assert.That(typeof(HttpResponseMessage) == result.GetType());
+            Assert.That(HttpStatusCode.UnprocessableEntity == result.StatusCode);
         }
 
         [Test]
@@ -168,14 +168,14 @@ namespace NCS.DSS.ActionPlan.Tests.FunctionTests
             _httpRequestHelper.Setup(x => x.GetDssTouchpointId(_request)).Returns("0000000001");
             _httpRequestHelper.Setup(x => x.GetDssApimUrl(_request)).Returns("http://localhost:");
             _httpRequestHelper.Setup(x => x.GetResourceFromRequest<Models.ActionPlan>(_request)).Returns(Task.FromResult<Models.ActionPlan>(_actionPlan));
-            _resourceHelper.Setup(x=>x.DoesCustomerExist(It.IsAny<Guid>())).Returns(Task.FromResult(false));
+            _resourceHelper.Setup(x => x.DoesCustomerExist(It.IsAny<Guid>())).Returns(Task.FromResult(false));
 
             // Act
             var result = await RunFunction(ValidCustomerId, ValidInteractionId);
 
             // Assert
-            Assert.IsInstanceOf<HttpResponseMessage>(result);
-            Assert.AreEqual(HttpStatusCode.NoContent, result.StatusCode);
+            Assert.That(typeof(HttpResponseMessage) == result.GetType());
+            Assert.That(HttpStatusCode.NoContent == result.StatusCode);
         }
 
         [Test]
@@ -186,14 +186,14 @@ namespace NCS.DSS.ActionPlan.Tests.FunctionTests
             _httpRequestHelper.Setup(x => x.GetDssApimUrl(_request)).Returns("http://localhost:");
             _httpRequestHelper.Setup(x => x.GetResourceFromRequest<Models.ActionPlan>(_request)).Returns(Task.FromResult<Models.ActionPlan>(_actionPlan));
             _resourceHelper.Setup(x => x.DoesCustomerExist(It.IsAny<Guid>())).Returns(Task.FromResult(true));
-            _resourceHelper.Setup(x=>x.DoesInteractionExistAndBelongToCustomer(It.IsAny<Guid>(), It.IsAny<Guid>())).Returns(false);
+            _resourceHelper.Setup(x => x.DoesInteractionExistAndBelongToCustomer(It.IsAny<Guid>(), It.IsAny<Guid>())).Returns(false);
 
             // Act
             var result = await RunFunction(ValidCustomerId, ValidInteractionId);
 
             // Assert
-            Assert.IsInstanceOf<HttpResponseMessage>(result);
-            Assert.AreEqual(HttpStatusCode.NoContent, result.StatusCode);
+            Assert.That(typeof(HttpResponseMessage) == result.GetType());
+            Assert.That(HttpStatusCode.NoContent == result.StatusCode);
         }
 
         [Test]
@@ -207,14 +207,14 @@ namespace NCS.DSS.ActionPlan.Tests.FunctionTests
             _resourceHelper.Setup(x => x.DoesCustomerExist(It.IsAny<Guid>())).Returns(Task.FromResult(true));
             _resourceHelper.Setup(x => x.DoesInteractionExistAndBelongToCustomer(It.IsAny<Guid>(), It.IsAny<Guid>())).Returns(true);
             _resourceHelper.Setup(x => x.DoesSessionExistAndBelongToCustomer(It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<Guid>())).Returns(true);
-            _postActionPlanHttpTriggerService.Setup(x=>x.CreateAsync(It.IsAny<Models.ActionPlan>())).Returns(Task.FromResult<Models.ActionPlan>(null));
+            _postActionPlanHttpTriggerService.Setup(x => x.CreateAsync(It.IsAny<Models.ActionPlan>())).Returns(Task.FromResult<Models.ActionPlan>(null));
 
             // Act
             var result = await RunFunction(ValidCustomerId, ValidInteractionId);
 
             // Assert
-            Assert.IsInstanceOf<HttpResponseMessage>(result);
-            Assert.AreEqual(HttpStatusCode.BadRequest, result.StatusCode);
+            Assert.That(typeof(HttpResponseMessage) == result.GetType());
+            Assert.That(HttpStatusCode.BadRequest == result.StatusCode);
         }
 
         [Test]
@@ -234,10 +234,9 @@ namespace NCS.DSS.ActionPlan.Tests.FunctionTests
             var result = await RunFunction(ValidCustomerId, ValidInteractionId);
 
             // Assert
-            Assert.IsInstanceOf<HttpResponseMessage>(result);
-            Assert.AreEqual(HttpStatusCode.Created, result.StatusCode);
+            Assert.That(typeof(HttpResponseMessage) == result.GetType());
+            Assert.That(HttpStatusCode.Created == result.StatusCode);
         }
-
         private async Task<HttpResponseMessage> RunFunction(string customerId, string interactionId)
         {
             return await _function.Run(

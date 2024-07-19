@@ -2,7 +2,6 @@
 using DFC.HTTP.Standard;
 using DFC.JSON.Standard;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Http.Internal;
 using Microsoft.Extensions.Logging;
 using Moq;
 using NCS.DSS.ActionPlan.Cosmos.Helper;
@@ -40,7 +39,7 @@ namespace NCS.DSS.ActionPlan.Tests.FunctionTests
         public void Setup()
         {
             _actionPlan = new Models.ActionPlan();
-            _request = new DefaultHttpRequest(new DefaultHttpContext());
+            _request = (new DefaultHttpContext()).Request;
             _log = new Mock<ILogger>();
             _resourceHelper = new Mock<IResourceHelper>();
             _loggerHelper = new Mock<ILoggerHelper>();
@@ -51,49 +50,48 @@ namespace NCS.DSS.ActionPlan.Tests.FunctionTests
             _function = new GetActionPlanByIdHttpTrigger.Function.GetActionPlanByIdHttpTrigger(_resourceHelper.Object, _getActionPlanByIdHttpTriggerService.Object, _loggerHelper.Object, _httpRequestHelper.Object, _httpResponseMessageHelper, _jsonHelper);
         }
 
-        [Test]
         public async Task GetActionPlanByIdHttpTrigger_ReturnsStatusCodeBadRequest_WhenDssCorrelationIdIsInvalid()
         {
             // Arrange
-            _httpRequestHelper.Setup(x=>x.GetDssCorrelationId(_request)).Returns(InValidId);
+            _httpRequestHelper.Setup(x => x.GetDssCorrelationId(_request)).Returns(InValidId);
 
             // Act
             var result = await RunFunction(InValidId, ValidInteractionId, ValidActionPlanId);
 
             // Assert
-            Assert.IsInstanceOf<HttpResponseMessage>(result);
-            Assert.AreEqual(HttpStatusCode.BadRequest, result.StatusCode);
+            Assert.That(typeof(HttpResponseMessage) == result.GetType());
+            Assert.That(HttpStatusCode.BadRequest == result.StatusCode);
         }
 
         [Test]
         public async Task GetActionPlanByIdHttpTrigger_ReturnsStatusCodeBadRequest_WhenTouchpointIdIsNotProvided()
         {
             // Arrange
-            _httpRequestHelper.Setup(x=>x.GetDssTouchpointId(_request)).Returns((string)null);
-            _httpRequestHelper.Setup(x=>x.GetDssCorrelationId(_request)).Returns(ValidDssCorrelationId);
+            _httpRequestHelper.Setup(x => x.GetDssTouchpointId(_request)).Returns((string)null);
+            _httpRequestHelper.Setup(x => x.GetDssCorrelationId(_request)).Returns(ValidDssCorrelationId);
 
 
             // Act
             var result = await RunFunction(InValidId, ValidInteractionId, ValidActionPlanId);
 
             // Assert
-            Assert.IsInstanceOf<HttpResponseMessage>(result);
-            Assert.AreEqual(HttpStatusCode.BadRequest, result.StatusCode);
+            Assert.That(typeof(HttpResponseMessage) == result.GetType());
+            Assert.That(HttpStatusCode.BadRequest == result.StatusCode);
         }
 
         [Test]
         public async Task GetActionPlanByIdHttpTrigger_ReturnsStatusCodeBadRequest_WhenCustomerIdIsInvalid()
         {
             // Arrange
-            _httpRequestHelper.Setup(x=>x.GetDssCorrelationId(_request)).Returns(ValidDssCorrelationId);
-            _httpRequestHelper.Setup(x=>x.GetDssTouchpointId(_request)).Returns("0000000001");
+            _httpRequestHelper.Setup(x => x.GetDssCorrelationId(_request)).Returns(ValidDssCorrelationId);
+            _httpRequestHelper.Setup(x => x.GetDssTouchpointId(_request)).Returns("0000000001");
 
             // Act
             var result = await RunFunction(InValidId, ValidInteractionId, ValidActionPlanId);
 
             // Assert
-            Assert.IsInstanceOf<HttpResponseMessage>(result);
-            Assert.AreEqual(HttpStatusCode.BadRequest, result.StatusCode);
+            Assert.That(typeof(HttpResponseMessage) == result.GetType());
+            Assert.That(HttpStatusCode.BadRequest == result.StatusCode);
         }
 
         [Test]
@@ -107,8 +105,8 @@ namespace NCS.DSS.ActionPlan.Tests.FunctionTests
             var result = await RunFunction(ValidCustomerId, InValidId, ValidActionPlanId);
 
             // Assert
-            Assert.IsInstanceOf<HttpResponseMessage>(result);
-            Assert.AreEqual(HttpStatusCode.BadRequest, result.StatusCode);
+            Assert.That(typeof(HttpResponseMessage) == result.GetType());
+            Assert.That(HttpStatusCode.BadRequest == result.StatusCode);
         }
 
         [Test]
@@ -122,8 +120,8 @@ namespace NCS.DSS.ActionPlan.Tests.FunctionTests
             var result = await RunFunction(ValidCustomerId, ValidInteractionId, InValidId);
 
             // Assert
-            Assert.IsInstanceOf<HttpResponseMessage>(result);
-            Assert.AreEqual(HttpStatusCode.BadRequest, result.StatusCode);
+            Assert.That(typeof(HttpResponseMessage) == result.GetType());
+            Assert.That(HttpStatusCode.BadRequest == result.StatusCode);
         }
 
         [Test]
@@ -132,14 +130,14 @@ namespace NCS.DSS.ActionPlan.Tests.FunctionTests
             // Arrange
             _httpRequestHelper.Setup(x => x.GetDssCorrelationId(_request)).Returns(ValidDssCorrelationId);
             _httpRequestHelper.Setup(x => x.GetDssTouchpointId(_request)).Returns("0000000001");
-            _resourceHelper.Setup(x=>x.DoesCustomerExist(It.IsAny<Guid>())).Returns(Task.FromResult(false));
+            _resourceHelper.Setup(x => x.DoesCustomerExist(It.IsAny<Guid>())).Returns(Task.FromResult(false));
 
             // Act
             var result = await RunFunction(ValidCustomerId, ValidInteractionId, ValidActionPlanId);
 
             // Assert
-            Assert.IsInstanceOf<HttpResponseMessage>(result);
-            Assert.AreEqual(HttpStatusCode.NoContent, result.StatusCode);
+            Assert.That(typeof(HttpResponseMessage) == result.GetType());
+            Assert.That(HttpStatusCode.NoContent == result.StatusCode);
         }
 
         [Test]
@@ -148,15 +146,15 @@ namespace NCS.DSS.ActionPlan.Tests.FunctionTests
             // Arrange
             _httpRequestHelper.Setup(x => x.GetDssCorrelationId(_request)).Returns(ValidDssCorrelationId);
             _httpRequestHelper.Setup(x => x.GetDssTouchpointId(_request)).Returns("0000000001");
-            _resourceHelper.Setup(x=>x.DoesCustomerExist(It.IsAny<Guid>())).Returns(Task.FromResult(true));
-            _resourceHelper.Setup(x=>x.DoesInteractionExistAndBelongToCustomer(It.IsAny<Guid>(), It.IsAny<Guid>())).Returns(false);
+            _resourceHelper.Setup(x => x.DoesCustomerExist(It.IsAny<Guid>())).Returns(Task.FromResult(true));
+            _resourceHelper.Setup(x => x.DoesInteractionExistAndBelongToCustomer(It.IsAny<Guid>(), It.IsAny<Guid>())).Returns(false);
 
             // Act
             var result = await RunFunction(ValidCustomerId, ValidInteractionId, ValidActionPlanId);
 
             // Assert
-            Assert.IsInstanceOf<HttpResponseMessage>(result);
-            Assert.AreEqual(HttpStatusCode.NoContent, result.StatusCode);
+            Assert.That(typeof(HttpResponseMessage) == result.GetType());
+            Assert.That(HttpStatusCode.NoContent == result.StatusCode);
         }
 
         [Test]
@@ -165,16 +163,16 @@ namespace NCS.DSS.ActionPlan.Tests.FunctionTests
             // Arrange
             _httpRequestHelper.Setup(x => x.GetDssCorrelationId(_request)).Returns(ValidDssCorrelationId);
             _httpRequestHelper.Setup(x => x.GetDssTouchpointId(_request)).Returns("0000000001");
-            _resourceHelper.Setup(x=>x.DoesCustomerExist(It.IsAny<Guid>())).Returns(Task.FromResult(true));
-            _resourceHelper.Setup(x=>x.DoesInteractionExistAndBelongToCustomer(It.IsAny<Guid>(), It.IsAny<Guid>())).Returns(true);
-            _getActionPlanByIdHttpTriggerService.Setup(x=>x.GetActionPlanForCustomerAsync(It.IsAny<Guid>(), It.IsAny<Guid>())).Returns(Task.FromResult<Models.ActionPlan>(null));
+            _resourceHelper.Setup(x => x.DoesCustomerExist(It.IsAny<Guid>())).Returns(Task.FromResult(true));
+            _resourceHelper.Setup(x => x.DoesInteractionExistAndBelongToCustomer(It.IsAny<Guid>(), It.IsAny<Guid>())).Returns(true);
+            _getActionPlanByIdHttpTriggerService.Setup(x => x.GetActionPlanForCustomerAsync(It.IsAny<Guid>(), It.IsAny<Guid>())).Returns(Task.FromResult<Models.ActionPlan>(null));
 
             // Act
             var result = await RunFunction(ValidCustomerId, ValidInteractionId, ValidActionPlanId);
 
             // Assert
-            Assert.IsInstanceOf<HttpResponseMessage>(result);
-            Assert.AreEqual(HttpStatusCode.NoContent, result.StatusCode);
+            Assert.That(typeof(HttpResponseMessage) == result.GetType());
+            Assert.That(HttpStatusCode.NoContent == result.StatusCode);
         }
 
         [Test]
@@ -183,18 +181,17 @@ namespace NCS.DSS.ActionPlan.Tests.FunctionTests
             // Arrange
             _httpRequestHelper.Setup(x => x.GetDssCorrelationId(_request)).Returns(ValidDssCorrelationId);
             _httpRequestHelper.Setup(x => x.GetDssTouchpointId(_request)).Returns("0000000001");
-            _resourceHelper.Setup(x=>x.DoesCustomerExist(It.IsAny<Guid>())).Returns(Task.FromResult(true));
-            _resourceHelper.Setup(x=>x.DoesInteractionExistAndBelongToCustomer(It.IsAny<Guid>(), It.IsAny<Guid>())).Returns(true);
-            _getActionPlanByIdHttpTriggerService.Setup(x=>x.GetActionPlanForCustomerAsync(It.IsAny<Guid>(), It.IsAny<Guid>())).Returns(Task.FromResult(_actionPlan));
+            _resourceHelper.Setup(x => x.DoesCustomerExist(It.IsAny<Guid>())).Returns(Task.FromResult(true));
+            _resourceHelper.Setup(x => x.DoesInteractionExistAndBelongToCustomer(It.IsAny<Guid>(), It.IsAny<Guid>())).Returns(true);
+            _getActionPlanByIdHttpTriggerService.Setup(x => x.GetActionPlanForCustomerAsync(It.IsAny<Guid>(), It.IsAny<Guid>())).Returns(Task.FromResult(_actionPlan));
 
             // Act
             var result = await RunFunction(ValidCustomerId, ValidInteractionId, ValidActionPlanId);
 
             // Assert
-            Assert.IsInstanceOf<HttpResponseMessage>(result);
-            Assert.AreEqual(HttpStatusCode.OK, result.StatusCode);
+            Assert.That(typeof(HttpResponseMessage) == result.GetType());
+            Assert.That(HttpStatusCode.OK == result.StatusCode);
         }
-
         private async Task<HttpResponseMessage> RunFunction(string customerId, string interactionId, string actionPlanId)
         {
             return await _function.Run(

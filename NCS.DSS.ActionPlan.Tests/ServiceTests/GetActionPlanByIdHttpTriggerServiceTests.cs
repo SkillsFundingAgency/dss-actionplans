@@ -35,7 +35,7 @@ namespace NCS.DSS.ActionPlan.Tests.ServiceTests
             var result = await _actionPlanHttpTriggerService.GetActionPlanForCustomerAsync(_customerId, _actionPlanId);
 
             // Assert
-            Assert.IsNull(result);
+            Assert.That(result,Is.Null);
         }
 
         [Test]
@@ -48,8 +48,8 @@ namespace NCS.DSS.ActionPlan.Tests.ServiceTests
             var result = await _actionPlanHttpTriggerService.GetActionPlanForCustomerAsync(_customerId, _actionPlanId);
 
             // Assert
-            Assert.IsNotNull(result);
-            Assert.IsInstanceOf<Models.ActionPlan>(result);
+            Assert.That(result,Is.Not.Null);
+            Assert.That(typeof(Models.ActionPlan) == result.GetType());
         }
     }
 }
