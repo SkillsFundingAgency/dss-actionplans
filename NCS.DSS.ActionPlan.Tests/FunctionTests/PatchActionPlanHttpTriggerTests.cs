@@ -12,8 +12,6 @@ using NCS.DSS.ActionPlan.Validation;
 using Newtonsoft.Json;
 using NUnit.Framework;
 using System;
-using System.Net;
-using System.Net.Http;
 using System.Threading.Tasks;
 
 namespace NCS.DSS.ActionPlan.Tests.FunctionTests

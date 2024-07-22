@@ -10,7 +10,6 @@ using NCS.DSS.ActionPlan.GetActionPlanHttpTrigger.Service;
 using System;
 using System.ComponentModel.DataAnnotations;
 using System.Net;
-using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.Azure.Functions.Worker;
 
