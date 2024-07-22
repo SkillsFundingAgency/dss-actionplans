@@ -22,7 +22,6 @@ namespace NCS.DSS.ActionPlan.GetActionPlanHttpTrigger.Function
         private IGetActionPlanHttpTriggerService _actionPlanGetService;
         private ILoggerHelper _loggerHelper;
         private IHttpRequestHelper _httpRequestHelper;
-        private IHttpResponseMessageHelper _httpResponseMessageHelper;
         private IJsonHelper _jsonHelper;
 
         public GetActionPlanHttpTrigger(
@@ -30,14 +29,12 @@ namespace NCS.DSS.ActionPlan.GetActionPlanHttpTrigger.Function
             IGetActionPlanHttpTriggerService actionPlanGetService,
             ILoggerHelper loggerHelper,
             IHttpRequestHelper httpRequestHelper,
-            IHttpResponseMessageHelper httpResponseMessageHelper,
             IJsonHelper jsonHelper)
         {
             _resourceHelper = resourceHelper;
             _actionPlanGetService = actionPlanGetService;
             _loggerHelper = loggerHelper;
             _httpRequestHelper = httpRequestHelper;
-            _httpResponseMessageHelper = httpResponseMessageHelper;
             _jsonHelper = jsonHelper;
         }
 
@@ -49,7 +46,7 @@ namespace NCS.DSS.ActionPlan.GetActionPlanHttpTrigger.Function
         [Response(HttpStatusCode = (int)HttpStatusCode.Unauthorized, Description = "API key is unknown or invalid", ShowSchema = false)]
         [Response(HttpStatusCode = (int)HttpStatusCode.Forbidden, Description = "Insufficient access", ShowSchema = false)]
         [Display(Name = "Get", Description = "Ability to return all action plans for the given customer.")]
-        public async Task<HttpResponseMessage> Run([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "Customers/{customerId}/ActionPlans")] HttpRequest req, ILogger log, string customerId)
+        public async Task<IActionResult> Run([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "Customers/{customerId}/ActionPlans")] HttpRequest req, ILogger log, string customerId)
         {
 
 
@@ -68,7 +65,7 @@ namespace NCS.DSS.ActionPlan.GetActionPlanHttpTrigger.Function
             var touchpointId = _httpRequestHelper.GetDssTouchpointId(req);
             if (string.IsNullOrEmpty(touchpointId))
             {
-                var response = _httpResponseMessageHelper.BadRequest();
+                var response = new BadRequestObjectResult("");
                 log.LogWarning($"Response Status Code: [{response.StatusCode}]. Unable to locate 'TouchpointId' in request header");
                 return response;
             }
@@ -77,7 +74,7 @@ namespace NCS.DSS.ActionPlan.GetActionPlanHttpTrigger.Function
 
             if (!Guid.TryParse(customerId, out var customerGuid))
             {
-                var response = _httpResponseMessageHelper.BadRequest(customerGuid);
+                var response = new BadRequestObjectResult(customerGuid);
                 log.LogWarning($"Response Status Code: [{response.StatusCode}]. Unable to parse 'customerId' to a Guid: [{customerId}]");
                 return response;
             }
@@ -87,7 +84,7 @@ namespace NCS.DSS.ActionPlan.GetActionPlanHttpTrigger.Function
 
             if (!doesCustomerExist)
             {
-                var response = _httpResponseMessageHelper.NoContent(customerGuid);
+                var response = new NoContentResult();
                 log.LogWarning($"Response Status Code: [{response.StatusCode}]. Customer does not exist [{customerGuid}]");
                 return response;
             }
@@ -97,13 +94,13 @@ namespace NCS.DSS.ActionPlan.GetActionPlanHttpTrigger.Function
 
             if (actionPlans == null)
             {
-                var response = _httpResponseMessageHelper.NoContent(customerGuid);
+                var response = new NoContentResult();
                 log.LogWarning($"Response Status Code: [{response.StatusCode}]. Get failed, no action plan found for customer [{customerGuid}]");
                 return response;
             }
             else
             {
-                var response = _httpResponseMessageHelper.Ok(_jsonHelper.SerializeObjectsAndRenameIdProperty(actionPlans, "id", "ActionPlanId"));
+                var response = new OkObjectResult(_jsonHelper.SerializeObjectsAndRenameIdProperty(actionPlans, "id", "ActionPlanId"));
                 log.LogInformation($"Response Status Code: [{response.StatusCode}]. Get returned content");
                 return response;
             }

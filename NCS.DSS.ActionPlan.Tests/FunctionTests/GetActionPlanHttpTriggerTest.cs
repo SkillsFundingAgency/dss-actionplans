@@ -1,7 +1,9 @@
 ﻿using DFC.Common.Standard.Logging;
 using DFC.HTTP.Standard;
 using DFC.JSON.Standard;
+using Grpc.Core;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Moq;
 using NCS.DSS.ActionPlan.Cosmos.Helper;
@@ -28,7 +30,6 @@ namespace NCS.DSS.ActionPlan.Tests.FunctionTests
         private Mock<IGetActionPlanHttpTriggerService> _getActionPlanHttpTriggerService;
         private Mock<ILoggerHelper> _loggerHelper;
         private Mock<IHttpRequestHelper> _httpRequestHelper;
-        private IHttpResponseMessageHelper _httpResponseMessageHelper;
         private IJsonHelper _jsonHelper;
         private GetActionPlanHttpTrigger.Function.GetActionPlanHttpTrigger _function;
 
@@ -40,12 +41,11 @@ namespace NCS.DSS.ActionPlan.Tests.FunctionTests
             _resourceHelper = new Mock<IResourceHelper>();
             _loggerHelper = new Mock<ILoggerHelper>();
             _httpRequestHelper = new Mock<IHttpRequestHelper>();
-            _httpResponseMessageHelper = new HttpResponseMessageHelper();
             _jsonHelper = new JsonHelper();
             _log = new Mock<ILogger>();
             _resourceHelper = new Mock<IResourceHelper>();
             _getActionPlanHttpTriggerService = new Mock<IGetActionPlanHttpTriggerService>();
-            _function = new GetActionPlanHttpTrigger.Function.GetActionPlanHttpTrigger(_resourceHelper.Object, _getActionPlanHttpTriggerService.Object, _loggerHelper.Object, _httpRequestHelper.Object, _httpResponseMessageHelper, _jsonHelper);
+            _function = new GetActionPlanHttpTrigger.Function.GetActionPlanHttpTrigger(_resourceHelper.Object, _getActionPlanHttpTriggerService.Object, _loggerHelper.Object, _httpRequestHelper.Object, _jsonHelper);
         }
 
         [Test]
@@ -55,8 +55,11 @@ namespace NCS.DSS.ActionPlan.Tests.FunctionTests
             _httpRequestHelper.Setup(x => x.GetDssCorrelationId(_request)).Returns(ValidDssCorrelationId);
             _httpRequestHelper.Setup(x => x.GetDssTouchpointId(_request)).Returns("0000000001");
 
-            // Act and Assert
-            await ActAndAssert(HttpStatusCode.NoContent);
+            // Act
+            var result = await RunFunction(ValidCustomerId);
+
+            // Assert
+            Assert.That(result, Is.InstanceOf<NoContentResult>());
         }
 
         [Test]
@@ -67,8 +70,11 @@ namespace NCS.DSS.ActionPlan.Tests.FunctionTests
             _httpRequestHelper.Setup(x => x.GetDssTouchpointId(_request)).Returns("0000000001");
             _resourceHelper.Setup(x=>x.DoesCustomerExist(It.IsAny<Guid>())).Returns(Task.FromResult(false));
 
-            /// Act and Assert
-            await ActAndAssert(HttpStatusCode.NoContent);
+            // Act
+            var result = await RunFunction(ValidCustomerId);
+
+            // Assert
+            Assert.That(result, Is.InstanceOf<NoContentResult>());
         }
 
         [Test]
@@ -80,8 +86,11 @@ namespace NCS.DSS.ActionPlan.Tests.FunctionTests
             _httpRequestHelper.Setup(x => x.GetDssTouchpointId(_request)).Returns("0000000001");
             _getActionPlanHttpTriggerService.Setup(x=>x.GetActionPlansAsync(It.IsAny<Guid>())).Returns(Task.FromResult<List<Models.ActionPlan>>(null));
 
-            // Act and Assert
-            await ActAndAssert(HttpStatusCode.NoContent);
+            // Act
+            var result = await RunFunction(ValidCustomerId);
+
+            // Assert
+            Assert.That(result, Is.InstanceOf<NoContentResult>());
         }
 
         [Test]
@@ -94,22 +103,18 @@ namespace NCS.DSS.ActionPlan.Tests.FunctionTests
             var listOfActionPlanes = new List<Models.ActionPlan>();
             _getActionPlanHttpTriggerService.Setup(x=>x.GetActionPlansAsync(It.IsAny<Guid>())).Returns(Task.FromResult(listOfActionPlanes));
 
-            // Act and Assert
-            await ActAndAssert(HttpStatusCode.OK);
-        }
-
-        private async Task<bool> ActAndAssert(HttpStatusCode statusCode)
-        {
+            
             // Act
             var result = await RunFunction(ValidCustomerId);
 
             // Assert
-            Assert.That(typeof(HttpResponseMessage) == result.GetType());
-            Assert.That(statusCode == result.StatusCode);
-            return true;
+            Assert.That(result,Is.InstanceOf<OkObjectResult>());
+            
         }
 
-        private async Task<HttpResponseMessage> RunFunction(string customerId)
+       
+
+        private async Task<IActionResult> RunFunction(string customerId)
         {
             return await _function.Run(
                 _request,
