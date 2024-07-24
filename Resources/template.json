@@ -40,12 +40,6 @@
     },
     "templateBaseUrl": {
       "type": "string"
-    },
-    "workspaceName": {
-        "type": "string"
-    },
-    "workspaceResourceGroup": {
-        "type": "string"
     }
   },
     "variables": {
@@ -96,9 +90,6 @@
                 },
                 "serviceBusQueueName": {
                   "value": "[parameters('serviceBusQueueName')]"
-                },
-                "workspaceId": {
-                  "value": "[resourceId(parameters('workspaceResourceGroup'), 'Microsoft.OperationalInsights/workspaces', parameters('workspaceName'))]"
                 }
               }
             },
