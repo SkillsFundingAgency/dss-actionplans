@@ -1,8 +1,11 @@
-# dss-actionplans
+# DSS Action Plans
+
+> [!NOTE]  
+> The latest version of this API is `v3`
 
 [![Build Status](https://sfa-gov-uk.visualstudio.com/CDS%202.0/_apis/build/status/Yaml/dss-actionplans?repoName=SkillsFundingAgency%2Fdss-actionplans&branchName=master-v3)](https://sfa-gov-uk.visualstudio.com/CDS%202.0/_build/latest?definitionId=1428&repoName=SkillsFundingAgency%2Fdss-actionplans&branchName=master-v3)
 
-Function app to provide api for maintaining an action plan.
+Function App to provide an API for maintaining an action plan.
 
 ## Developer Setup
 
