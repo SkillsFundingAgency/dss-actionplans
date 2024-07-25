@@ -29,7 +29,7 @@ namespace NCS.DSS.ActionPlan.APIDefinition
         {
            var swagger = _swaggerDocumentGenerator.GenerateSwaggerDocument(req, ApiTitle, ApiDescription, ApiDefinitionName, ApiVersion, Assembly.GetExecutingAssembly());
 
-            return new OkObjectResult(new StringContent(swagger));
+            return new OkObjectResult(swagger);
             
         }
     }
