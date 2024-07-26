@@ -11,6 +11,7 @@ using NUnit.Framework;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using GetActionPlanLogger = NCS.DSS.ActionPlan.GetActionPlanHttpTrigger.Function;
 
 namespace NCS.DSS.ActionPlan.Tests.FunctionTests
 {
@@ -21,14 +22,13 @@ namespace NCS.DSS.ActionPlan.Tests.FunctionTests
         private const string ValidDssCorrelationId = "452d8e8c-2516-4a6b-9fc1-c85e578ac066";
         private const string InValidId = "1111111-2222-3333-4444-555555555555";
 
-        private Mock<ILogger> _log;
         private HttpRequest _request;
         private Mock<IResourceHelper> _resourceHelper;
         private Mock<IGetActionPlanHttpTriggerService> _getActionPlanHttpTriggerService;
-        private Mock<ILoggerHelper> _loggerHelper;
+        private Mock<ILogger<GetActionPlanLogger.GetActionPlanHttpTrigger>> _loggerHelper;
         private Mock<IHttpRequestHelper> _httpRequestHelper;
         private IJsonHelper _jsonHelper;
-        private GetActionPlanHttpTrigger.Function.GetActionPlanHttpTrigger _function;
+        private GetActionPlanLogger.GetActionPlanHttpTrigger _function;
 
         [SetUp]
         public void Setup()
@@ -36,13 +36,12 @@ namespace NCS.DSS.ActionPlan.Tests.FunctionTests
             _request = (new DefaultHttpContext()).Request;
 
             _resourceHelper = new Mock<IResourceHelper>();
-            _loggerHelper = new Mock<ILoggerHelper>();
+            _loggerHelper = new Mock<ILogger<GetActionPlanLogger.GetActionPlanHttpTrigger>>();
             _httpRequestHelper = new Mock<IHttpRequestHelper>();
             _jsonHelper = new JsonHelper();
-            _log = new Mock<ILogger>();
             _resourceHelper = new Mock<IResourceHelper>();
             _getActionPlanHttpTriggerService = new Mock<IGetActionPlanHttpTriggerService>();
-            _function = new GetActionPlanHttpTrigger.Function.GetActionPlanHttpTrigger(_resourceHelper.Object, _getActionPlanHttpTriggerService.Object, _loggerHelper.Object, _httpRequestHelper.Object, _jsonHelper);
+            _function = new GetActionPlanLogger.GetActionPlanHttpTrigger(_resourceHelper.Object, _getActionPlanHttpTriggerService.Object, _loggerHelper.Object, _httpRequestHelper.Object, _jsonHelper);
         }
 
         [Test]
@@ -115,7 +114,6 @@ namespace NCS.DSS.ActionPlan.Tests.FunctionTests
         {
             return await _function.Run(
                 _request,
-                _log.Object,
                 customerId).ConfigureAwait(false);
         }
     }

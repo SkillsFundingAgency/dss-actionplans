@@ -10,6 +10,7 @@ using NCS.DSS.ActionPlan.GetActionPlanByIdHttpTrigger.Service;
 using NUnit.Framework;
 using System;
 using System.Threading.Tasks;
+using GetActionPlanByIdLogger = NCS.DSS.ActionPlan.GetActionPlanByIdHttpTrigger.Function.GetActionPlanByIdHttpTrigger;
 
 namespace NCS.DSS.ActionPlan.Tests.FunctionTests
 {
@@ -26,11 +27,11 @@ namespace NCS.DSS.ActionPlan.Tests.FunctionTests
         private HttpRequest _request;
         private Mock<IResourceHelper> _resourceHelper;
         private Mock<IGetActionPlanByIdHttpTriggerService> _getActionPlanByIdHttpTriggerService;
-        private Mock<ILoggerHelper> _loggerHelper;
+        private Mock<ILogger<GetActionPlanByIdLogger>> _loggerHelper;
         private Mock<IHttpRequestHelper> _httpRequestHelper;
         private IJsonHelper _jsonHelper;
         private Models.ActionPlan _actionPlan;
-        private GetActionPlanByIdHttpTrigger.Function.GetActionPlanByIdHttpTrigger _function;
+        private GetActionPlanByIdLogger _function;
 
 
         [SetUp]
@@ -40,11 +41,11 @@ namespace NCS.DSS.ActionPlan.Tests.FunctionTests
             _request = (new DefaultHttpContext()).Request;
             _log = new Mock<ILogger>();
             _resourceHelper = new Mock<IResourceHelper>();
-            _loggerHelper = new Mock<ILoggerHelper>();
+            _loggerHelper = new Mock<ILogger<GetActionPlanByIdLogger>>();
             _httpRequestHelper = new Mock<IHttpRequestHelper>();
             _jsonHelper = new JsonHelper();
             _getActionPlanByIdHttpTriggerService = new Mock<IGetActionPlanByIdHttpTriggerService>();
-            _function = new GetActionPlanByIdHttpTrigger.Function.GetActionPlanByIdHttpTrigger(_resourceHelper.Object, _getActionPlanByIdHttpTriggerService.Object, _loggerHelper.Object, _httpRequestHelper.Object, _jsonHelper);
+            _function = new GetActionPlanByIdLogger(_resourceHelper.Object, _getActionPlanByIdHttpTriggerService.Object, _loggerHelper.Object, _httpRequestHelper.Object, _jsonHelper);
         }
 
         public async Task GetActionPlanByIdHttpTrigger_ReturnsStatusCodeBadRequest_WhenDssCorrelationIdIsInvalid()
@@ -184,8 +185,7 @@ namespace NCS.DSS.ActionPlan.Tests.FunctionTests
         private async Task<IActionResult> RunFunction(string customerId, string interactionId, string actionPlanId)
         {
             return await _function.Run(
-                _request, 
-                _log.Object, 
+                _request,  
                 customerId, 
                 interactionId,
                 actionPlanId).ConfigureAwait(false);

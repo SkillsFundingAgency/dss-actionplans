@@ -14,7 +14,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Net;
 using System.Threading.Tasks;
-
+using PostActionPlanHttpLogger = NCS.DSS.ActionPlan.PostActionPlanHttpTrigger.Function;
 namespace NCS.DSS.ActionPlan.Tests.FunctionTests
 {
     [TestFixture]
@@ -26,16 +26,15 @@ namespace NCS.DSS.ActionPlan.Tests.FunctionTests
         private const string ValidDssCorrelationId = "452d8e8c-2516-4a6b-9fc1-c85e578ac066";
         private const string InValidId = "1111111-2222-3333-4444-555555555555";
 
-        private Mock<ILogger> _log;
         private HttpRequest _request;
         private Mock<IResourceHelper> _resourceHelper;
         private IValidate _validate;
         private Mock<IPostActionPlanHttpTriggerService> _postActionPlanHttpTriggerService;
-        private Mock<ILoggerHelper> _loggerHelper;
+        private Mock<ILogger<PostActionPlanHttpLogger.PostActionPlanHttpTrigger>> _loggerHelper;
         private Mock<IHttpRequestHelper> _httpRequestHelper;
         private IJsonHelper _jsonHelper;
         private Models.ActionPlan _actionPlan;
-        private PostActionPlanHttpTrigger.Function.PostActionPlanHttpTrigger _function;
+        private PostActionPlanHttpLogger.PostActionPlanHttpTrigger _function;
 
         [SetUp]
         public void Setup()
@@ -43,13 +42,12 @@ namespace NCS.DSS.ActionPlan.Tests.FunctionTests
             _actionPlan =new Models.ActionPlan();
             _request = null;
             _resourceHelper = new Mock<IResourceHelper>();
-            _loggerHelper = new Mock<ILoggerHelper>();
+            _loggerHelper = new Mock<ILogger<PostActionPlanHttpLogger.PostActionPlanHttpTrigger>>();
             _httpRequestHelper = new Mock<IHttpRequestHelper>();
             _jsonHelper = new JsonHelper();
-            _log = new Mock<ILogger>(); 
             _validate = new Validate();
             _postActionPlanHttpTriggerService = new Mock<IPostActionPlanHttpTriggerService>();
-            _function = new PostActionPlanHttpTrigger.Function.PostActionPlanHttpTrigger(
+            _function = new PostActionPlanHttpLogger.PostActionPlanHttpTrigger(
                 _resourceHelper.Object, 
                 _validate,
                 _postActionPlanHttpTriggerService.Object, 
@@ -228,7 +226,6 @@ namespace NCS.DSS.ActionPlan.Tests.FunctionTests
         {
             return await _function.Run(
                 _request,
-                _log.Object,
                 customerId,
                 interactionId).ConfigureAwait(false);
         }

@@ -13,6 +13,7 @@ using Newtonsoft.Json;
 using NUnit.Framework;
 using System;
 using System.Threading.Tasks;
+using PatchActionPlanLogger = NCS.DSS.ActionPlan.PatchActionPlanHttpTrigger.Function;
 
 namespace NCS.DSS.ActionPlan.Tests.FunctionTests
 {
@@ -26,18 +27,17 @@ namespace NCS.DSS.ActionPlan.Tests.FunctionTests
         private const string ValidDssCorrelationId = "452d8e8c-2516-4a6b-9fc1-c85e578ac066";
         private const string InValidId = "1111111-2222-3333-4444-555555555555";
 
-        private Mock<ILogger> _log;
         private HttpRequest _request;
         private Mock<IResourceHelper> _resourceHelper;
         private IValidate _validate;
         private Mock<IPatchActionPlanHttpTriggerService> _patchActionPlanHttpTriggerService;
-        private Mock<ILoggerHelper> _loggerHelper;
+        private Mock<ILogger<PatchActionPlanLogger.PatchActionPlanHttpTrigger>> _loggerHelper;
         private Mock<IHttpRequestHelper> _httpRequestHelper;
         private IJsonHelper _jsonHelper;
         private Models.ActionPlan _actionPlan;
         private ActionPlanPatch _actionPlanPatch;
         private string _actionPlanString = string.Empty;
-        private PatchActionPlanHttpTrigger.Function.PatchActionPlanHttpTrigger _function;
+        private PatchActionPlanLogger.PatchActionPlanHttpTrigger _function;
 
         [SetUp]
         public void Setup()
@@ -46,15 +46,14 @@ namespace NCS.DSS.ActionPlan.Tests.FunctionTests
             _actionPlanPatch = new ActionPlanPatch();
             _request = (new DefaultHttpContext()).Request;
             _resourceHelper = new Mock<IResourceHelper>();
-            _loggerHelper = new Mock<ILoggerHelper>();
+            _loggerHelper = new Mock<ILogger<PatchActionPlanLogger.PatchActionPlanHttpTrigger>>();
             _httpRequestHelper = new Mock<IHttpRequestHelper>();
             _jsonHelper = new JsonHelper();
-            _log = new Mock<ILogger>();
             _resourceHelper = new Mock<IResourceHelper>();
             _validate = new Validate();
             _patchActionPlanHttpTriggerService = new Mock<IPatchActionPlanHttpTriggerService>();
             _actionPlanString = JsonConvert.SerializeObject(_actionPlan);
-            _function = new PatchActionPlanHttpTrigger.Function.PatchActionPlanHttpTrigger(
+            _function = new PatchActionPlanLogger.PatchActionPlanHttpTrigger(
                 _resourceHelper.Object, 
                 _validate, 
                 _patchActionPlanHttpTriggerService.Object, 
@@ -312,7 +311,6 @@ namespace NCS.DSS.ActionPlan.Tests.FunctionTests
         {
             return await _function.Run(
                 _request,
-                _log.Object,
                 customerId,
                 interactionId,
                 actionPlanId).ConfigureAwait(false);
