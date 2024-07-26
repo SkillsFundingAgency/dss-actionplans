@@ -230,7 +230,11 @@ namespace NCS.DSS.ActionPlan.PatchActionPlanHttpTrigger.Function
 
             if (updatedActionPlan != null)
             {
-                var response = new OkObjectResult(_jsonHelper.SerializeObjectAndRenameIdProperty(updatedActionPlan, "id", "ActionPlanId"));                
+                var contentTypes = new Microsoft.AspNetCore.Mvc.Formatters.MediaTypeCollection
+                {
+                    new Microsoft.Net.Http.Headers.MediaTypeHeaderValue("application/json")
+                };
+                var response = new OkObjectResult(_jsonHelper.SerializeObjectAndRenameIdProperty(updatedActionPlan, "id", "ActionPlanId")) { ContentTypes = contentTypes };                
                 _logger.LogInformation($"Response Status Code: [{response.StatusCode}].Patch succeeded, attempting to send to service bus [{actionPlanGuid}]");
                 await _actionPlanPatchService.SendToServiceBusQueueAsync(updatedActionPlan, customerGuid, apimUrl);
                 return response;

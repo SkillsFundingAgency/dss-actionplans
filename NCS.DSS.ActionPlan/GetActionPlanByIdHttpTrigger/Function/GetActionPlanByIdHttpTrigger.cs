@@ -127,7 +127,11 @@ namespace NCS.DSS.ActionPlan.GetActionPlanByIdHttpTrigger.Function
             }
             else
             {
-                var response = new OkObjectResult(_jsonHelper.SerializeObjectAndRenameIdProperty(actionPlan, "id", "ActionPlanId"));
+                var contentTypes = new Microsoft.AspNetCore.Mvc.Formatters.MediaTypeCollection
+                {
+                    new Microsoft.Net.Http.Headers.MediaTypeHeaderValue("application/json")
+                };
+                var response = new OkObjectResult(_jsonHelper.SerializeObjectAndRenameIdProperty(actionPlan, "id", "ActionPlanId")) { ContentTypes = contentTypes };
                 _logger.LogInformation($"Response Status Code: [{response.StatusCode}]. Get returned content.");
                 return response;
             }

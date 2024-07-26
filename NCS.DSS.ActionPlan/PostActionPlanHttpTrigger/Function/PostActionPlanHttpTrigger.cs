@@ -181,7 +181,11 @@ namespace NCS.DSS.ActionPlan.PostActionPlanHttpTrigger.Function
 
             if (actionPlan != null)
             {
-                var response = new ObjectResult(_jsonHelper.SerializeObjectAndRenameIdProperty(actionPlan, "id", "ActionPlanId")) { StatusCode = (int) HttpStatusCode.Created};
+                var contentTypes = new Microsoft.AspNetCore.Mvc.Formatters.MediaTypeCollection
+                {
+                    new Microsoft.Net.Http.Headers.MediaTypeHeaderValue("application/json")
+                };
+                var response = new ObjectResult(_jsonHelper.SerializeObjectAndRenameIdProperty(actionPlan, "id", "ActionPlanId")) { StatusCode = (int) HttpStatusCode.Created, ContentTypes = contentTypes};
                 _logger.LogInformation($"Response Status Code: [{response.StatusCode}]. attempting to send to service bus [{actionPlan.ActionPlanId}]");
                 await _actionPlanPostService.SendToServiceBusQueueAsync(actionPlan, ApimURL);
                 return response;

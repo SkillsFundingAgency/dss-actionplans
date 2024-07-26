@@ -12,6 +12,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Net;
 using System.Threading.Tasks;
 using Microsoft.Azure.Functions.Worker;
+using NCS.DSS.ActionPlan.Models;
 
 namespace NCS.DSS.ActionPlan.GetActionPlanHttpTrigger.Function
 {
@@ -99,7 +100,12 @@ namespace NCS.DSS.ActionPlan.GetActionPlanHttpTrigger.Function
             }
             else
             {
-                var response = new OkObjectResult(_jsonHelper.SerializeObjectsAndRenameIdProperty(actionPlans, "id", "ActionPlanId"));
+                var contentTypes = new Microsoft.AspNetCore.Mvc.Formatters.MediaTypeCollection
+                {
+                    new Microsoft.Net.Http.Headers.MediaTypeHeaderValue("application/json")
+                };
+                
+                var response = new OkObjectResult(_jsonHelper.SerializeObjectsAndRenameIdProperty(actionPlans, "id", "ActionPlanId")) { ContentTypes = contentTypes };
                 _logger.LogInformation($"Response Status Code: [{response.StatusCode}]. Get returned content");
                 return response;
             }
