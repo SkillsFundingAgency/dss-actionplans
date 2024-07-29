@@ -38,7 +38,7 @@ namespace NCS.DSS.ActionPlan.Tests.FunctionTests
         private ActionPlanPatch _actionPlanPatch;
         private string _actionPlanString = string.Empty;
         private PatchActionPlanLogger.PatchActionPlanHttpTrigger _function;
-
+        private IJsonHelper _jsonHelper;
         [SetUp]
         public void Setup()
         {
@@ -50,6 +50,7 @@ namespace NCS.DSS.ActionPlan.Tests.FunctionTests
             _httpRequestHelper = new Mock<IHttpRequestHelper>();
             _resourceHelper = new Mock<IResourceHelper>();
             _validate = new Validate();
+            _jsonHelper = new JsonHelper();
             _patchActionPlanHttpTriggerService = new Mock<IPatchActionPlanHttpTriggerService>();
             _actionPlanString = JsonConvert.SerializeObject(_actionPlan);
             _function = new PatchActionPlanLogger.PatchActionPlanHttpTrigger(
@@ -57,7 +58,8 @@ namespace NCS.DSS.ActionPlan.Tests.FunctionTests
                 _validate, 
                 _patchActionPlanHttpTriggerService.Object, 
                 _loggerHelper.Object, 
-                _httpRequestHelper.Object);
+                _httpRequestHelper.Object,
+                _jsonHelper);
         }
         public async Task PatchActionPlanHttpTrigger_ReturnsStatusCodeBadRequest_WhenTouchpointIdIsNotProvided()
         {

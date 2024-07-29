@@ -14,6 +14,7 @@ using System.Net;
 using System.Threading.Tasks;
 using Microsoft.Azure.Functions.Worker;
 using System.Text.Json;
+using DFC.JSON.Standard;
 
 namespace NCS.DSS.ActionPlan.PatchActionPlanHttpTrigger.Function
 {
@@ -24,19 +25,21 @@ namespace NCS.DSS.ActionPlan.PatchActionPlanHttpTrigger.Function
         private IPatchActionPlanHttpTriggerService _actionPlanPatchService;
         private ILogger<PatchActionPlanHttpTrigger> _logger;
         private IHttpRequestHelper _httpRequestHelper;
-
+        private IJsonHelper _jsonHelper;
         public PatchActionPlanHttpTrigger(
              IResourceHelper resourceHelper,
              IValidate validate,
              IPatchActionPlanHttpTriggerService actionPlanPatchService,
              ILogger<PatchActionPlanHttpTrigger> logger,
-             IHttpRequestHelper httpRequestHelper)
+             IHttpRequestHelper httpRequestHelper,
+             IJsonHelper jsonHelper)
         {
             _resourceHelper = resourceHelper;
             _validate = validate;
             _actionPlanPatchService = actionPlanPatchService;
             _logger = logger;
             _httpRequestHelper = httpRequestHelper;
+            _jsonHelper = jsonHelper;
         }
 
         [Function("Patch")]
@@ -225,7 +228,7 @@ namespace NCS.DSS.ActionPlan.PatchActionPlanHttpTrigger.Function
 
             if (updatedActionPlan != null)
             {
-                var response = new JsonResult(updatedActionPlan, new JsonSerializerOptions()) { StatusCode = (int)HttpStatusCode.OK };
+                var response = new JsonResult(_jsonHelper.SerializeObjectAndRenameIdProperty(updatedActionPlan, "id", "ActionPlanId"), new JsonSerializerOptions()) { StatusCode = (int)HttpStatusCode.OK };
                 _logger.LogInformation($"Response Status Code: [{response.StatusCode}].Patch succeeded, attempting to send to service bus [{actionPlanGuid}]");
                 await _actionPlanPatchService.SendToServiceBusQueueAsync(updatedActionPlan, customerGuid, apimUrl);
                 return response;
