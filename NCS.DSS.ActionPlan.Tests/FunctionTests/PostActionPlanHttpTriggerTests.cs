@@ -1,4 +1,5 @@
 ﻿using DFC.HTTP.Standard;
+using DFC.JSON.Standard;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -32,7 +33,7 @@ namespace NCS.DSS.ActionPlan.Tests.FunctionTests
         private Mock<IHttpRequestHelper> _httpRequestHelper;
         private Models.ActionPlan _actionPlan;
         private PostActionPlanHttpLogger.PostActionPlanHttpTrigger _function;
-
+        private IJsonHelper _jsonHelper;
         [SetUp]
         public void Setup()
         {
@@ -43,12 +44,14 @@ namespace NCS.DSS.ActionPlan.Tests.FunctionTests
             _httpRequestHelper = new Mock<IHttpRequestHelper>();
             _validate = new Validate();
             _postActionPlanHttpTriggerService = new Mock<IPostActionPlanHttpTriggerService>();
+            _jsonHelper = new JsonHelper();
             _function = new PostActionPlanHttpLogger.PostActionPlanHttpTrigger(
                 _resourceHelper.Object, 
                 _validate,
                 _postActionPlanHttpTriggerService.Object, 
                 _loggerHelper.Object, 
-                _httpRequestHelper.Object
+                _httpRequestHelper.Object, 
+                _jsonHelper
                 );
         }
 
@@ -120,7 +123,7 @@ namespace NCS.DSS.ActionPlan.Tests.FunctionTests
                 validateMock.Object,
                 _postActionPlanHttpTriggerService.Object,
                 _loggerHelper.Object,
-                _httpRequestHelper.Object
+                _httpRequestHelper.Object, _jsonHelper
                 );
 
             // Act
