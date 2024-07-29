@@ -12,6 +12,7 @@ using NCS.DSS.ActionPlan.Validation;
 using Newtonsoft.Json;
 using NUnit.Framework;
 using System;
+using System.Net;
 using System.Threading.Tasks;
 using PatchActionPlanLogger = NCS.DSS.ActionPlan.PatchActionPlanHttpTrigger.Function;
 
@@ -33,7 +34,6 @@ namespace NCS.DSS.ActionPlan.Tests.FunctionTests
         private Mock<IPatchActionPlanHttpTriggerService> _patchActionPlanHttpTriggerService;
         private Mock<ILogger<PatchActionPlanLogger.PatchActionPlanHttpTrigger>> _loggerHelper;
         private Mock<IHttpRequestHelper> _httpRequestHelper;
-        private IJsonHelper _jsonHelper;
         private Models.ActionPlan _actionPlan;
         private ActionPlanPatch _actionPlanPatch;
         private string _actionPlanString = string.Empty;
@@ -48,7 +48,6 @@ namespace NCS.DSS.ActionPlan.Tests.FunctionTests
             _resourceHelper = new Mock<IResourceHelper>();
             _loggerHelper = new Mock<ILogger<PatchActionPlanLogger.PatchActionPlanHttpTrigger>>();
             _httpRequestHelper = new Mock<IHttpRequestHelper>();
-            _jsonHelper = new JsonHelper();
             _resourceHelper = new Mock<IResourceHelper>();
             _validate = new Validate();
             _patchActionPlanHttpTriggerService = new Mock<IPatchActionPlanHttpTriggerService>();
@@ -58,8 +57,7 @@ namespace NCS.DSS.ActionPlan.Tests.FunctionTests
                 _validate, 
                 _patchActionPlanHttpTriggerService.Object, 
                 _loggerHelper.Object, 
-                _httpRequestHelper.Object, 
-                _jsonHelper);
+                _httpRequestHelper.Object);
         }
         public async Task PatchActionPlanHttpTrigger_ReturnsStatusCodeBadRequest_WhenTouchpointIdIsNotProvided()
         {
@@ -302,9 +300,11 @@ namespace NCS.DSS.ActionPlan.Tests.FunctionTests
 
             // Act
             var result = await RunFunction(ValidCustomerId, ValidInteractionId, ValidActionPlanId);
+            var jsonResult = result as JsonResult;
 
             // Assert
-            Assert.That(result, Is.InstanceOf<OkObjectResult>());
+            Assert.That(result, Is.InstanceOf<JsonResult>());
+            Assert.That(jsonResult.StatusCode, Is.EqualTo((int)HttpStatusCode.OK));
         }
 
         private async Task<IActionResult> RunFunction(string customerId, string interactionId, string actionPlanId)

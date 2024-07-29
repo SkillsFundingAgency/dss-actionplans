@@ -1,4 +1,3 @@
-using DFC.Common.Standard.Logging;
 using DFC.HTTP.Standard;
 using DFC.JSON.Standard;
 using DFC.Swagger.Standard.Annotations;
@@ -8,13 +7,13 @@ using Microsoft.Extensions.Logging;
 using NCS.DSS.ActionPlan.Cosmos.Helper;
 using NCS.DSS.ActionPlan.PostActionPlanHttpTrigger.Service;
 using NCS.DSS.ActionPlan.Validation;
-using Newtonsoft.Json;
 using System;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using Microsoft.Azure.Functions.Worker;
+using System.Text.Json;
 
 namespace NCS.DSS.ActionPlan.PostActionPlanHttpTrigger.Function
 {
@@ -25,22 +24,19 @@ namespace NCS.DSS.ActionPlan.PostActionPlanHttpTrigger.Function
         private IPostActionPlanHttpTriggerService _actionPlanPostService;
         private ILogger<PostActionPlanHttpTrigger> _logger;
         private IHttpRequestHelper _httpRequestHelper;
-        private IJsonHelper _jsonHelper;
 
         public PostActionPlanHttpTrigger(
             IResourceHelper resourceHelper,
             IValidate validate,
             IPostActionPlanHttpTriggerService actionPlanPostService,
             ILogger<PostActionPlanHttpTrigger> logger,
-            IHttpRequestHelper httpRequestHelper,
-            IJsonHelper jsonHelper)
+            IHttpRequestHelper httpRequestHelper)
         {
             _resourceHelper = resourceHelper ;
             _validate = validate;
             _actionPlanPostService = actionPlanPostService;
             _logger = logger;
             _httpRequestHelper = httpRequestHelper;
-            _jsonHelper = jsonHelper;
         }
 
 
@@ -116,7 +112,7 @@ namespace NCS.DSS.ActionPlan.PostActionPlanHttpTrigger.Function
                 _logger.LogInformation($"Attempt to get resource from body of the request");
                 actionPlanRequest = await _httpRequestHelper.GetResourceFromRequest<Models.ActionPlan>(req);
             }
-            catch (JsonException ex)
+            catch (System.Text.Json.JsonException ex)
             {
                 var response = new UnprocessableEntityObjectResult(ex);
                 _logger.LogError($"Response Status Code: [{response.StatusCode}]. Unable to retrieve body from req", ex);
@@ -180,12 +176,8 @@ namespace NCS.DSS.ActionPlan.PostActionPlanHttpTrigger.Function
             var actionPlan = await _actionPlanPostService.CreateAsync(actionPlanRequest);
 
             if (actionPlan != null)
-            {
-                var contentTypes = new Microsoft.AspNetCore.Mvc.Formatters.MediaTypeCollection
-                {
-                    new Microsoft.Net.Http.Headers.MediaTypeHeaderValue("application/json")
-                };
-                var response = new ObjectResult(_jsonHelper.SerializeObjectAndRenameIdProperty(actionPlan, "id", "ActionPlanId")) { StatusCode = (int) HttpStatusCode.Created, ContentTypes = contentTypes};
+            {                
+                var response = new JsonResult(actionPlan, new JsonSerializerOptions()) { StatusCode = (int)HttpStatusCode.Created };
                 _logger.LogInformation($"Response Status Code: [{response.StatusCode}]. attempting to send to service bus [{actionPlan.ActionPlanId}]");
                 await _actionPlanPostService.SendToServiceBusQueueAsync(actionPlan, ApimURL);
                 return response;

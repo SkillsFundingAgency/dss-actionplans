@@ -1,6 +1,4 @@
-using DFC.Common.Standard.Logging;
 using DFC.HTTP.Standard;
-using DFC.JSON.Standard;
 using DFC.Swagger.Standard.Annotations;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -12,7 +10,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Net;
 using System.Threading.Tasks;
 using Microsoft.Azure.Functions.Worker;
-using NCS.DSS.ActionPlan.Models;
+using System.Text.Json;
 
 namespace NCS.DSS.ActionPlan.GetActionPlanHttpTrigger.Function
 {
@@ -21,21 +19,18 @@ namespace NCS.DSS.ActionPlan.GetActionPlanHttpTrigger.Function
         private IResourceHelper _resourceHelper;
         private IGetActionPlanHttpTriggerService _actionPlanGetService;
         private IHttpRequestHelper _httpRequestHelper;
-        private IJsonHelper _jsonHelper;
         private ILogger<GetActionPlanHttpTrigger> _logger;
 
         public GetActionPlanHttpTrigger(
             IResourceHelper resourceHelper,
             IGetActionPlanHttpTriggerService actionPlanGetService,
             ILogger<GetActionPlanHttpTrigger> logger,
-            IHttpRequestHelper httpRequestHelper,
-            IJsonHelper jsonHelper)
+            IHttpRequestHelper httpRequestHelper)
         {
             _resourceHelper = resourceHelper;
             _actionPlanGetService = actionPlanGetService;
             _logger = logger;
             _httpRequestHelper = httpRequestHelper;
-            _jsonHelper = jsonHelper;
         }
 
         [Function("Get")]
@@ -48,8 +43,6 @@ namespace NCS.DSS.ActionPlan.GetActionPlanHttpTrigger.Function
         [Display(Name = "Get", Description = "Ability to return all action plans for the given customer.")]
         public async Task<IActionResult> Run([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "Customers/{customerId}/ActionPlans")] HttpRequest req, string customerId)
         {
-
-
             var correlationId = _httpRequestHelper.GetDssCorrelationId(req);
             if (string.IsNullOrEmpty(correlationId))
                 _logger.LogInformation("Unable to locate 'DssCorrelationId' in request header");
@@ -91,25 +84,23 @@ namespace NCS.DSS.ActionPlan.GetActionPlanHttpTrigger.Function
 
             _logger.LogInformation($"Attempting to get action plan for customer [{customerGuid}]");
             var actionPlans = await _actionPlanGetService.GetActionPlansAsync(customerGuid);
-
+            JsonResult jsonResponse;
             if (actionPlans == null)
             {
                 var response = new NoContentResult();
                 _logger.LogWarning($"Response Status Code: [{response.StatusCode}]. Get failed, no action plan found for customer [{customerGuid}]");
                 return response;
             }
+            else if (actionPlans.Count == 1)
+            {
+                jsonResponse = new JsonResult(actionPlans[0], new JsonSerializerOptions()) { StatusCode = (int)HttpStatusCode.OK };
+            }
             else
             {
-                var contentTypes = new Microsoft.AspNetCore.Mvc.Formatters.MediaTypeCollection
-                {
-                    new Microsoft.Net.Http.Headers.MediaTypeHeaderValue("application/json")
-                };
-                
-                var response = new OkObjectResult(_jsonHelper.SerializeObjectsAndRenameIdProperty(actionPlans, "id", "ActionPlanId")) { ContentTypes = contentTypes };
-                _logger.LogInformation($"Response Status Code: [{response.StatusCode}]. Get returned content");
-                return response;
+                jsonResponse = new JsonResult(actionPlans, new JsonSerializerOptions()) { StatusCode = (int) HttpStatusCode.OK };
             }
-
+            _logger.LogInformation($"Response Status Code: [{jsonResponse.StatusCode}]. Get returned content");
+            return jsonResponse;
         }
     }
 }

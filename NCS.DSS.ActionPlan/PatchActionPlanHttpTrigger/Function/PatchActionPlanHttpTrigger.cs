@@ -1,6 +1,4 @@
-using DFC.Common.Standard.Logging;
 using DFC.HTTP.Standard;
-using DFC.JSON.Standard;
 using DFC.Swagger.Standard.Annotations;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -9,13 +7,13 @@ using NCS.DSS.ActionPlan.Cosmos.Helper;
 using NCS.DSS.ActionPlan.Models;
 using NCS.DSS.ActionPlan.PatchActionPlanHttpTrigger.Service;
 using NCS.DSS.ActionPlan.Validation;
-using Newtonsoft.Json;
 using System;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using Microsoft.Azure.Functions.Worker;
+using System.Text.Json;
 
 namespace NCS.DSS.ActionPlan.PatchActionPlanHttpTrigger.Function
 {
@@ -26,22 +24,19 @@ namespace NCS.DSS.ActionPlan.PatchActionPlanHttpTrigger.Function
         private IPatchActionPlanHttpTriggerService _actionPlanPatchService;
         private ILogger<PatchActionPlanHttpTrigger> _logger;
         private IHttpRequestHelper _httpRequestHelper;
-        private IJsonHelper _jsonHelper;
 
         public PatchActionPlanHttpTrigger(
              IResourceHelper resourceHelper,
              IValidate validate,
              IPatchActionPlanHttpTriggerService actionPlanPatchService,
              ILogger<PatchActionPlanHttpTrigger> logger,
-             IHttpRequestHelper httpRequestHelper,
-             IJsonHelper jsonHelper)
+             IHttpRequestHelper httpRequestHelper)
         {
             _resourceHelper = resourceHelper;
             _validate = validate;
             _actionPlanPatchService = actionPlanPatchService;
             _logger = logger;
             _httpRequestHelper = httpRequestHelper;
-            _jsonHelper = jsonHelper;
         }
 
         [Function("Patch")]
@@ -124,7 +119,7 @@ namespace NCS.DSS.ActionPlan.PatchActionPlanHttpTrigger.Function
                 _logger.LogInformation($"Attempt to get resource from body of the request");
                 actionPlanPatchRequest = await _httpRequestHelper.GetResourceFromRequest<ActionPlanPatch>(req);
             }
-            catch (JsonException ex)
+            catch (Exception ex)
             {
                 var response = new UnprocessableEntityObjectResult(ex);
                 _logger.LogError($"Response Status Code: [{response.StatusCode}]. Unable to retrieve body from req. ", ex.Message);
@@ -197,7 +192,7 @@ namespace NCS.DSS.ActionPlan.PatchActionPlanHttpTrigger.Function
 
             try
             {
-                actionPlanValidationObject = JsonConvert.DeserializeObject<Models.ActionPlan>(patchedActionPlan);
+                actionPlanValidationObject =  JsonSerializer.Deserialize<Models.ActionPlan>(patchedActionPlan);
             }
             catch (JsonException ex)
             {
@@ -230,11 +225,7 @@ namespace NCS.DSS.ActionPlan.PatchActionPlanHttpTrigger.Function
 
             if (updatedActionPlan != null)
             {
-                var contentTypes = new Microsoft.AspNetCore.Mvc.Formatters.MediaTypeCollection
-                {
-                    new Microsoft.Net.Http.Headers.MediaTypeHeaderValue("application/json")
-                };
-                var response = new OkObjectResult(_jsonHelper.SerializeObjectAndRenameIdProperty(updatedActionPlan, "id", "ActionPlanId")) { ContentTypes = contentTypes };                
+                var response = new JsonResult(updatedActionPlan, new JsonSerializerOptions()) { StatusCode = (int)HttpStatusCode.OK };
                 _logger.LogInformation($"Response Status Code: [{response.StatusCode}].Patch succeeded, attempting to send to service bus [{actionPlanGuid}]");
                 await _actionPlanPatchService.SendToServiceBusQueueAsync(updatedActionPlan, customerGuid, apimUrl);
                 return response;

@@ -1,6 +1,4 @@
-using DFC.Common.Standard.Logging;
 using DFC.HTTP.Standard;
-using DFC.JSON.Standard;
 using DFC.Swagger.Standard.Annotations;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -12,6 +10,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Net;
 using System.Threading.Tasks;
 using Microsoft.Azure.Functions.Worker;
+using System.Text.Json;
 
 namespace NCS.DSS.ActionPlan.GetActionPlanByIdHttpTrigger.Function
 {
@@ -22,20 +21,17 @@ namespace NCS.DSS.ActionPlan.GetActionPlanByIdHttpTrigger.Function
         private ILogger<GetActionPlanByIdHttpTrigger> _logger;
         private IHttpRequestHelper _httpRequestHelper;
         private IHttpResponseMessageHelper _httpResponseMessageHelper;
-        private IJsonHelper _jsonHelper;
 
         public GetActionPlanByIdHttpTrigger(
             IResourceHelper resourceHelper,
             IGetActionPlanByIdHttpTriggerService actionPlanGetService,
             ILogger<GetActionPlanByIdHttpTrigger> logger,
-            IHttpRequestHelper httpRequestHelper,
-            IJsonHelper jsonHelper)
+            IHttpRequestHelper httpRequestHelper)
         {
             _resourceHelper = resourceHelper;
             _actionPlanGetService = actionPlanGetService;
             _logger = logger;
             _httpRequestHelper = httpRequestHelper;
-            _jsonHelper = jsonHelper;
         }
 
         [Function("GetById")]
@@ -126,12 +122,8 @@ namespace NCS.DSS.ActionPlan.GetActionPlanByIdHttpTrigger.Function
                 return response;
             }
             else
-            {
-                var contentTypes = new Microsoft.AspNetCore.Mvc.Formatters.MediaTypeCollection
-                {
-                    new Microsoft.Net.Http.Headers.MediaTypeHeaderValue("application/json")
-                };
-                var response = new OkObjectResult(_jsonHelper.SerializeObjectAndRenameIdProperty(actionPlan, "id", "ActionPlanId")) { ContentTypes = contentTypes };
+            {                
+                var response = new JsonResult(actionPlan,new JsonSerializerOptions()) { StatusCode = (int)HttpStatusCode.OK };
                 _logger.LogInformation($"Response Status Code: [{response.StatusCode}]. Get returned content.");
                 return response;
             }

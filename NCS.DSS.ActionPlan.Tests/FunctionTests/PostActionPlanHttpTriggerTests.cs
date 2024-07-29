@@ -1,6 +1,4 @@
-﻿using DFC.Common.Standard.Logging;
-using DFC.HTTP.Standard;
-using DFC.JSON.Standard;
+﻿using DFC.HTTP.Standard;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -32,7 +30,6 @@ namespace NCS.DSS.ActionPlan.Tests.FunctionTests
         private Mock<IPostActionPlanHttpTriggerService> _postActionPlanHttpTriggerService;
         private Mock<ILogger<PostActionPlanHttpLogger.PostActionPlanHttpTrigger>> _loggerHelper;
         private Mock<IHttpRequestHelper> _httpRequestHelper;
-        private IJsonHelper _jsonHelper;
         private Models.ActionPlan _actionPlan;
         private PostActionPlanHttpLogger.PostActionPlanHttpTrigger _function;
 
@@ -44,7 +41,6 @@ namespace NCS.DSS.ActionPlan.Tests.FunctionTests
             _resourceHelper = new Mock<IResourceHelper>();
             _loggerHelper = new Mock<ILogger<PostActionPlanHttpLogger.PostActionPlanHttpTrigger>>();
             _httpRequestHelper = new Mock<IHttpRequestHelper>();
-            _jsonHelper = new JsonHelper();
             _validate = new Validate();
             _postActionPlanHttpTriggerService = new Mock<IPostActionPlanHttpTriggerService>();
             _function = new PostActionPlanHttpLogger.PostActionPlanHttpTrigger(
@@ -52,8 +48,8 @@ namespace NCS.DSS.ActionPlan.Tests.FunctionTests
                 _validate,
                 _postActionPlanHttpTriggerService.Object, 
                 _loggerHelper.Object, 
-                _httpRequestHelper.Object, 
-                _jsonHelper);
+                _httpRequestHelper.Object
+                );
         }
 
         [Test]
@@ -119,13 +115,13 @@ namespace NCS.DSS.ActionPlan.Tests.FunctionTests
             var validateMock = new Mock<IValidate>();
             var validationResults = new List<ValidationResult> { new ValidationResult("interaction Id is Required") };
             validateMock.Setup(x => x.ValidateResource(It.IsAny<Models.ActionPlan>(), It.IsAny<DateTime>())).Returns(validationResults);
-            _function = new PostActionPlanHttpTrigger.Function.PostActionPlanHttpTrigger(
+            _function = new PostActionPlanHttpLogger.PostActionPlanHttpTrigger(
                 _resourceHelper.Object,
                 validateMock.Object,
                 _postActionPlanHttpTriggerService.Object,
                 _loggerHelper.Object,
-                _httpRequestHelper.Object,
-                _jsonHelper);
+                _httpRequestHelper.Object
+                );
 
             // Act
             var result = await RunFunction(ValidCustomerId, ValidInteractionId);
@@ -217,10 +213,11 @@ namespace NCS.DSS.ActionPlan.Tests.FunctionTests
 
             // Act
             var result = await RunFunction(ValidCustomerId, ValidInteractionId);
+            var jsonResult = result as JsonResult;
 
             // Assert
-            Assert.That(result,Is.InstanceOf<ObjectResult>());
-            Assert.That((int)HttpStatusCode.Created == ((ObjectResult)result).StatusCode);
+            Assert.That(result, Is.InstanceOf<JsonResult>());
+            Assert.That(jsonResult.StatusCode, Is.EqualTo((int)HttpStatusCode.Created));
         }
         private async Task<IActionResult> RunFunction(string customerId, string interactionId)
         {

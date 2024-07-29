@@ -1,5 +1,4 @@
-﻿using DFC.Common.Standard.Logging;
-using DFC.HTTP.Standard;
+﻿using DFC.HTTP.Standard;
 using DFC.JSON.Standard;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -10,6 +9,7 @@ using NCS.DSS.ActionPlan.GetActionPlanHttpTrigger.Service;
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
+using System.Net;
 using System.Threading.Tasks;
 using GetActionPlanLogger = NCS.DSS.ActionPlan.GetActionPlanHttpTrigger.Function;
 
@@ -27,7 +27,6 @@ namespace NCS.DSS.ActionPlan.Tests.FunctionTests
         private Mock<IGetActionPlanHttpTriggerService> _getActionPlanHttpTriggerService;
         private Mock<ILogger<GetActionPlanLogger.GetActionPlanHttpTrigger>> _loggerHelper;
         private Mock<IHttpRequestHelper> _httpRequestHelper;
-        private IJsonHelper _jsonHelper;
         private GetActionPlanLogger.GetActionPlanHttpTrigger _function;
 
         [SetUp]
@@ -38,10 +37,9 @@ namespace NCS.DSS.ActionPlan.Tests.FunctionTests
             _resourceHelper = new Mock<IResourceHelper>();
             _loggerHelper = new Mock<ILogger<GetActionPlanLogger.GetActionPlanHttpTrigger>>();
             _httpRequestHelper = new Mock<IHttpRequestHelper>();
-            _jsonHelper = new JsonHelper();
             _resourceHelper = new Mock<IResourceHelper>();
             _getActionPlanHttpTriggerService = new Mock<IGetActionPlanHttpTriggerService>();
-            _function = new GetActionPlanLogger.GetActionPlanHttpTrigger(_resourceHelper.Object, _getActionPlanHttpTriggerService.Object, _loggerHelper.Object, _httpRequestHelper.Object, _jsonHelper);
+            _function = new GetActionPlanLogger.GetActionPlanHttpTrigger(_resourceHelper.Object, _getActionPlanHttpTriggerService.Object, _loggerHelper.Object, _httpRequestHelper.Object);
         }
 
         [Test]
@@ -102,9 +100,11 @@ namespace NCS.DSS.ActionPlan.Tests.FunctionTests
             
             // Act
             var result = await RunFunction(ValidCustomerId);
+            var jsonResult = result as JsonResult;
 
             // Assert
-            Assert.That(result,Is.InstanceOf<OkObjectResult>());
+            Assert.That(result,Is.InstanceOf<JsonResult>());
+            Assert.That(jsonResult.StatusCode, Is.EqualTo((int)HttpStatusCode.OK));
             
         }
 
