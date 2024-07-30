@@ -1,5 +1,6 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 using DFC.JSON.Standard.Attributes;
 using DFC.Swagger.Standard.Annotations;
 using NCS.DSS.ActionPlan.ReferenceData;
@@ -79,7 +80,7 @@ namespace NCS.DSS.ActionPlan.Models
         [Example(Description = "0000000001")]
         public string LastModifiedTouchpointId { get; set; }
 
-        [JsonIgnoreOnSerialize]
+        [JsonIgnore]
         public string CreatedBy { get; set; }
 
         [Display(Description = "Is the customer satisfied with their action plan?")]

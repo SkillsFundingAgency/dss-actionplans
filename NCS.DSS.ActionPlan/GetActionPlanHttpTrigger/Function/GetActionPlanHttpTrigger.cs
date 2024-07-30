@@ -93,11 +93,11 @@ namespace NCS.DSS.ActionPlan.GetActionPlanHttpTrigger.Function
             }
             else if (actionPlans.Count == 1)
             {
-                jsonResponse = new JsonResult(actionPlans[0], new JsonSerializerOptions()) { StatusCode = (int)HttpStatusCode.OK };
+                jsonResponse = new JsonResult(actionPlans[0], new JsonSerializerOptions() { DefaultIgnoreCondition = System.Text.Json.Serialization.JsonIgnoreCondition.Never}) { StatusCode = (int)HttpStatusCode.OK };
             }
             else
             {
-                jsonResponse = new JsonResult(actionPlans, new JsonSerializerOptions()) { StatusCode = (int) HttpStatusCode.OK };
+                jsonResponse = new JsonResult(actionPlans, new JsonSerializerOptions() { DefaultIgnoreCondition = System.Text.Json.Serialization.JsonIgnoreCondition.Never }) { StatusCode = (int) HttpStatusCode.OK };
             }
             _logger.LogInformation($"Response Status Code: [{jsonResponse.StatusCode}]. Get returned content");
             return jsonResponse;
