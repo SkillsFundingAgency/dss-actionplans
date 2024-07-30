@@ -7,6 +7,7 @@ using Microsoft.Extensions.Logging;
 using Moq;
 using NCS.DSS.ActionPlan.Cosmos.Helper;
 using NCS.DSS.ActionPlan.GetActionPlanByIdHttpTrigger.Service;
+using NCS.DSS.ActionPlan.Models;
 using NUnit.Framework;
 using System;
 using System.Net;
@@ -32,9 +33,9 @@ namespace NCS.DSS.ActionPlan.Tests.FunctionTests
         private Mock<IHttpRequestHelper> _httpRequestHelper;
         private Models.ActionPlan _actionPlan;
         private GetActionPlanByIdLogger _function;
+        private IConvertToDynamic _dynamicHelper;
 
-
-        [SetUp]
+       [SetUp]
         public void Setup()
         {
             _actionPlan = new Models.ActionPlan();
@@ -44,7 +45,8 @@ namespace NCS.DSS.ActionPlan.Tests.FunctionTests
             _loggerHelper = new Mock<ILogger<GetActionPlanByIdLogger>>();
             _httpRequestHelper = new Mock<IHttpRequestHelper>();
             _getActionPlanByIdHttpTriggerService = new Mock<IGetActionPlanByIdHttpTriggerService>();
-            _function = new GetActionPlanByIdLogger(_resourceHelper.Object, _getActionPlanByIdHttpTriggerService.Object, _loggerHelper.Object, _httpRequestHelper.Object );
+            _dynamicHelper = new ConvertToDynamic();
+            _function = new GetActionPlanByIdLogger(_resourceHelper.Object, _getActionPlanByIdHttpTriggerService.Object, _loggerHelper.Object, _httpRequestHelper.Object, _dynamicHelper);
         }
 
         public async Task GetActionPlanByIdHttpTrigger_ReturnsStatusCodeBadRequest_WhenDssCorrelationIdIsInvalid()

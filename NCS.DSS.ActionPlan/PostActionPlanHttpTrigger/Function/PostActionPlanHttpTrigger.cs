@@ -14,6 +14,7 @@ using System.Net;
 using System.Threading.Tasks;
 using Microsoft.Azure.Functions.Worker;
 using System.Text.Json;
+using NCS.DSS.ActionPlan.Models;
 
 namespace NCS.DSS.ActionPlan.PostActionPlanHttpTrigger.Function
 {
@@ -24,21 +25,22 @@ namespace NCS.DSS.ActionPlan.PostActionPlanHttpTrigger.Function
         private IPostActionPlanHttpTriggerService _actionPlanPostService;
         private ILogger<PostActionPlanHttpTrigger> _logger;
         private IHttpRequestHelper _httpRequestHelper;
-        private IJsonHelper _jsonHelper;
+        private IConvertToDynamic _dynamicHelper;
         
         public PostActionPlanHttpTrigger(
             IResourceHelper resourceHelper,
             IValidate validate,
             IPostActionPlanHttpTriggerService actionPlanPostService,
             ILogger<PostActionPlanHttpTrigger> logger,
-            IHttpRequestHelper httpRequestHelper, IJsonHelper jsonHelper)
+            IHttpRequestHelper httpRequestHelper,
+            IConvertToDynamic dynamicHelper)
         {
             _resourceHelper = resourceHelper ;
             _validate = validate;
             _actionPlanPostService = actionPlanPostService;
             _logger = logger;
             _httpRequestHelper = httpRequestHelper;
-            _jsonHelper = jsonHelper;
+            _dynamicHelper = dynamicHelper;
         }
 
 
@@ -179,7 +181,7 @@ namespace NCS.DSS.ActionPlan.PostActionPlanHttpTrigger.Function
 
             if (actionPlan != null)
             {                
-                var response = new JsonResult(_jsonHelper.SerializeObjectAndRenameIdProperty(actionPlan,"id","ActionPlanId"), new JsonSerializerOptions() { }) { StatusCode = (int)HttpStatusCode.Created };
+                var response = new JsonResult(_dynamicHelper.RenameAndExcludeProperty(actionPlan,"id","ActionPlanId","CreatedBy"), new JsonSerializerOptions() { }) { StatusCode = (int)HttpStatusCode.Created };
                 _logger.LogInformation($"Response Status Code: [{response.StatusCode}]. attempting to send to service bus [{actionPlan.ActionPlanId}]");
                 await _actionPlanPostService.SendToServiceBusQueueAsync(actionPlan, ApimURL);
                 return response;

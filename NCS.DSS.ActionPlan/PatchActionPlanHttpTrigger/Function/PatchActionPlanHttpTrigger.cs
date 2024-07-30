@@ -25,21 +25,21 @@ namespace NCS.DSS.ActionPlan.PatchActionPlanHttpTrigger.Function
         private IPatchActionPlanHttpTriggerService _actionPlanPatchService;
         private ILogger<PatchActionPlanHttpTrigger> _logger;
         private IHttpRequestHelper _httpRequestHelper;
-        private IJsonHelper _jsonHelper;
+        private IConvertToDynamic _dynamicHelper;
         public PatchActionPlanHttpTrigger(
              IResourceHelper resourceHelper,
              IValidate validate,
              IPatchActionPlanHttpTriggerService actionPlanPatchService,
              ILogger<PatchActionPlanHttpTrigger> logger,
              IHttpRequestHelper httpRequestHelper,
-             IJsonHelper jsonHelper)
+             IConvertToDynamic dynamicHelper)
         {
             _resourceHelper = resourceHelper;
             _validate = validate;
             _actionPlanPatchService = actionPlanPatchService;
             _logger = logger;
             _httpRequestHelper = httpRequestHelper;
-            _jsonHelper = jsonHelper;
+            _dynamicHelper = dynamicHelper;
         }
 
         [Function("Patch")]
@@ -228,7 +228,7 @@ namespace NCS.DSS.ActionPlan.PatchActionPlanHttpTrigger.Function
 
             if (updatedActionPlan != null)
             {
-                var response = new JsonResult(updatedActionPlan, new JsonSerializerOptions() { DefaultIgnoreCondition = System.Text.Json.Serialization.JsonIgnoreCondition.Always}) { StatusCode = (int)HttpStatusCode.OK };
+                var response = new JsonResult(_dynamicHelper.ExcludeProperty(updatedActionPlan,"CreatedBy"), new JsonSerializerOptions()) { StatusCode = (int)HttpStatusCode.OK };
                 _logger.LogInformation($"Response Status Code: [{response.StatusCode}].Patch succeeded, attempting to send to service bus [{actionPlanGuid}]");
                 await _actionPlanPatchService.SendToServiceBusQueueAsync(updatedActionPlan, customerGuid, apimUrl);
                 return response;

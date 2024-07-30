@@ -11,6 +11,7 @@ using System.Net;
 using System.Threading.Tasks;
 using Microsoft.Azure.Functions.Worker;
 using System.Text.Json;
+using NCS.DSS.ActionPlan.Models;
 
 namespace NCS.DSS.ActionPlan.GetActionPlanByIdHttpTrigger.Function
 {
@@ -21,17 +22,19 @@ namespace NCS.DSS.ActionPlan.GetActionPlanByIdHttpTrigger.Function
         private ILogger<GetActionPlanByIdHttpTrigger> _logger;
         private IHttpRequestHelper _httpRequestHelper;
         private IHttpResponseMessageHelper _httpResponseMessageHelper;
-
+        private IConvertToDynamic _dynamicHelper;
         public GetActionPlanByIdHttpTrigger(
             IResourceHelper resourceHelper,
             IGetActionPlanByIdHttpTriggerService actionPlanGetService,
             ILogger<GetActionPlanByIdHttpTrigger> logger,
-            IHttpRequestHelper httpRequestHelper)
+            IHttpRequestHelper httpRequestHelper,
+            IConvertToDynamic dynamicHelper)
         {
             _resourceHelper = resourceHelper;
             _actionPlanGetService = actionPlanGetService;
             _logger = logger;
             _httpRequestHelper = httpRequestHelper;
+            _dynamicHelper = dynamicHelper;
         }
 
         [Function("GetById")]
@@ -123,7 +126,7 @@ namespace NCS.DSS.ActionPlan.GetActionPlanByIdHttpTrigger.Function
             }
             else
             {                
-                var response = new JsonResult(actionPlan,new JsonSerializerOptions()) { StatusCode = (int)HttpStatusCode.OK };
+                var response = new JsonResult(_dynamicHelper.RenameProperty(actionPlan,"id","ActionPlanId"),new JsonSerializerOptions()) { StatusCode = (int)HttpStatusCode.OK };
                 _logger.LogInformation($"Response Status Code: [{response.StatusCode}]. Get returned content.");
                 return response;
             }

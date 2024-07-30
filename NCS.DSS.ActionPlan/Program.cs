@@ -8,6 +8,7 @@ using NCS.DSS.ActionPlan.Cosmos.Helper;
 using NCS.DSS.ActionPlan.Cosmos.Provider;
 using NCS.DSS.ActionPlan.GetActionPlanByIdHttpTrigger.Service;
 using NCS.DSS.ActionPlan.GetActionPlanHttpTrigger.Service;
+using NCS.DSS.ActionPlan.Models;
 using NCS.DSS.ActionPlan.PatchActionPlanHttpTrigger.Service;
 using NCS.DSS.ActionPlan.PostActionPlanHttpTrigger.Service;
 using NCS.DSS.ActionPlan.Validation;
@@ -29,6 +30,7 @@ var host = new HostBuilder()
         services.AddScoped<IGetActionPlanByIdHttpTriggerService, GetActionPlanByIdHttpTriggerService>();
         services.AddScoped<IPostActionPlanHttpTriggerService, PostActionPlanHttpTriggerService>();
         services.AddScoped<IPatchActionPlanHttpTriggerService, PatchActionPlanHttpTriggerService>();
+        services.AddSingleton<IConvertToDynamic, ConvertToDynamic>();
     })
     .Build();
 host.Run();

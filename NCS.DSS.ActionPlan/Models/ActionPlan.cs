@@ -1,7 +1,6 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
-using DFC.JSON.Standard.Attributes;
 using DFC.Swagger.Standard.Annotations;
 using NCS.DSS.ActionPlan.ReferenceData;
 
@@ -11,7 +10,7 @@ namespace NCS.DSS.ActionPlan.Models
     {
         [Display(Description = "Unique identifier of the action plan record.")]
         [Example(Description = "b8592ff8-af97-49ad-9fb2-e5c3c717fd85")]
-        [Newtonsoft.Json.JsonProperty(PropertyName = "id")]
+        [JsonPropertyName("id")]
         public Guid? ActionPlanId { get; set; }
 
         [Display(Description = "Unique identifier of a customer.")]
@@ -80,7 +79,6 @@ namespace NCS.DSS.ActionPlan.Models
         [Example(Description = "0000000001")]
         public string LastModifiedTouchpointId { get; set; }
 
-        [JsonIgnore]
         public string CreatedBy { get; set; }
 
         [Display(Description = "Is the customer satisfied with their action plan?")]

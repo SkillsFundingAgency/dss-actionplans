@@ -6,6 +6,7 @@ using Microsoft.Extensions.Logging;
 using Moq;
 using NCS.DSS.ActionPlan.Cosmos.Helper;
 using NCS.DSS.ActionPlan.GetActionPlanHttpTrigger.Service;
+using NCS.DSS.ActionPlan.Models;
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
@@ -27,6 +28,7 @@ namespace NCS.DSS.ActionPlan.Tests.FunctionTests
         private Mock<IGetActionPlanHttpTriggerService> _getActionPlanHttpTriggerService;
         private Mock<ILogger<GetActionPlanLogger.GetActionPlanHttpTrigger>> _loggerHelper;
         private Mock<IHttpRequestHelper> _httpRequestHelper;
+        private IConvertToDynamic _dynamicHelper;
         private GetActionPlanLogger.GetActionPlanHttpTrigger _function;
 
         [SetUp]
@@ -38,8 +40,9 @@ namespace NCS.DSS.ActionPlan.Tests.FunctionTests
             _loggerHelper = new Mock<ILogger<GetActionPlanLogger.GetActionPlanHttpTrigger>>();
             _httpRequestHelper = new Mock<IHttpRequestHelper>();
             _resourceHelper = new Mock<IResourceHelper>();
+            _dynamicHelper = new ConvertToDynamic();
             _getActionPlanHttpTriggerService = new Mock<IGetActionPlanHttpTriggerService>();
-            _function = new GetActionPlanLogger.GetActionPlanHttpTrigger(_resourceHelper.Object, _getActionPlanHttpTriggerService.Object, _loggerHelper.Object, _httpRequestHelper.Object);
+            _function = new GetActionPlanLogger.GetActionPlanHttpTrigger(_resourceHelper.Object, _getActionPlanHttpTriggerService.Object, _loggerHelper.Object, _httpRequestHelper.Object, _dynamicHelper);
         }
 
         [Test]

@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Moq;
 using NCS.DSS.ActionPlan.Cosmos.Helper;
+using NCS.DSS.ActionPlan.Models;
 using NCS.DSS.ActionPlan.PostActionPlanHttpTrigger.Service;
 using NCS.DSS.ActionPlan.Validation;
 using NUnit.Framework;
@@ -33,7 +34,7 @@ namespace NCS.DSS.ActionPlan.Tests.FunctionTests
         private Mock<IHttpRequestHelper> _httpRequestHelper;
         private Models.ActionPlan _actionPlan;
         private PostActionPlanHttpLogger.PostActionPlanHttpTrigger _function;
-        private IJsonHelper _jsonHelper;
+        private IConvertToDynamic _dynamicHelper;
         [SetUp]
         public void Setup()
         {
@@ -44,14 +45,14 @@ namespace NCS.DSS.ActionPlan.Tests.FunctionTests
             _httpRequestHelper = new Mock<IHttpRequestHelper>();
             _validate = new Validate();
             _postActionPlanHttpTriggerService = new Mock<IPostActionPlanHttpTriggerService>();
-            _jsonHelper = new JsonHelper();
+            _dynamicHelper = new ConvertToDynamic();
             _function = new PostActionPlanHttpLogger.PostActionPlanHttpTrigger(
                 _resourceHelper.Object, 
                 _validate,
                 _postActionPlanHttpTriggerService.Object, 
                 _loggerHelper.Object, 
-                _httpRequestHelper.Object, 
-                _jsonHelper
+                _httpRequestHelper.Object,
+                _dynamicHelper
                 );
         }
 
@@ -123,7 +124,8 @@ namespace NCS.DSS.ActionPlan.Tests.FunctionTests
                 validateMock.Object,
                 _postActionPlanHttpTriggerService.Object,
                 _loggerHelper.Object,
-                _httpRequestHelper.Object, _jsonHelper
+                _httpRequestHelper.Object, 
+                _dynamicHelper
                 );
 
             // Act

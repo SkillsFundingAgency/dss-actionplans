@@ -11,6 +11,7 @@ using System.Net;
 using System.Threading.Tasks;
 using Microsoft.Azure.Functions.Worker;
 using System.Text.Json;
+using NCS.DSS.ActionPlan.Models;
 
 namespace NCS.DSS.ActionPlan.GetActionPlanHttpTrigger.Function
 {
@@ -20,17 +21,20 @@ namespace NCS.DSS.ActionPlan.GetActionPlanHttpTrigger.Function
         private IGetActionPlanHttpTriggerService _actionPlanGetService;
         private IHttpRequestHelper _httpRequestHelper;
         private ILogger<GetActionPlanHttpTrigger> _logger;
+        private IConvertToDynamic _dynamicHelper;
 
         public GetActionPlanHttpTrigger(
             IResourceHelper resourceHelper,
             IGetActionPlanHttpTriggerService actionPlanGetService,
             ILogger<GetActionPlanHttpTrigger> logger,
-            IHttpRequestHelper httpRequestHelper)
+            IHttpRequestHelper httpRequestHelper,
+            IConvertToDynamic dynamicHelper)
         {
             _resourceHelper = resourceHelper;
             _actionPlanGetService = actionPlanGetService;
             _logger = logger;
             _httpRequestHelper = httpRequestHelper;
+            _dynamicHelper = dynamicHelper;
         }
 
         [Function("Get")]
@@ -84,6 +88,8 @@ namespace NCS.DSS.ActionPlan.GetActionPlanHttpTrigger.Function
 
             _logger.LogInformation($"Attempting to get action plan for customer [{customerGuid}]");
             var actionPlans = await _actionPlanGetService.GetActionPlansAsync(customerGuid);
+            
+
             JsonResult jsonResponse;
             if (actionPlans == null)
             {
@@ -93,14 +99,15 @@ namespace NCS.DSS.ActionPlan.GetActionPlanHttpTrigger.Function
             }
             else if (actionPlans.Count == 1)
             {
-                jsonResponse = new JsonResult(actionPlans[0], new JsonSerializerOptions() { DefaultIgnoreCondition = System.Text.Json.Serialization.JsonIgnoreCondition.Never}) { StatusCode = (int)HttpStatusCode.OK };
+                jsonResponse = new JsonResult(_dynamicHelper.RenameProperty(actionPlans[0], "id","ActionPlanId"), new JsonSerializerOptions()) { StatusCode = (int)HttpStatusCode.OK };
             }
             else
             {
-                jsonResponse = new JsonResult(actionPlans, new JsonSerializerOptions() { DefaultIgnoreCondition = System.Text.Json.Serialization.JsonIgnoreCondition.Never }) { StatusCode = (int) HttpStatusCode.OK };
+                jsonResponse = new JsonResult(_dynamicHelper.RenameProperty(actionPlans, "id", "ActionPlanId"), new JsonSerializerOptions()) { StatusCode = (int) HttpStatusCode.OK };
             }
             _logger.LogInformation($"Response Status Code: [{jsonResponse.StatusCode}]. Get returned content");
             return jsonResponse;
         }
+        
     }
 }
