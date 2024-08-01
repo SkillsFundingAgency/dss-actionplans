@@ -222,30 +222,24 @@ namespace NCS.DSS.ActionPlan.PatchActionPlanHttpTrigger.Function
                 _logger.LogWarning($"Response Status Code: [{response.StatusCode}].  Validation errors: [{errors.FirstOrDefault().ErrorMessage}]");
                 return response;
             }
-            try
+
+            _logger.LogInformation($"Attempting to update action plan [{actionPlanGuid}]");
+            var updatedActionPlan = await _actionPlanPatchService.UpdateCosmosAsync(patchedActionPlan, actionPlanGuid);
+
+            if (updatedActionPlan != null)
             {
-                _logger.LogInformation($"Attempting to update action plan [{actionPlanGuid}]");
-                var updatedActionPlan = await _actionPlanPatchService.UpdateCosmosAsync(patchedActionPlan, actionPlanGuid);
-                if (updatedActionPlan != null)
-                {
-                    var response = new JsonResult(_dynamicHelper.ExcludeProperty(updatedActionPlan, "CreatedBy"), new JsonSerializerOptions()) { StatusCode = (int)HttpStatusCode.OK };
-                    _logger.LogInformation($"Response Status Code: [{response.StatusCode}].Patch succeeded, attempting to send to service bus [{actionPlanGuid}]");
-                    await _actionPlanPatchService.SendToServiceBusQueueAsync(updatedActionPlan, customerGuid, apimUrl);
-                    return response;
-                }
-                else
-                {
-                    var response = new BadRequestObjectResult(actionPlanGuid);
-                    _logger.LogWarning($"Response Status Code: [{response.StatusCode}]. Failed to patch a resource");
-                    return response;
-                }
-            }
-            catch (Exception ex)
-            {
-                var response = new UnprocessableEntityObjectResult(_dynamicHelper.ExcludeProperty(ex, ["TargetSite"]));
-                _logger.LogError($"Response Status Code: [{response.StatusCode}]. Unable to retrieve body from req. ", ex.Message);
+                var response = new JsonResult(_dynamicHelper.ExcludeProperty(updatedActionPlan,"CreatedBy"), new JsonSerializerOptions()) { StatusCode = (int)HttpStatusCode.OK };
+                _logger.LogInformation($"Response Status Code: [{response.StatusCode}].Patch succeeded, attempting to send to service bus [{actionPlanGuid}]");
+                await _actionPlanPatchService.SendToServiceBusQueueAsync(updatedActionPlan, customerGuid, apimUrl);
                 return response;
             }
+            else
+            {
+                var response = new BadRequestObjectResult(actionPlanGuid);
+                _logger.LogWarning($"Response Status Code: [{response.StatusCode}]. Failed to patch a resource");
+                return response;
+            }
+            
         }
     }
 }

@@ -10,7 +10,7 @@ namespace NCS.DSS.ActionPlan.Models
     {
         [Display(Description = "Unique identifier of the action plan record.")]
         [Example(Description = "b8592ff8-af97-49ad-9fb2-e5c3c717fd85")]
-        [JsonPropertyName("id")]
+        [Newtonsoft.Json.JsonProperty("id")]
         public Guid? ActionPlanId { get; set; }
 
         [Display(Description = "Unique identifier of a customer.")]
