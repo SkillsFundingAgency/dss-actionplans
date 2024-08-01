@@ -1,5 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Dynamic;
+using System.Text.Json;
 
 namespace NCS.DSS.ActionPlan.Models
 {
@@ -16,6 +18,7 @@ namespace NCS.DSS.ActionPlan.Models
         public IList<ExpandoObject> ExcludeProperty(IList<ActionPlan> actionPlans, string name);
 
         public void AddProperty(ExpandoObject expando, string propertyName, object propertyValue);
-       
+        public ExpandoObject ExcludeProperty(Exception exception, string[] names);
+
     }
 }

@@ -116,9 +116,9 @@ namespace NCS.DSS.ActionPlan.PostActionPlanHttpTrigger.Function
                 _logger.LogInformation($"Attempt to get resource from body of the request");
                 actionPlanRequest = await _httpRequestHelper.GetResourceFromRequest<Models.ActionPlan>(req);
             }
-            catch (System.Text.Json.JsonException ex)
+            catch (Exception ex)
             {
-                var response = new UnprocessableEntityObjectResult(ex);
+                var response = new UnprocessableEntityObjectResult(_dynamicHelper.ExcludeProperty(ex, ["TargetSite"]));
                 _logger.LogError($"Response Status Code: [{response.StatusCode}]. Unable to retrieve body from req", ex);
                 return response;
             }

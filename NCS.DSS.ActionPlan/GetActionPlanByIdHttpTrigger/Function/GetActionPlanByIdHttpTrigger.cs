@@ -21,7 +21,6 @@ namespace NCS.DSS.ActionPlan.GetActionPlanByIdHttpTrigger.Function
         private IGetActionPlanByIdHttpTriggerService _actionPlanGetService;
         private ILogger<GetActionPlanByIdHttpTrigger> _logger;
         private IHttpRequestHelper _httpRequestHelper;
-        private IHttpResponseMessageHelper _httpResponseMessageHelper;
         private IConvertToDynamic _dynamicHelper;
         public GetActionPlanByIdHttpTrigger(
             IResourceHelper resourceHelper,

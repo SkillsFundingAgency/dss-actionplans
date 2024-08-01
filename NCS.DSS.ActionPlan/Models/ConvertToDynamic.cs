@@ -1,5 +1,10 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Dynamic;
+using System.Linq;
+using System.Text.Json;
+using System.Xml.Linq;
+using static Azure.Core.HttpHeader;
 
 namespace NCS.DSS.ActionPlan.Models
 {
@@ -44,11 +49,23 @@ namespace NCS.DSS.ActionPlan.Models
         public ExpandoObject ExcludeProperty(ActionPlan actionPlan, string name)
         {
             dynamic updatedObject = new ExpandoObject();
-            foreach (var item in typeof(Models.ActionPlan).GetProperties())
+            foreach (var item in typeof(ActionPlan).GetProperties())
             {
                 if (item.Name == name)
                     continue;
                 AddProperty(updatedObject, item.Name, item.GetValue(actionPlan));
+            }
+            return updatedObject;
+        }
+        public ExpandoObject ExcludeProperty(Exception exception, string[] names)
+        {
+            dynamic updatedObject = new ExpandoObject();
+            foreach (var item in typeof(Exception).GetProperties())
+            {
+                if (names.Contains(item.Name))
+                    continue;
+               
+                AddProperty(updatedObject, item.Name, item.GetValue(exception));
             }
             return updatedObject;
         }
