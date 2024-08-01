@@ -2,9 +2,6 @@
 using System.Collections.Generic;
 using System.Dynamic;
 using System.Linq;
-using System.Text.Json;
-using System.Xml.Linq;
-using static Azure.Core.HttpHeader;
 
 namespace NCS.DSS.ActionPlan.Models
 {
