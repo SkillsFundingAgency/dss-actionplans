@@ -123,7 +123,7 @@ namespace NCS.DSS.ActionPlan.PatchActionPlanHttpTrigger.Function
             }
             catch (Exception ex)
             {
-                var response = new UnprocessableEntityObjectResult(_dynamicHelper.ExcludeProperty(ex, ["TargetSite"]));
+                var response = new UnprocessableEntityObjectResult(_dynamicHelper.ExcludeProperty(ex, ["TargetSite", "StackTrace"]));
                 _logger.LogError($"Response Status Code: [{response.StatusCode}]. Unable to retrieve body from req. ", ex.Message);
                 return response;
             }
@@ -222,24 +222,30 @@ namespace NCS.DSS.ActionPlan.PatchActionPlanHttpTrigger.Function
                 _logger.LogWarning($"Response Status Code: [{response.StatusCode}].  Validation errors: [{errors.FirstOrDefault().ErrorMessage}]");
                 return response;
             }
-
-            _logger.LogInformation($"Attempting to update action plan [{actionPlanGuid}]");
-            var updatedActionPlan = await _actionPlanPatchService.UpdateCosmosAsync(patchedActionPlan, actionPlanGuid);
-
-            if (updatedActionPlan != null)
+            try
             {
-                var response = new JsonResult(_dynamicHelper.ExcludeProperty(updatedActionPlan,"CreatedBy"), new JsonSerializerOptions()) { StatusCode = (int)HttpStatusCode.OK };
-                _logger.LogInformation($"Response Status Code: [{response.StatusCode}].Patch succeeded, attempting to send to service bus [{actionPlanGuid}]");
-                await _actionPlanPatchService.SendToServiceBusQueueAsync(updatedActionPlan, customerGuid, apimUrl);
+                _logger.LogInformation($"Attempting to update action plan [{actionPlanGuid}]");
+                var updatedActionPlan = await _actionPlanPatchService.UpdateCosmosAsync(patchedActionPlan, actionPlanGuid);
+                if (updatedActionPlan != null)
+                {
+                    var response = new JsonResult(_dynamicHelper.ExcludeProperty(updatedActionPlan, "CreatedBy"), new JsonSerializerOptions()) { StatusCode = (int)HttpStatusCode.OK };
+                    _logger.LogInformation($"Response Status Code: [{response.StatusCode}].Patch succeeded, attempting to send to service bus [{actionPlanGuid}]");
+                    await _actionPlanPatchService.SendToServiceBusQueueAsync(updatedActionPlan, customerGuid, apimUrl);
+                    return response;
+                }
+                else
+                {
+                    var response = new BadRequestObjectResult(actionPlanGuid);
+                    _logger.LogWarning($"Response Status Code: [{response.StatusCode}]. Failed to patch a resource");
+                    return response;
+                }
+            }
+            catch (Exception ex)
+            {
+                var response = new UnprocessableEntityObjectResult(_dynamicHelper.ExcludeProperty(ex, ["TargetSite", "StackTrace"]));
+                _logger.LogError($"Response Status Code: [{response.StatusCode}]. Unable to retrieve body from req. ", ex.Message);
                 return response;
             }
-            else
-            {
-                var response = new BadRequestObjectResult(actionPlanGuid);
-                _logger.LogWarning($"Response Status Code: [{response.StatusCode}]. Failed to patch a resource");
-                return response;
-            }
-            
         }
     }
 }
