@@ -27,9 +27,7 @@ namespace NCS.DSS.ActionPlan.Tests.ValidationTests
             var result = validation.ValidateResource(actionPlan, It.IsAny<DateTime>());
 
             // Assert
-            Assert.IsInstanceOf<List<ValidationResult>>(result);
-            Assert.IsNotNull(result);
-            Assert.AreEqual(1, result.Count);
+            ExecuteAssert(1, result);
         }
 
         [Test]
@@ -47,9 +45,7 @@ namespace NCS.DSS.ActionPlan.Tests.ValidationTests
             var result = validation.ValidateResource(actionPlan, It.IsAny<DateTime>());
 
             // Assert
-            Assert.IsInstanceOf<List<ValidationResult>>(result);
-            Assert.IsNotNull(result);
-            Assert.AreEqual(1, result.Count);
+            ExecuteAssert(1, result);
         }
 
         [Test]
@@ -68,9 +64,7 @@ namespace NCS.DSS.ActionPlan.Tests.ValidationTests
             var result = validation.ValidateResource(actionPlan, DateTime.MaxValue);
 
             // Assert
-            Assert.IsInstanceOf<List<ValidationResult>>(result);
-            Assert.IsNotNull(result);
-            Assert.AreEqual(1, result.Count);
+            ExecuteAssert(1, result);
         }
 
         [Test]
@@ -89,9 +83,7 @@ namespace NCS.DSS.ActionPlan.Tests.ValidationTests
             var result = validation.ValidateResource(actionPlan, It.IsAny<DateTime>());
 
             // Assert
-            Assert.IsInstanceOf<List<ValidationResult>>(result);
-            Assert.IsNotNull(result);
-            Assert.AreEqual(1, result.Count);
+            ExecuteAssert(1, result);
         }
 
         [Test]
@@ -109,9 +101,7 @@ namespace NCS.DSS.ActionPlan.Tests.ValidationTests
             var result = validation.ValidateResource(actionPlan, It.IsAny<DateTime>());
 
             // Assert
-            Assert.IsInstanceOf<List<ValidationResult>>(result);
-            Assert.IsNotNull(result);
-            Assert.AreEqual(1, result.Count);
+            ExecuteAssert(1, result);
         }
 
         [Test]
@@ -131,9 +121,7 @@ namespace NCS.DSS.ActionPlan.Tests.ValidationTests
             var result = validation.ValidateResource(actionPlan, It.IsAny<DateTime>());
 
             // Assert
-            Assert.IsInstanceOf<List<ValidationResult>>(result);
-            Assert.IsNotNull(result);
-            Assert.AreEqual(1, result.Count);
+            ExecuteAssert(1, result);
         }
 
         [Test]
@@ -153,9 +141,7 @@ namespace NCS.DSS.ActionPlan.Tests.ValidationTests
             var result = validation.ValidateResource(actionPlan, It.IsAny<DateTime>());
 
             // Assert
-            Assert.IsInstanceOf<List<ValidationResult>>(result);
-            Assert.IsNotNull(result);
-            Assert.AreEqual(1, result.Count);
+            ExecuteAssert(1, result);
         }
 
         [Test]
@@ -175,9 +161,7 @@ namespace NCS.DSS.ActionPlan.Tests.ValidationTests
             var result = validation.ValidateResource(actionPlan, It.IsAny<DateTime>());
 
             // Assert
-            Assert.IsInstanceOf<List<ValidationResult>>(result);
-            Assert.IsNotNull(result);
-            Assert.AreEqual(2, result.Count);
+            ExecuteAssert(2, result);
         }
 
         [Test]
@@ -197,9 +181,7 @@ namespace NCS.DSS.ActionPlan.Tests.ValidationTests
             var result = validation.ValidateResource(actionPlan, It.IsAny<DateTime>());
 
             // Assert
-            Assert.IsInstanceOf<List<ValidationResult>>(result);
-            Assert.IsNotNull(result);
-            Assert.AreEqual(1, result.Count);
+            ExecuteAssert(1, result);
         }
 
         [Test]
@@ -218,9 +200,8 @@ namespace NCS.DSS.ActionPlan.Tests.ValidationTests
             var result = validation.ValidateResource(actionPlan, It.IsAny<DateTime>());
 
             // Assert
-            Assert.IsInstanceOf<List<ValidationResult>>(result);
-            Assert.IsNotNull(result);
-            Assert.AreEqual(3, result.Count);
+            ExecuteAssert(3, result);
+
         }
 
         [Test]
@@ -240,9 +221,7 @@ namespace NCS.DSS.ActionPlan.Tests.ValidationTests
             var result = validation.ValidateResource(actionPlan, It.IsAny<DateTime>());
 
             // Assert
-            Assert.IsInstanceOf<List<ValidationResult>>(result);
-            Assert.IsNotNull(result);
-            Assert.AreEqual(1, result.Count);
+            ExecuteAssert(1, result);
         }
 
         [Test]
@@ -262,9 +241,8 @@ namespace NCS.DSS.ActionPlan.Tests.ValidationTests
             var result = validation.ValidateResource(actionPlan, It.IsAny<DateTime>());
 
             // Assert
-            Assert.IsInstanceOf<List<ValidationResult>>(result);
-            Assert.IsNotNull(result);
-            Assert.AreEqual(1, result.Count);
+            ExecuteAssert(1, result);
+
         }
 
         [Test]
@@ -281,11 +259,17 @@ namespace NCS.DSS.ActionPlan.Tests.ValidationTests
             var validation = new Validate();
 
             var result = validation.ValidateResource(actionPlan, DateTime.UtcNow.AddDays(2));
-
+            
             // Assert
-            Assert.IsInstanceOf<List<ValidationResult>>(result);
-            Assert.IsNotNull(result);
-            Assert.AreEqual(1, result.Count);
+            ExecuteAssert(1, result);
+            
+        }
+        private void ExecuteAssert(int resultCount,object result)
+        {
+            // Assert
+            Assert.That(typeof(List<ValidationResult>) == result.GetType());
+            Assert.That(result,Is.Not.Null);
+            Assert.That(resultCount == ((List<ValidationResult>)result).Count);
         }
 
     }
