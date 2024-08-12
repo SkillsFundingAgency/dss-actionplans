@@ -16,7 +16,7 @@ namespace NCS.DSS.ActionPlan.APIDefinition
         public const string ApiDescription = "To support the Data Collections integration with DSS PriorityCustomer has been removed and is now " +
             "recorded in the Customer API.";
 
-        public const string ApiVersion = "3.0.0";
+        public const string ApiVersion = "4.0.0";
         private ISwaggerDocumentGenerator _swaggerDocumentGenerator;
 
         public ApiDefinition(ISwaggerDocumentGenerator swaggerDocumentGenerator)
