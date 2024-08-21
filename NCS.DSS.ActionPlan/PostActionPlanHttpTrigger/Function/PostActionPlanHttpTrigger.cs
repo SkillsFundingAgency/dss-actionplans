@@ -1,22 +1,20 @@
-using DFC.Common.Standard.Logging;
 using DFC.HTTP.Standard;
 using DFC.JSON.Standard;
 using DFC.Swagger.Standard.Annotations;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Azure.WebJobs;
-using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Extensions.Logging;
 using NCS.DSS.ActionPlan.Cosmos.Helper;
 using NCS.DSS.ActionPlan.PostActionPlanHttpTrigger.Service;
 using NCS.DSS.ActionPlan.Validation;
-using Newtonsoft.Json;
 using System;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Net;
-using System.Net.Http;
 using System.Threading.Tasks;
+using Microsoft.Azure.Functions.Worker;
+using System.Text.Json;
+using NCS.DSS.ActionPlan.Models;
 
 namespace NCS.DSS.ActionPlan.PostActionPlanHttpTrigger.Function
 {
@@ -25,31 +23,28 @@ namespace NCS.DSS.ActionPlan.PostActionPlanHttpTrigger.Function
         private IResourceHelper _resourceHelper;
         private IValidate _validate;
         private IPostActionPlanHttpTriggerService _actionPlanPostService;
-        private ILoggerHelper _loggerHelper;
+        private ILogger<PostActionPlanHttpTrigger> _logger;
         private IHttpRequestHelper _httpRequestHelper;
-        private IHttpResponseMessageHelper _httpResponseMessageHelper;
-        private IJsonHelper _jsonHelper;
-
+        private IConvertToDynamic _dynamicHelper;
+        
         public PostActionPlanHttpTrigger(
             IResourceHelper resourceHelper,
             IValidate validate,
             IPostActionPlanHttpTriggerService actionPlanPostService,
-            ILoggerHelper loggerHelper,
+            ILogger<PostActionPlanHttpTrigger> logger,
             IHttpRequestHelper httpRequestHelper,
-            IHttpResponseMessageHelper httpResponseMessageHelper,
-            IJsonHelper jsonHelper)
+            IConvertToDynamic dynamicHelper)
         {
             _resourceHelper = resourceHelper ;
             _validate = validate;
             _actionPlanPostService = actionPlanPostService;
-            _loggerHelper = loggerHelper;
+            _logger = logger;
             _httpRequestHelper = httpRequestHelper;
-            _httpResponseMessageHelper = httpResponseMessageHelper;
-            _jsonHelper = jsonHelper;
+            _dynamicHelper = dynamicHelper;
         }
 
 
-        [FunctionName("Post")]
+        [Function("Post")]
         [ProducesResponseType(typeof(Models.ActionPlan), (int)HttpStatusCode.OK)]
         [Response(HttpStatusCode = (int)HttpStatusCode.Created, Description = "Action Plan Created", ShowSchema = true)]
         [Response(HttpStatusCode = (int)HttpStatusCode.NoContent, Description = "Action Plan does not exist", ShowSchema = false)]
@@ -62,55 +57,55 @@ namespace NCS.DSS.ActionPlan.PostActionPlanHttpTrigger.Function
                                               "<br><b>DateActionPlanCreated:</b> DateActionPlanCreated >= Session.DateAndTimeOfSession <br>" +
                                               "<br><b>DateActionPlanSentToCustomer:</b> DateActionPlanSentToCustomer >= DateActionPlanCreated <br>" +
                                               "<br><b>DateActionPlanAcknowledged:</b> DateActionPlanAcknowledged >= DateActionPlanCreated")]
-        public async Task<HttpResponseMessage> Run([HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "Customers/{customerId}/Interactions/{interactionId}/ActionPlans")]HttpRequest req, ILogger log, string customerId, string interactionId)
+        public async Task<IActionResult> Run([HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "Customers/{customerId}/Interactions/{interactionId}/ActionPlans")]HttpRequest req, string customerId, string interactionId)
         {
 
             var correlationId = _httpRequestHelper.GetDssCorrelationId(req);
             if (string.IsNullOrEmpty(correlationId))
-                log.LogInformation("Unable to locate 'DssCorrelationId' in request header");
+                _logger.LogInformation("Unable to locate 'DssCorrelationId' in request header");
 
             if (!Guid.TryParse(correlationId, out var correlationGuid))
             {
-                log.LogInformation("Unable to parse 'DssCorrelationId' to a Guid");
+                _logger.LogInformation("Unable to parse 'DssCorrelationId' to a Guid");
                 correlationGuid = Guid.NewGuid();
             }
 
-            log.LogInformation($"DssCorrelationId: [{correlationGuid}]");
+            _logger.LogInformation($"DssCorrelationId: [{correlationGuid}]");
 
 
             var touchpointId = _httpRequestHelper.GetDssTouchpointId(req);
             if (string.IsNullOrEmpty(touchpointId))
             {
-                var response = _httpResponseMessageHelper.BadRequest();
-                log.LogWarning($"Response Status Code: [{response.StatusCode}]. Unable to locate 'TouchpointId' in request header");
+                var response = new BadRequestObjectResult("");
+                _logger.LogWarning($"Response Status Code: [{response.StatusCode}]. Unable to locate 'TouchpointId' in request header");
                 return response;
             }
 
             var ApimURL = _httpRequestHelper.GetDssApimUrl(req);
             if (string.IsNullOrEmpty(ApimURL))
             {
-                var response = _httpResponseMessageHelper.BadRequest();
-                log.LogWarning($"Response Status Code: [{response.StatusCode}]. Unable to locate 'apimurl' in request header");
+                var response = new BadRequestObjectResult("");
+                _logger.LogWarning($"Response Status Code: [{response.StatusCode}]. Unable to locate 'apimurl' in request header");
                 return response;
             }
 
             var subcontractorId = _httpRequestHelper.GetDssSubcontractorId(req);
             if (string.IsNullOrEmpty(subcontractorId))
-                log.LogInformation($"Unable to locate 'SubcontractorId' in request header");
+                _logger.LogInformation($"Unable to locate 'SubcontractorId' in request header");
 
-            log.LogInformation($"Post Action Plan C# HTTP trigger function  processed a request. By Touchpoint: [{touchpointId}]");
+            _logger.LogInformation($"Post Action Plan C# HTTP trigger function  processed a request. By Touchpoint: [{touchpointId}]");
 
             if (!Guid.TryParse(customerId, out var customerGuid))
             {
-                var response = _httpResponseMessageHelper.BadRequest(customerGuid);
-                log.LogWarning($"Response Status Code: [{response.StatusCode}]. Unable to parse 'customerId' to a Guid: [{customerId}]");
+                var response = new BadRequestObjectResult(customerGuid);
+                _logger.LogWarning($"Response Status Code: [{response.StatusCode}]. Unable to parse 'customerId' to a Guid: [{customerId}]");
                 return response;
             }
 
             if (!Guid.TryParse(interactionId, out var interactionGuid))
             {
-                var response = _httpResponseMessageHelper.BadRequest(interactionGuid);
-                log.LogWarning($"Response Status Code: [{response.StatusCode}]. Unable to parse 'interactionId' to a Guid: [{interactionId}]");
+                var response = new BadRequestObjectResult(interactionGuid);
+                _logger.LogWarning($"Response Status Code: [{response.StatusCode}]. Unable to parse 'interactionId' to a Guid: [{interactionId}]");
                 return response;
             }
 
@@ -118,83 +113,83 @@ namespace NCS.DSS.ActionPlan.PostActionPlanHttpTrigger.Function
 
             try
             {
-                log.LogInformation($"Attempt to get resource from body of the request");
+                _logger.LogInformation($"Attempt to get resource from body of the request");
                 actionPlanRequest = await _httpRequestHelper.GetResourceFromRequest<Models.ActionPlan>(req);
             }
-            catch (JsonException ex)
+            catch (Exception ex)
             {
-                var response = _httpResponseMessageHelper.UnprocessableEntity(ex);
-                log.LogError($"Response Status Code: [{response.StatusCode}]. Unable to retrieve body from req", ex);
+                var response = new UnprocessableEntityObjectResult(_dynamicHelper.ExcludeProperty(ex, ["TargetSite"]));
+                _logger.LogError($"Response Status Code: [{response.StatusCode}]. Unable to retrieve body from req", ex);
                 return response;
             }
 
             if (actionPlanRequest == null)
             {
-                var response = _httpResponseMessageHelper.UnprocessableEntity(req);
-                log.LogWarning($"Response Status Code: [{response.StatusCode}]. Action plan request is null");
+                var response = new UnprocessableEntityObjectResult(req);
+                _logger.LogWarning($"Response Status Code: [{response.StatusCode}]. Action plan request is null");
                 return response;
             }
 
-            log.LogInformation($"Attempt to set id's for action plan");
+            _logger.LogInformation($"Attempt to set id's for action plan");
             actionPlanRequest.SetIds(customerGuid, interactionGuid, touchpointId, subcontractorId);
 
-            log.LogInformation($"Attempting to see if customer exists [{customerGuid}]");
+            _logger.LogInformation($"Attempting to see if customer exists [{customerGuid}]");
             var doesCustomerExist = await _resourceHelper.DoesCustomerExist(customerGuid);
 
             if (!doesCustomerExist)
             {
-                var response = _httpResponseMessageHelper.NoContent(customerGuid);
-                log.LogWarning($"Response Status Code: [{response.StatusCode}]. Customer does not exist [{customerGuid}]");
+                var response = new NoContentResult();
+                _logger.LogWarning($"Response Status Code: [{response.StatusCode}]. Customer does not exist [{customerGuid}]");
                 return response;
             }
 
-            log.LogInformation($"Attempting to see if this is a read only customer [{customerGuid}]");
+            _logger.LogInformation($"Attempting to see if this is a read only customer [{customerGuid}]");
             var isCustomerReadOnly = _resourceHelper.IsCustomerReadOnly();
 
             if (isCustomerReadOnly)
             {
-                var response = _httpResponseMessageHelper.Forbidden(customerGuid);
-                log.LogWarning($"Response Status Code: [{response.StatusCode}]. Customer is read only [{customerGuid}]");
+                var response = new ObjectResult(customerGuid) { StatusCode = (int)HttpStatusCode.Forbidden};
+                _logger.LogWarning($"Response Status Code: [{response.StatusCode}]. Customer is read only [{customerGuid}]");
                 return response;
             }
 
-            log.LogInformation($"Attempting to get Interaction [{interactionGuid}] for customer [{customerGuid}]");
+            _logger.LogInformation($"Attempting to get Interaction [{interactionGuid}] for customer [{customerGuid}]");
             var doesInteractionExist = _resourceHelper.DoesInteractionExistAndBelongToCustomer(interactionGuid, customerGuid);
 
             if (!doesInteractionExist)
             {
-                var response = _httpResponseMessageHelper.NoContent(interactionGuid);
-                log.LogWarning($"Response Status Code: [{response.StatusCode}]. Interaction does not exist [{interactionGuid}]");
+                var response = new NoContentResult();
+                _logger.LogWarning($"Response Status Code: [{response.StatusCode}]. Interaction does not exist [{interactionGuid}]");
                 return response;
             }
 
-            log.LogInformation($"Attempting to get GetDateAndTimeOfSession for Session [{actionPlanRequest.SessionId}]");
+            _logger.LogInformation($"Attempting to get GetDateAndTimeOfSession for Session [{actionPlanRequest.SessionId}]");
             var dateAndTimeOfSession = await _resourceHelper.GetDateAndTimeOfSession(actionPlanRequest.SessionId.GetValueOrDefault());
 
-            log.LogInformation($"Attempt to validate Action Plan resource");
+            _logger.LogInformation($"Attempt to validate Action Plan resource");
             var errors = _validate.ValidateResource(actionPlanRequest, dateAndTimeOfSession);
 
             if (errors != null && errors.Any())
             {
-                var response = _httpResponseMessageHelper.UnprocessableEntity(errors);
-                log.LogWarning($"Response Status Code: [{response.StatusCode}]. Validation errors: [{errors.FirstOrDefault().ErrorMessage}]");
+                var response = new UnprocessableEntityObjectResult(errors);
+                _logger.LogWarning($"Response Status Code: [{response.StatusCode}]. Validation errors: [{errors.FirstOrDefault().ErrorMessage}]");
                 return response;
             }
 
-            log.LogInformation($"Attempting to get Create Action Plan for customer [{customerGuid}]");
+            _logger.LogInformation($"Attempting to get Create Action Plan for customer [{customerGuid}]");
             var actionPlan = await _actionPlanPostService.CreateAsync(actionPlanRequest);
 
             if (actionPlan != null)
-            {
-                var response = _httpResponseMessageHelper.Created(_jsonHelper.SerializeObjectAndRenameIdProperty(actionPlan, "id", "ActionPlanId"));
-                log.LogInformation($"Response Status Code: [{response.StatusCode}]. attempting to send to service bus [{actionPlan.ActionPlanId}]");
+            {                
+                var response = new JsonResult(_dynamicHelper.RenameAndExcludeProperty(actionPlan,"id","ActionPlanId","CreatedBy"), new JsonSerializerOptions() { }) { StatusCode = (int)HttpStatusCode.Created };
+                _logger.LogInformation($"Response Status Code: [{response.StatusCode}]. attempting to send to service bus [{actionPlan.ActionPlanId}]");
                 await _actionPlanPostService.SendToServiceBusQueueAsync(actionPlan, ApimURL);
                 return response;
             }
             else
             {
-                var response = _httpResponseMessageHelper.BadRequest(customerGuid);
-                log.LogWarning($"Response Status Code: [{response.StatusCode}]. Failed to create the Action Plan");
+                var response = new BadRequestObjectResult(customerGuid);
+                _logger .LogWarning($"Response Status Code: [{response.StatusCode}]. Failed to create the Action Plan");
                 return response;
             }
             
