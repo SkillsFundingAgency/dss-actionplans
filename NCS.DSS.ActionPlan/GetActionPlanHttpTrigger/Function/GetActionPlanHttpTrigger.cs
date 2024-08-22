@@ -2,16 +2,16 @@ using DFC.HTTP.Standard;
 using DFC.Swagger.Standard.Annotations;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Azure.Functions.Worker;
 using Microsoft.Extensions.Logging;
 using NCS.DSS.ActionPlan.Cosmos.Helper;
 using NCS.DSS.ActionPlan.GetActionPlanHttpTrigger.Service;
+using NCS.DSS.ActionPlan.Models;
 using System;
 using System.ComponentModel.DataAnnotations;
 using System.Net;
-using System.Threading.Tasks;
-using Microsoft.Azure.Functions.Worker;
 using System.Text.Json;
-using NCS.DSS.ActionPlan.Models;
+using System.Threading.Tasks;
 
 namespace NCS.DSS.ActionPlan.GetActionPlanHttpTrigger.Function
 {
@@ -88,7 +88,7 @@ namespace NCS.DSS.ActionPlan.GetActionPlanHttpTrigger.Function
 
             _logger.LogInformation($"Attempting to get action plan for customer [{customerGuid}]");
             var actionPlans = await _actionPlanGetService.GetActionPlansAsync(customerGuid);
-            
+
 
             JsonResult jsonResponse;
             if (actionPlans == null)
@@ -99,15 +99,15 @@ namespace NCS.DSS.ActionPlan.GetActionPlanHttpTrigger.Function
             }
             else if (actionPlans.Count == 1)
             {
-                jsonResponse = new JsonResult(_dynamicHelper.RenameProperty(actionPlans[0], "id","ActionPlanId"), new JsonSerializerOptions()) { StatusCode = (int)HttpStatusCode.OK };
+                jsonResponse = new JsonResult(_dynamicHelper.RenameProperty(actionPlans[0], "id", "ActionPlanId"), new JsonSerializerOptions()) { StatusCode = (int)HttpStatusCode.OK };
             }
             else
             {
-                jsonResponse = new JsonResult(_dynamicHelper.RenameProperty(actionPlans, "id", "ActionPlanId"), new JsonSerializerOptions()) { StatusCode = (int) HttpStatusCode.OK };
+                jsonResponse = new JsonResult(_dynamicHelper.RenameProperty(actionPlans, "id", "ActionPlanId"), new JsonSerializerOptions()) { StatusCode = (int)HttpStatusCode.OK };
             }
             _logger.LogInformation($"Response Status Code: [{jsonResponse.StatusCode}]. Get returned content");
             return jsonResponse;
         }
-        
+
     }
 }

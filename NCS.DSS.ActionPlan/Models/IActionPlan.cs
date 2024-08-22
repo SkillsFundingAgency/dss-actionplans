@@ -1,6 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using NCS.DSS.ActionPlan.ReferenceData;
+﻿using NCS.DSS.ActionPlan.ReferenceData;
+using System;
 
 namespace NCS.DSS.ActionPlan.Models
 {

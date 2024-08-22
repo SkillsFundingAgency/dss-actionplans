@@ -259,16 +259,16 @@ namespace NCS.DSS.ActionPlan.Tests.ValidationTests
             var validation = new Validate();
 
             var result = validation.ValidateResource(actionPlan, DateTime.UtcNow.AddDays(2));
-            
+
             // Assert
             ExecuteAssert(1, result);
-            
+
         }
-        private void ExecuteAssert(int resultCount,object result)
+        private void ExecuteAssert(int resultCount, object result)
         {
             // Assert
             Assert.That(typeof(List<ValidationResult>) == result.GetType());
-            Assert.That(result,Is.Not.Null);
+            Assert.That(result, Is.Not.Null);
             Assert.That(resultCount == ((List<ValidationResult>)result).Count);
         }
 

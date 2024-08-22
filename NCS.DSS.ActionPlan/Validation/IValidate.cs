@@ -1,7 +1,7 @@
-﻿using System;
+﻿using NCS.DSS.ActionPlan.Models;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using NCS.DSS.ActionPlan.Models;
 
 namespace NCS.DSS.ActionPlan.Validation
 {

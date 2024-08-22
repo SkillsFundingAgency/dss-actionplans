@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Dynamic;
-using System.Text.Json;
 
 namespace NCS.DSS.ActionPlan.Models
 {

@@ -1,5 +1,4 @@
 ﻿using DFC.HTTP.Standard;
-using DFC.JSON.Standard;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -65,7 +64,7 @@ namespace NCS.DSS.ActionPlan.Tests.FunctionTests
             // Arrange
             _httpRequestHelper.Setup(x => x.GetDssCorrelationId(_request)).Returns(ValidDssCorrelationId);
             _httpRequestHelper.Setup(x => x.GetDssTouchpointId(_request)).Returns("0000000001");
-            _resourceHelper.Setup(x=>x.DoesCustomerExist(It.IsAny<Guid>())).Returns(Task.FromResult(false));
+            _resourceHelper.Setup(x => x.DoesCustomerExist(It.IsAny<Guid>())).Returns(Task.FromResult(false));
 
             // Act
             var result = await RunFunction(ValidCustomerId);
@@ -81,7 +80,7 @@ namespace NCS.DSS.ActionPlan.Tests.FunctionTests
             _resourceHelper.Setup(x => x.DoesCustomerExist(It.IsAny<Guid>())).Returns(Task.FromResult(true));
             _httpRequestHelper.Setup(x => x.GetDssCorrelationId(_request)).Returns(ValidDssCorrelationId);
             _httpRequestHelper.Setup(x => x.GetDssTouchpointId(_request)).Returns("0000000001");
-            _getActionPlanHttpTriggerService.Setup(x=>x.GetActionPlansAsync(It.IsAny<Guid>())).Returns(Task.FromResult<List<Models.ActionPlan>>(null));
+            _getActionPlanHttpTriggerService.Setup(x => x.GetActionPlansAsync(It.IsAny<Guid>())).Returns(Task.FromResult<List<Models.ActionPlan>>(null));
 
             // Act
             var result = await RunFunction(ValidCustomerId);
@@ -98,20 +97,20 @@ namespace NCS.DSS.ActionPlan.Tests.FunctionTests
             _httpRequestHelper.Setup(x => x.GetDssCorrelationId(_request)).Returns(ValidDssCorrelationId);
             _httpRequestHelper.Setup(x => x.GetDssTouchpointId(_request)).Returns("0000000001");
             var listOfActionPlanes = new List<Models.ActionPlan>();
-            _getActionPlanHttpTriggerService.Setup(x=>x.GetActionPlansAsync(It.IsAny<Guid>())).Returns(Task.FromResult(listOfActionPlanes));
+            _getActionPlanHttpTriggerService.Setup(x => x.GetActionPlansAsync(It.IsAny<Guid>())).Returns(Task.FromResult(listOfActionPlanes));
 
-            
+
             // Act
             var result = await RunFunction(ValidCustomerId);
             var jsonResult = result as JsonResult;
 
             // Assert
-            Assert.That(result,Is.InstanceOf<JsonResult>());
+            Assert.That(result, Is.InstanceOf<JsonResult>());
             Assert.That(jsonResult.StatusCode, Is.EqualTo((int)HttpStatusCode.OK));
-            
+
         }
 
-       
+
 
         private async Task<IActionResult> RunFunction(string customerId)
         {

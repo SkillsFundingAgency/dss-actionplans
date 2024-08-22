@@ -34,7 +34,7 @@ namespace NCS.DSS.ActionPlan.Tests.ServiceTests
             var result = _actionPlanPatchService.Patch(string.Empty, It.IsAny<ActionPlanPatch>());
 
             // Assert
-            Assert.That(result,Is.Null);
+            Assert.That(result, Is.Null);
         }
 
         [Test]

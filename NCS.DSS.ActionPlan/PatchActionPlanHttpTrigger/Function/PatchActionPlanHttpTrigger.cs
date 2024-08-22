@@ -2,6 +2,7 @@ using DFC.HTTP.Standard;
 using DFC.Swagger.Standard.Annotations;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Azure.Functions.Worker;
 using Microsoft.Extensions.Logging;
 using NCS.DSS.ActionPlan.Cosmos.Helper;
 using NCS.DSS.ActionPlan.Models;
@@ -11,9 +12,8 @@ using System;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Net;
-using System.Threading.Tasks;
-using Microsoft.Azure.Functions.Worker;
 using System.Text.Json;
+using System.Threading.Tasks;
 
 namespace NCS.DSS.ActionPlan.PatchActionPlanHttpTrigger.Function
 {
@@ -194,7 +194,7 @@ namespace NCS.DSS.ActionPlan.PatchActionPlanHttpTrigger.Function
 
             try
             {
-                actionPlanValidationObject =  JsonSerializer.Deserialize<Models.ActionPlan>(patchedActionPlan);
+                actionPlanValidationObject = JsonSerializer.Deserialize<Models.ActionPlan>(patchedActionPlan);
             }
             catch (JsonException ex)
             {
@@ -228,7 +228,7 @@ namespace NCS.DSS.ActionPlan.PatchActionPlanHttpTrigger.Function
 
             if (updatedActionPlan != null)
             {
-                var response = new JsonResult(_dynamicHelper.ExcludeProperty(updatedActionPlan,"CreatedBy"), new JsonSerializerOptions()) { StatusCode = (int)HttpStatusCode.OK };
+                var response = new JsonResult(_dynamicHelper.ExcludeProperty(updatedActionPlan, "CreatedBy"), new JsonSerializerOptions()) { StatusCode = (int)HttpStatusCode.OK };
                 _logger.LogInformation($"Response Status Code: [{response.StatusCode}].Patch succeeded, attempting to send to service bus [{actionPlanGuid}]");
                 await _actionPlanPatchService.SendToServiceBusQueueAsync(updatedActionPlan, customerGuid, apimUrl);
                 return response;
@@ -239,7 +239,7 @@ namespace NCS.DSS.ActionPlan.PatchActionPlanHttpTrigger.Function
                 _logger.LogWarning($"Response Status Code: [{response.StatusCode}]. Failed to patch a resource");
                 return response;
             }
-            
+
         }
     }
 }
