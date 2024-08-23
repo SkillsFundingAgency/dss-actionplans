@@ -29,26 +29,26 @@ namespace NCS.DSS.ActionPlan.Tests.ServiceTests
         public async Task GetActionPlanHttpTriggerServiceTests_GetActionPlanForCustomerAsync_ReturnsNullWhenResourceCannotBeFound()
         {
             // Arrange
-            _documentDbProvider.Setup(x=>x.GetActionPlanForCustomerAsync(It.IsAny<Guid>(), It.IsAny<Guid>())).Returns(Task.FromResult<Models.ActionPlan>(null));
+            _documentDbProvider.Setup(x => x.GetActionPlanForCustomerAsync(It.IsAny<Guid>(), It.IsAny<Guid>())).Returns(Task.FromResult<Models.ActionPlan>(null));
 
             // Act
             var result = await _actionPlanHttpTriggerService.GetActionPlanForCustomerAsync(_customerId, _actionPlanId);
 
             // Assert
-            Assert.That(result,Is.Null);
+            Assert.That(result, Is.Null);
         }
 
         [Test]
         public async Task GetActionPlanHttpTriggerServiceTests_GetActionPlanForCustomerAsync_ReturnsResource()
         {
             // Arrange
-            _documentDbProvider.Setup(x=>x.GetActionPlanForCustomerAsync(It.IsAny<Guid>(), It.IsAny<Guid>())).Returns(Task.FromResult(_actionPlan));
+            _documentDbProvider.Setup(x => x.GetActionPlanForCustomerAsync(It.IsAny<Guid>(), It.IsAny<Guid>())).Returns(Task.FromResult(_actionPlan));
 
             // Act
             var result = await _actionPlanHttpTriggerService.GetActionPlanForCustomerAsync(_customerId, _actionPlanId);
 
             // Assert
-            Assert.That(result,Is.Not.Null);
+            Assert.That(result, Is.Not.Null);
             Assert.That(typeof(Models.ActionPlan) == result.GetType());
         }
     }

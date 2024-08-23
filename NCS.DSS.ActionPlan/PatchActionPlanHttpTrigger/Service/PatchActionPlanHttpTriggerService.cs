@@ -1,9 +1,9 @@
-﻿using System;
-using System.Net;
-using System.Threading.Tasks;
-using NCS.DSS.ActionPlan.Cosmos.Provider;
+﻿using NCS.DSS.ActionPlan.Cosmos.Provider;
 using NCS.DSS.ActionPlan.Models;
 using NCS.DSS.ActionPlan.ServiceBus;
+using System;
+using System.Net;
+using System.Threading.Tasks;
 
 namespace NCS.DSS.ActionPlan.PatchActionPlanHttpTrigger.Service
 {
@@ -42,7 +42,7 @@ namespace NCS.DSS.ActionPlan.PatchActionPlanHttpTrigger.Service
 
             var responseStatusCode = response?.StatusCode;
 
-            return responseStatusCode == HttpStatusCode.OK ? (dynamic) response.Resource : null;
+            return responseStatusCode == HttpStatusCode.OK ? (dynamic)response.Resource : null;
         }
 
         public async Task<string> GetActionPlanForCustomerAsync(Guid customerId, Guid actionPlanId)

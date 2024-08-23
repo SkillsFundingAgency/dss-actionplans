@@ -1,20 +1,19 @@
 using DFC.HTTP.Standard;
-using DFC.JSON.Standard;
 using DFC.Swagger.Standard.Annotations;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Azure.Functions.Worker;
 using Microsoft.Extensions.Logging;
 using NCS.DSS.ActionPlan.Cosmos.Helper;
+using NCS.DSS.ActionPlan.Models;
 using NCS.DSS.ActionPlan.PostActionPlanHttpTrigger.Service;
 using NCS.DSS.ActionPlan.Validation;
 using System;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Net;
-using System.Threading.Tasks;
-using Microsoft.Azure.Functions.Worker;
 using System.Text.Json;
-using NCS.DSS.ActionPlan.Models;
+using System.Threading.Tasks;
 
 namespace NCS.DSS.ActionPlan.PostActionPlanHttpTrigger.Function
 {
@@ -26,7 +25,7 @@ namespace NCS.DSS.ActionPlan.PostActionPlanHttpTrigger.Function
         private ILogger<PostActionPlanHttpTrigger> _logger;
         private IHttpRequestHelper _httpRequestHelper;
         private IConvertToDynamic _dynamicHelper;
-        
+
         public PostActionPlanHttpTrigger(
             IResourceHelper resourceHelper,
             IValidate validate,
@@ -35,7 +34,7 @@ namespace NCS.DSS.ActionPlan.PostActionPlanHttpTrigger.Function
             IHttpRequestHelper httpRequestHelper,
             IConvertToDynamic dynamicHelper)
         {
-            _resourceHelper = resourceHelper ;
+            _resourceHelper = resourceHelper;
             _validate = validate;
             _actionPlanPostService = actionPlanPostService;
             _logger = logger;
@@ -57,7 +56,7 @@ namespace NCS.DSS.ActionPlan.PostActionPlanHttpTrigger.Function
                                               "<br><b>DateActionPlanCreated:</b> DateActionPlanCreated >= Session.DateAndTimeOfSession <br>" +
                                               "<br><b>DateActionPlanSentToCustomer:</b> DateActionPlanSentToCustomer >= DateActionPlanCreated <br>" +
                                               "<br><b>DateActionPlanAcknowledged:</b> DateActionPlanAcknowledged >= DateActionPlanCreated")]
-        public async Task<IActionResult> Run([HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "Customers/{customerId}/Interactions/{interactionId}/ActionPlans")]HttpRequest req, string customerId, string interactionId)
+        public async Task<IActionResult> Run([HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "Customers/{customerId}/Interactions/{interactionId}/ActionPlans")] HttpRequest req, string customerId, string interactionId)
         {
 
             var correlationId = _httpRequestHelper.GetDssCorrelationId(req);
@@ -148,7 +147,7 @@ namespace NCS.DSS.ActionPlan.PostActionPlanHttpTrigger.Function
 
             if (isCustomerReadOnly)
             {
-                var response = new ObjectResult(customerGuid) { StatusCode = (int)HttpStatusCode.Forbidden};
+                var response = new ObjectResult(customerGuid) { StatusCode = (int)HttpStatusCode.Forbidden };
                 _logger.LogWarning($"Response Status Code: [{response.StatusCode}]. Customer is read only [{customerGuid}]");
                 return response;
             }
@@ -180,8 +179,8 @@ namespace NCS.DSS.ActionPlan.PostActionPlanHttpTrigger.Function
             var actionPlan = await _actionPlanPostService.CreateAsync(actionPlanRequest);
 
             if (actionPlan != null)
-            {                
-                var response = new JsonResult(_dynamicHelper.RenameAndExcludeProperty(actionPlan,"id","ActionPlanId","CreatedBy"), new JsonSerializerOptions() { }) { StatusCode = (int)HttpStatusCode.Created };
+            {
+                var response = new JsonResult(_dynamicHelper.RenameAndExcludeProperty(actionPlan, "id", "ActionPlanId", "CreatedBy"), new JsonSerializerOptions() { }) { StatusCode = (int)HttpStatusCode.Created };
                 _logger.LogInformation($"Response Status Code: [{response.StatusCode}]. attempting to send to service bus [{actionPlan.ActionPlanId}]");
                 await _actionPlanPostService.SendToServiceBusQueueAsync(actionPlan, ApimURL);
                 return response;
@@ -189,10 +188,10 @@ namespace NCS.DSS.ActionPlan.PostActionPlanHttpTrigger.Function
             else
             {
                 var response = new BadRequestObjectResult(customerGuid);
-                _logger .LogWarning($"Response Status Code: [{response.StatusCode}]. Failed to create the Action Plan");
+                _logger.LogWarning($"Response Status Code: [{response.StatusCode}]. Failed to create the Action Plan");
                 return response;
             }
-            
+
         }
     }
 }

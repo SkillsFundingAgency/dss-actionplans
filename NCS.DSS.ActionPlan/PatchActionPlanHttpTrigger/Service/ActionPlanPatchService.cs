@@ -1,7 +1,6 @@
 ﻿using DFC.JSON.Standard;
 using NCS.DSS.ActionPlan.Models;
 using Newtonsoft.Json.Linq;
-using System.Linq;
 
 namespace NCS.DSS.ActionPlan.PatchActionPlanHttpTrigger.Service
 {

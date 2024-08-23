@@ -16,7 +16,7 @@ namespace NCS.DSS.ActionPlan.Tests.ModelTests
 
             // Assert
             Assert.That(actionPlan.LastModifiedDate, Is.Not.Null);
-            
+
             Assert.That(false == actionPlan.CustomerCharterShownToCustomer);
         }
 

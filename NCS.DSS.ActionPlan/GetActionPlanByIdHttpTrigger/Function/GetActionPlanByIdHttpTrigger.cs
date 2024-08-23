@@ -2,16 +2,16 @@ using DFC.HTTP.Standard;
 using DFC.Swagger.Standard.Annotations;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Azure.Functions.Worker;
 using Microsoft.Extensions.Logging;
 using NCS.DSS.ActionPlan.Cosmos.Helper;
 using NCS.DSS.ActionPlan.GetActionPlanByIdHttpTrigger.Service;
+using NCS.DSS.ActionPlan.Models;
 using System;
 using System.ComponentModel.DataAnnotations;
 using System.Net;
-using System.Threading.Tasks;
-using Microsoft.Azure.Functions.Worker;
 using System.Text.Json;
-using NCS.DSS.ActionPlan.Models;
+using System.Threading.Tasks;
 
 namespace NCS.DSS.ActionPlan.GetActionPlanByIdHttpTrigger.Function
 {
@@ -124,8 +124,8 @@ namespace NCS.DSS.ActionPlan.GetActionPlanByIdHttpTrigger.Function
                 return response;
             }
             else
-            {                
-                var response = new JsonResult(_dynamicHelper.RenameProperty(actionPlan,"id","ActionPlanId"),new JsonSerializerOptions()) { StatusCode = (int)HttpStatusCode.OK };
+            {
+                var response = new JsonResult(_dynamicHelper.RenameProperty(actionPlan, "id", "ActionPlanId"), new JsonSerializerOptions()) { StatusCode = (int)HttpStatusCode.OK };
                 _logger.LogInformation($"Response Status Code: [{response.StatusCode}]. Get returned content.");
                 return response;
             }

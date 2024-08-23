@@ -1,12 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using DFC.Swagger.Standard.Annotations;
+﻿using DFC.Swagger.Standard.Annotations;
 using NCS.DSS.ActionPlan.ReferenceData;
+using System;
+using System.ComponentModel.DataAnnotations;
 
 namespace NCS.DSS.ActionPlan.Models
 {
-    
+
     public class ActionPlanPatch : IActionPlan
     {
         [Display(Description = "Unique identifier to the related session resource. " +

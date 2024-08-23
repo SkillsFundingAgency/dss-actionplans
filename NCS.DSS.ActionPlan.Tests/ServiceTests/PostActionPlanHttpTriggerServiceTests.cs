@@ -1,16 +1,16 @@
-﻿using System;
-using System.Collections.Specialized;
-using System.IO;
-using System.Net;
-using System.Reflection;
-using System.Threading.Tasks;
-using Microsoft.Azure.Documents;
+﻿using Microsoft.Azure.Documents;
 using Microsoft.Azure.Documents.Client;
 using Moq;
 using NCS.DSS.ActionPlan.Cosmos.Provider;
 using NCS.DSS.ActionPlan.PostActionPlanHttpTrigger.Service;
 using Newtonsoft.Json;
 using NUnit.Framework;
+using System;
+using System.Collections.Specialized;
+using System.IO;
+using System.Net;
+using System.Reflection;
+using System.Threading.Tasks;
 
 namespace NCS.DSS.ActionPlan.Tests.ServiceTests
 {
@@ -39,7 +39,7 @@ namespace NCS.DSS.ActionPlan.Tests.ServiceTests
             var result = await _actionPlanHttpTriggerService.CreateAsync(It.IsAny<Models.ActionPlan>());
 
             // Assert
-            Assert.That(result,Is.Null);
+            Assert.That(result, Is.Null);
         }
 
         [Test]
@@ -68,13 +68,13 @@ namespace NCS.DSS.ActionPlan.Tests.ServiceTests
 
             responseField?.SetValue(resourceResponse, documentServiceResponse);
 
-            _documentDbProvider.Setup(x=>x.CreateActionPlanAsync(It.IsAny<Models.ActionPlan>())).Returns(Task.FromResult(resourceResponse));
+            _documentDbProvider.Setup(x => x.CreateActionPlanAsync(It.IsAny<Models.ActionPlan>())).Returns(Task.FromResult(resourceResponse));
 
             // Act
             var result = await _actionPlanHttpTriggerService.CreateAsync(_actionPlan);
 
             // Assert
-            Assert.That(result,Is.Not.Null);
+            Assert.That(result, Is.Not.Null);
             Assert.That(typeof(Models.ActionPlan) == result.GetType());
 
         }

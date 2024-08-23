@@ -1,6 +1,4 @@
-﻿using DFC.Common.Standard.Logging;
-using DFC.HTTP.Standard;
-using DFC.JSON.Standard;
+﻿using DFC.HTTP.Standard;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -54,10 +52,10 @@ namespace NCS.DSS.ActionPlan.Tests.FunctionTests
             _patchActionPlanHttpTriggerService = new Mock<IPatchActionPlanHttpTriggerService>();
             _actionPlanString = JsonConvert.SerializeObject(_actionPlan);
             _function = new PatchActionPlanLogger.PatchActionPlanHttpTrigger(
-                _resourceHelper.Object, 
-                _validate, 
-                _patchActionPlanHttpTriggerService.Object, 
-                _loggerHelper.Object, 
+                _resourceHelper.Object,
+                _validate,
+                _patchActionPlanHttpTriggerService.Object,
+                _loggerHelper.Object,
                 _httpRequestHelper.Object,
                 _dynamicHelper);
         }

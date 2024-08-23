@@ -1,6 +1,4 @@
-﻿using DFC.Common.Standard.Logging;
-using DFC.HTTP.Standard;
-using DFC.JSON.Standard;
+﻿using DFC.HTTP.Standard;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -35,7 +33,7 @@ namespace NCS.DSS.ActionPlan.Tests.FunctionTests
         private GetActionPlanByIdLogger _function;
         private IConvertToDynamic _dynamicHelper;
 
-       [SetUp]
+        [SetUp]
         public void Setup()
         {
             _actionPlan = new Models.ActionPlan();
@@ -188,8 +186,8 @@ namespace NCS.DSS.ActionPlan.Tests.FunctionTests
         private async Task<IActionResult> RunFunction(string customerId, string interactionId, string actionPlanId)
         {
             return await _function.Run(
-                _request,  
-                customerId, 
+                _request,
+                customerId,
                 interactionId,
                 actionPlanId).ConfigureAwait(false);
         }

@@ -61,7 +61,7 @@ namespace NCS.DSS.ActionPlan.Models
             {
                 if (names.Contains(item.Name))
                     continue;
-               
+
                 AddProperty(updatedObject, item.Name, item.GetValue(exception));
             }
             return updatedObject;
