@@ -1,9 +1,8 @@
-﻿using System;
+﻿using NCS.DSS.ActionPlan.Models;
+using NCS.DSS.ActionPlan.ReferenceData;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using NCS.DSS.ActionPlan.Models;
-using NCS.DSS.ActionPlan.ReferenceData;
 
 namespace NCS.DSS.ActionPlan.Validation
 {
@@ -29,7 +28,7 @@ namespace NCS.DSS.ActionPlan.Validation
             {
                 if (actionPlanResource.DateActionPlanCreated.Value > DateTime.UtcNow)
                     results.Add(new ValidationResult("Date ActionPlan Created must be less the current date/time", new[] { "DateActionPlanCreated" }));
-                
+
                 if (dateAndTimeSessionCreated.HasValue)
                 {
                     if (!(actionPlanResource.DateActionPlanCreated.Value >= dateAndTimeSessionCreated.Value))
@@ -69,7 +68,7 @@ namespace NCS.DSS.ActionPlan.Validation
 
             if (actionPlanResource.CustomerSatisfaction.HasValue && !Enum.IsDefined(typeof(CustomerSatisfaction), actionPlanResource.CustomerSatisfaction.Value))
                 results.Add(new ValidationResult("Please supply a valid Customer Satisfaction result", new[] { "CustomerSatisfaction" }));
-            
+
         }
     }
 }

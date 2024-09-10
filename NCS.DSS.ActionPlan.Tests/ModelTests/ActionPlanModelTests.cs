@@ -15,8 +15,9 @@ namespace NCS.DSS.ActionPlan.Tests.ModelTests
             actionPlan.SetDefaultValues();
 
             // Assert
-            Assert.IsNotNull(actionPlan.LastModifiedDate);
-            Assert.AreEqual(false, actionPlan.CustomerCharterShownToCustomer);
+            Assert.That(actionPlan.LastModifiedDate, Is.Not.Null);
+
+            Assert.That(false == actionPlan.CustomerCharterShownToCustomer);
         }
 
         [Test]
@@ -27,7 +28,7 @@ namespace NCS.DSS.ActionPlan.Tests.ModelTests
             actionPlan.SetDefaultValues();
 
             // Assert
-            Assert.AreEqual(DateTime.MaxValue, actionPlan.LastModifiedDate);
+            Assert.That(DateTime.MaxValue == actionPlan.LastModifiedDate);
         }
 
         [Test]
@@ -38,7 +39,7 @@ namespace NCS.DSS.ActionPlan.Tests.ModelTests
             actionPlan.SetDefaultValues();
 
             // Assert
-            Assert.AreEqual(true, actionPlan.CustomerCharterShownToCustomer);
+            Assert.That(true == actionPlan.CustomerCharterShownToCustomer);
         }
 
         [Test]
@@ -49,7 +50,7 @@ namespace NCS.DSS.ActionPlan.Tests.ModelTests
             actionPlan.SetIds(It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<string>(), It.IsAny<string>());
 
             // Assert
-            Assert.AreNotSame(Guid.Empty, actionPlan.ActionPlanId);
+            Assert.That(actionPlan.ActionPlanId, Is.Not.Empty);// != Guid.Empty);
         }
 
         [Test]
@@ -61,7 +62,7 @@ namespace NCS.DSS.ActionPlan.Tests.ModelTests
             actionPlan.SetIds(customerId, It.IsAny<Guid>(), It.IsAny<string>(), It.IsAny<string>());
 
             // Assert
-            Assert.AreEqual(customerId, actionPlan.CustomerId);
+            Assert.That(customerId == actionPlan.CustomerId);
         }
 
         [Test]
@@ -73,7 +74,7 @@ namespace NCS.DSS.ActionPlan.Tests.ModelTests
             actionPlan.SetIds(It.IsAny<Guid>(), interactionId, It.IsAny<string>(), It.IsAny<string>());
 
             // Assert
-            Assert.AreEqual(interactionId, actionPlan.InteractionId);
+            Assert.That(interactionId == actionPlan.InteractionId);
         }
 
         [Test]
@@ -84,7 +85,7 @@ namespace NCS.DSS.ActionPlan.Tests.ModelTests
             actionPlan.SetIds(It.IsAny<Guid>(), It.IsAny<Guid>(), "0000000000", It.IsAny<string>());
 
             // Assert
-            Assert.AreEqual("0000000000", actionPlan.LastModifiedTouchpointId);
+            Assert.That("0000000000" == actionPlan.LastModifiedTouchpointId);
         }
 
         [Test]
@@ -95,7 +96,7 @@ namespace NCS.DSS.ActionPlan.Tests.ModelTests
             actionPlan.SetIds(It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<string>(), "0000000000");
 
             // Assert
-            Assert.AreEqual("0000000000", actionPlan.SubcontractorId);
+            Assert.That("0000000000" == actionPlan.SubcontractorId);
         }
 
     }

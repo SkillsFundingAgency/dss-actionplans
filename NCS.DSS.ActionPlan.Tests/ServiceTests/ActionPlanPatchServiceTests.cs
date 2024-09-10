@@ -34,7 +34,7 @@ namespace NCS.DSS.ActionPlan.Tests.ServiceTests
             var result = _actionPlanPatchService.Patch(string.Empty, It.IsAny<ActionPlanPatch>());
 
             // Assert
-            Assert.IsNull(result);
+            Assert.That(result, Is.Null);
         }
 
         [Test]
@@ -47,7 +47,7 @@ namespace NCS.DSS.ActionPlan.Tests.ServiceTests
             var actionPlan = JsonConvert.DeserializeObject<Models.ActionPlan>(patchedActionPlan);
 
             // Assert
-            Assert.AreEqual(DateTime.MaxValue, actionPlan.DateActionPlanCreated);
+            Assert.That(DateTime.MaxValue == actionPlan.DateActionPlanCreated);
         }
 
 
@@ -61,7 +61,7 @@ namespace NCS.DSS.ActionPlan.Tests.ServiceTests
             var actionPlan = JsonConvert.DeserializeObject<Models.ActionPlan>(patchedActionPlan);
 
             // Assert
-            Assert.AreEqual(true, actionPlan.CustomerCharterShownToCustomer);
+            Assert.That(true == actionPlan.CustomerCharterShownToCustomer);
         }
 
         [Test]
@@ -74,7 +74,7 @@ namespace NCS.DSS.ActionPlan.Tests.ServiceTests
             var actionPlan = JsonConvert.DeserializeObject<Models.ActionPlan>(patchedActionPlan);
 
             // Assert
-            Assert.AreEqual(DateTime.MaxValue, actionPlan.DateAndTimeCharterShown);
+            Assert.That(DateTime.MaxValue == actionPlan.DateAndTimeCharterShown);
         }
 
         [Test]
@@ -87,7 +87,7 @@ namespace NCS.DSS.ActionPlan.Tests.ServiceTests
             var actionPlan = JsonConvert.DeserializeObject<Models.ActionPlan>(patchedActionPlan);
 
             // Assert
-            Assert.AreEqual(DateTime.MaxValue, actionPlan.DateActionPlanSentToCustomer);
+            Assert.That(DateTime.MaxValue == actionPlan.DateActionPlanSentToCustomer);
         }
 
         [Test]
@@ -100,7 +100,7 @@ namespace NCS.DSS.ActionPlan.Tests.ServiceTests
             var actionPlan = JsonConvert.DeserializeObject<Models.ActionPlan>(patchedActionPlan);
 
             // Assert
-            Assert.AreEqual(ActionPlanDeliveryMethod.Paper, actionPlan.ActionPlanDeliveryMethod);
+            Assert.That(ActionPlanDeliveryMethod.Paper == actionPlan.ActionPlanDeliveryMethod);
         }
 
         [Test]
@@ -113,7 +113,7 @@ namespace NCS.DSS.ActionPlan.Tests.ServiceTests
             var actionPlan = JsonConvert.DeserializeObject<Models.ActionPlan>(patchedActionPlan);
 
             // Assert
-            Assert.AreEqual(DateTime.MaxValue, actionPlan.DateActionPlanAcknowledged);
+            Assert.That(DateTime.MaxValue == actionPlan.DateActionPlanAcknowledged);
         }
 
         [Test]
@@ -126,7 +126,7 @@ namespace NCS.DSS.ActionPlan.Tests.ServiceTests
             var actionPlan = JsonConvert.DeserializeObject<Models.ActionPlan>(patchedActionPlan);
 
             // Assert
-            Assert.AreEqual("Current", actionPlan.CurrentSituation);
+            Assert.That("Current" == actionPlan.CurrentSituation);
         }
 
         [Test]
@@ -139,7 +139,7 @@ namespace NCS.DSS.ActionPlan.Tests.ServiceTests
             var actionPlan = JsonConvert.DeserializeObject<Models.ActionPlan>(patchedActionPlan);
 
             // Assert
-            Assert.AreEqual(DateTime.MaxValue, actionPlan.LastModifiedDate);
+            Assert.That(DateTime.MaxValue == actionPlan.LastModifiedDate);
         }
 
         [Test]
@@ -152,7 +152,7 @@ namespace NCS.DSS.ActionPlan.Tests.ServiceTests
             var actionPlan = JsonConvert.DeserializeObject<Models.ActionPlan>(patchedActionPlan);
 
             // Assert
-            Assert.AreEqual("0000000111", actionPlan.LastModifiedTouchpointId);
+            Assert.That("0000000111" == actionPlan.LastModifiedTouchpointId);
         }
         [Test]
         public void CustomerPatchServiceTests_CheckCustomerSatisfactionUpdated_WhenPatchIsCalled()
@@ -165,7 +165,7 @@ namespace NCS.DSS.ActionPlan.Tests.ServiceTests
             var satisfaction = JsonConvert.DeserializeObject<Models.ActionPlanPatch>(patchedCustomer);
 
             // Assert
-            Assert.AreEqual(CustomerSatisfaction.Satisfied, satisfaction.CustomerSatisfaction);
+            Assert.That(CustomerSatisfaction.Satisfied == satisfaction.CustomerSatisfaction);
         }
     }
 }
