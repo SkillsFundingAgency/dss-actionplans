@@ -15,12 +15,12 @@ namespace NCS.DSS.ActionPlan.PatchActionPlanHttpTrigger.Service
 
         public PatchActionPlanHttpTriggerService(
             IActionPlanPatchService actionPlanPatchService, 
-            ICosmosDbProvider documentDbProvider,
+            ICosmosDbProvider cosmosDbProvider,
             IActionPlanServiceBusClient actionPlanServiceBusClient, 
             ILogger<PatchActionPlanHttpTriggerService> logger)
         {
             _actionPlanPatchService = actionPlanPatchService;
-            _cosmosDbProvider = documentDbProvider;
+            _cosmosDbProvider = cosmosDbProvider;
             _actionPlanServiceBusClient = actionPlanServiceBusClient;
             _logger = logger;
         }
@@ -69,7 +69,7 @@ namespace NCS.DSS.ActionPlan.PatchActionPlanHttpTrigger.Service
             }
 
             _logger.LogError("Failed to update action plan in Cosmos DB with ID: {ActionPlanId}.", actionPlanId);
-            return null;            
+            return null;
         }
 
         public async Task<string> GetActionPlanForCustomerAsync(Guid customerId, Guid actionPlanId)

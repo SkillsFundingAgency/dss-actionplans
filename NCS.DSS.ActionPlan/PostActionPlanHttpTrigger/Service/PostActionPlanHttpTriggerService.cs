@@ -24,18 +24,38 @@ namespace NCS.DSS.ActionPlan.PostActionPlanHttpTrigger.Service
         public async Task<Models.ActionPlan> CreateAsync(Models.ActionPlan actionPlan)
         {
             if (actionPlan == null)
+            {
+                _logger.LogInformation("The actionPlan object provided is null.");
                 return null;
+            }
 
             actionPlan.SetDefaultValues();
 
             var response = await _cosmosDbProvider.CreateActionPlanAsync(actionPlan);
 
-            return response.StatusCode == HttpStatusCode.Created ? (dynamic)response.Resource : null;
+            if (response?.StatusCode == HttpStatusCode.Created)
+            {
+                _logger.LogInformation("Completed creating action plan in Cosmos DB with ID: {ActionPlanId}", actionPlan.ActionPlanId);
+                return response.Resource;
+            }
+
+            _logger.LogError("Failed to creating action plan in Cosmos DB with ID: {ActionPlanId}.", actionPlan.ActionPlanId);
+            return null;
         }
 
         public async Task SendToServiceBusQueueAsync(Models.ActionPlan actionPlan, string reqUrl)
         {
-            await _actionPlanServiceBusClient.SendPostMessageAsync(actionPlan, reqUrl);
+            try
+            {
+                _logger.LogInformation("Sending action plan with ID: {ActionPlanId} to Service Bus.", actionPlan.ActionPlanId);
+                await _actionPlanServiceBusClient.SendPostMessageAsync(actionPlan, reqUrl);
+                _logger.LogInformation("Successfully sent action plan with ID: {ActionPlanId} to Service Bus.", actionPlan.ActionPlanId);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "An error occurred while sending action plan with ID: {ActionPlanId} to Service Bus.", actionPlan.ActionPlanId);
+                throw;
+            }
         }
     }
 }

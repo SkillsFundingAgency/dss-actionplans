@@ -1,4 +1,5 @@
-﻿using Moq;
+﻿using Microsoft.Extensions.Logging;
+using Moq;
 using NCS.DSS.ActionPlan.Cosmos.Provider;
 using NCS.DSS.ActionPlan.GetActionPlanHttpTrigger.Service;
 using NUnit.Framework;
@@ -13,13 +14,15 @@ namespace NCS.DSS.ActionPlan.Tests.ServiceTests
     {
         private IGetActionPlanHttpTriggerService _actionPlanHttpTriggerService;
         private Mock<ICosmosDbProvider> _cosmosDbProvider;
+        private Mock<ILogger<GetActionPlanHttpTriggerService>> _mockLogger;
         private readonly Guid _customerId = Guid.Parse("58b43e3f-4a50-4900-9c82-a14682ee90fa");
 
         [SetUp]
         public void Setup()
         {
             _cosmosDbProvider = new Mock<ICosmosDbProvider>();
-            _actionPlanHttpTriggerService = new GetActionPlanHttpTriggerService(_cosmosDbProvider.Object);
+            _mockLogger = new Mock<ILogger<GetActionPlanHttpTriggerService>>();
+            _actionPlanHttpTriggerService = new GetActionPlanHttpTriggerService(_cosmosDbProvider.Object, _mockLogger.Object);
         }
 
         [Test]

@@ -204,7 +204,7 @@ namespace NCS.DSS.ActionPlan.Cosmos.Provider
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error occurred while retrieving Action Plan. Customer ID: {CustomerId}. Address ID: {ActionPlanId}.", customerId, actionPlanId);
+                _logger.LogError(ex, "Error occurred while retrieving Action Plan. Customer ID: {CustomerId}. Action Plan ID: {ActionPlanId}.", customerId, actionPlanId);
                 throw;
             }
         }
