@@ -1,6 +1,4 @@
 ﻿using NCS.DSS.ActionPlan.Cosmos.Provider;
-using System;
-using System.Threading.Tasks;
 
 namespace NCS.DSS.ActionPlan.GetActionPlanByIdHttpTrigger.Service
 {

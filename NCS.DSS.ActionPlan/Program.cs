@@ -1,4 +1,3 @@
-using DFC.Common.Standard.Logging;
 using DFC.HTTP.Standard;
 using DFC.JSON.Standard;
 using DFC.Swagger.Standard;
@@ -27,7 +26,7 @@ namespace NCS.DSS.ActionPlan
                     services.AddApplicationInsightsTelemetryWorkerService();
                     services.ConfigureFunctionsApplicationInsights();
                     services.AddSingleton<IResourceHelper, ResourceHelper>();
-                    services.AddSingleton<IValidate, Validate>();                    
+                    services.AddSingleton<IValidate, Validate>();
                     services.AddSingleton<IHttpRequestHelper, HttpRequestHelper>();
                     services.AddSingleton<IHttpResponseMessageHelper, HttpResponseMessageHelper>();
                     services.AddSingleton<IJsonHelper, JsonHelper>();

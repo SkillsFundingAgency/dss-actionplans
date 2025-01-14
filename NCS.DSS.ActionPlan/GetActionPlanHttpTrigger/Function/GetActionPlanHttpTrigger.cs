@@ -7,11 +7,9 @@ using Microsoft.Extensions.Logging;
 using NCS.DSS.ActionPlan.Cosmos.Helper;
 using NCS.DSS.ActionPlan.GetActionPlanHttpTrigger.Service;
 using NCS.DSS.ActionPlan.Models;
-using System;
 using System.ComponentModel.DataAnnotations;
 using System.Net;
 using System.Text.Json;
-using System.Threading.Tasks;
 
 namespace NCS.DSS.ActionPlan.GetActionPlanHttpTrigger.Function
 {

@@ -1,9 +1,7 @@
 ﻿using NCS.DSS.ActionPlan.Cosmos.Provider;
 using NCS.DSS.ActionPlan.Models;
 using NCS.DSS.ActionPlan.ServiceBus;
-using System;
 using System.Net;
-using System.Threading.Tasks;
 
 namespace NCS.DSS.ActionPlan.PatchActionPlanHttpTrigger.Service
 {
