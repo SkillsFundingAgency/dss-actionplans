@@ -4,16 +4,16 @@ namespace NCS.DSS.ActionPlan.GetActionPlanHttpTrigger.Service
 {
     public class GetActionPlanHttpTriggerService : IGetActionPlanHttpTriggerService
     {
-        private readonly IDocumentDBProvider _documentDbProvider;
+        private readonly ICosmosDbProvider _cosmosDbProvider;
 
-        public GetActionPlanHttpTriggerService(IDocumentDBProvider documentDbProvider)
+        public GetActionPlanHttpTriggerService(ICosmosDbProvider cosmosDbProvider)
         {
-            _documentDbProvider = documentDbProvider;
+            _cosmosDbProvider = cosmosDbProvider;
         }
 
         public async Task<List<Models.ActionPlan>> GetActionPlansAsync(Guid customerId)
         {
-            var actionPlans = await _documentDbProvider.GetActionPlansForCustomerAsync(customerId);
+            var actionPlans = await _cosmosDbProvider.GetActionPlansForCustomerAsync(customerId);
 
             return actionPlans;
         }

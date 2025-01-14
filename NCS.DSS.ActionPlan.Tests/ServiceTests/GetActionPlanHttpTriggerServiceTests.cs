@@ -12,21 +12,21 @@ namespace NCS.DSS.ActionPlan.Tests.ServiceTests
     public class GetActionPlanHttpTriggerServiceTests
     {
         private IGetActionPlanHttpTriggerService _actionPlanHttpTriggerService;
-        private Mock<IDocumentDBProvider> _documentDbProvider;
+        private Mock<ICosmosDbProvider> _cosmosDbProvider;
         private readonly Guid _customerId = Guid.Parse("58b43e3f-4a50-4900-9c82-a14682ee90fa");
 
         [SetUp]
         public void Setup()
         {
-            _documentDbProvider = new Mock<IDocumentDBProvider>();
-            _actionPlanHttpTriggerService = new GetActionPlanHttpTriggerService(_documentDbProvider.Object);
+            _cosmosDbProvider = new Mock<ICosmosDbProvider>();
+            _actionPlanHttpTriggerService = new GetActionPlanHttpTriggerService(_cosmosDbProvider.Object);
         }
 
         [Test]
         public async Task GetActionPlanHttpTriggerServiceTests_GetActionPlansAsync_ReturnsNullWhenResourceCannotBeFound()
         {
             // Arrange
-            _documentDbProvider.Setup(x => x.GetActionPlansForCustomerAsync(It.IsAny<Guid>())).Returns(Task.FromResult<List<Models.ActionPlan>>(null));
+            _cosmosDbProvider.Setup(x => x.GetActionPlansForCustomerAsync(It.IsAny<Guid>())).Returns(Task.FromResult<List<Models.ActionPlan>>(null));
 
             // Act
             var result = await _actionPlanHttpTriggerService.GetActionPlansAsync(_customerId);
@@ -39,7 +39,7 @@ namespace NCS.DSS.ActionPlan.Tests.ServiceTests
         public async Task GetActionPlanHttpTriggerServiceTests_GetActionPlansAsync_ReturnsResource()
         {
             // Arrange
-            _documentDbProvider.Setup(x => x.GetActionPlansForCustomerAsync(It.IsAny<Guid>())).Returns(Task.FromResult(new List<Models.ActionPlan>()));
+            _cosmosDbProvider.Setup(x => x.GetActionPlansForCustomerAsync(It.IsAny<Guid>())).Returns(Task.FromResult(new List<Models.ActionPlan>()));
 
             // Act
             var result = await _actionPlanHttpTriggerService.GetActionPlansAsync(_customerId);
