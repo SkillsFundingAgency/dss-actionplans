@@ -29,7 +29,7 @@ namespace NCS.DSS.ActionPlan.Tests.FunctionTests
         private Mock<IResourceHelper> _resourceHelper;
         private IValidate _validate;
         private Mock<IPostActionPlanHttpTriggerService> _postActionPlanHttpTriggerService;
-        private Mock<ILogger<PostActionPlanHttpLogger.PostActionPlanHttpTrigger>> _loggerHelper;
+        private Mock<ILogger<PostActionPlanHttpLogger.PostActionPlanHttpTrigger>> _logger;
         private Mock<IHttpRequestHelper> _httpRequestHelper;
         private Models.ActionPlan _actionPlan;
         private PostActionPlanHttpLogger.PostActionPlanHttpTrigger _function;
@@ -40,7 +40,7 @@ namespace NCS.DSS.ActionPlan.Tests.FunctionTests
             _actionPlan = new Models.ActionPlan();
             _request = null;
             _resourceHelper = new Mock<IResourceHelper>();
-            _loggerHelper = new Mock<ILogger<PostActionPlanHttpLogger.PostActionPlanHttpTrigger>>();
+            _logger = new Mock<ILogger<PostActionPlanHttpLogger.PostActionPlanHttpTrigger>>();
             _httpRequestHelper = new Mock<IHttpRequestHelper>();
             _validate = new Validate();
             _postActionPlanHttpTriggerService = new Mock<IPostActionPlanHttpTriggerService>();
@@ -49,7 +49,7 @@ namespace NCS.DSS.ActionPlan.Tests.FunctionTests
                 _resourceHelper.Object,
                 _validate,
                 _postActionPlanHttpTriggerService.Object,
-                _loggerHelper.Object,
+                _logger.Object,
                 _httpRequestHelper.Object,
                 _dynamicHelper
                 );
@@ -122,7 +122,7 @@ namespace NCS.DSS.ActionPlan.Tests.FunctionTests
                 _resourceHelper.Object,
                 validateMock.Object,
                 _postActionPlanHttpTriggerService.Object,
-                _loggerHelper.Object,
+                _logger.Object,
                 _httpRequestHelper.Object,
                 _dynamicHelper
                 );

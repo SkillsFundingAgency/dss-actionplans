@@ -27,8 +27,7 @@ namespace NCS.DSS.ActionPlan
                     services.AddApplicationInsightsTelemetryWorkerService();
                     services.ConfigureFunctionsApplicationInsights();
                     services.AddSingleton<IResourceHelper, ResourceHelper>();
-                    services.AddSingleton<IValidate, Validate>();
-                    services.AddSingleton<ILoggerHelper, LoggerHelper>();
+                    services.AddSingleton<IValidate, Validate>();                    
                     services.AddSingleton<IHttpRequestHelper, HttpRequestHelper>();
                     services.AddSingleton<IHttpResponseMessageHelper, HttpResponseMessageHelper>();
                     services.AddSingleton<IJsonHelper, JsonHelper>();
