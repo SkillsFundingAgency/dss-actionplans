@@ -89,7 +89,7 @@ namespace NCS.DSS.ActionPlan.GetActionPlanHttpTrigger.Function
             
             if (actionPlans == null)
             {
-                _logger.LogInformation("Action Plan(s) does not exist for Customer. Customer GUID: {CustomerGuid}", customerGuid);
+                _logger.LogWarning("Action Plan(s) does not exist for Customer. Customer GUID: {CustomerGuid}", customerGuid);
                 _logger.LogInformation("Function {FunctionName} has finished invoking", nameof(GetActionPlanHttpTrigger));
                 return new NoContentResult();
             }

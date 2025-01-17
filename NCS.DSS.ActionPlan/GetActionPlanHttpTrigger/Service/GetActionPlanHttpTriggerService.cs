@@ -21,7 +21,7 @@ namespace NCS.DSS.ActionPlan.GetActionPlanHttpTrigger.Service
 
             if (actionPlans == null)
             {
-                _logger.LogInformation("No Action Plan exist for Customer. Customer GUID: {CustomerId}", customerId);
+                _logger.LogWarning("No Action Plan exist for Customer. Customer GUID: {CustomerId}", customerId);
                 return null;
             }
 
