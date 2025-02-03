@@ -1,23 +1,31 @@
-﻿using NCS.DSS.ActionPlan.Cosmos.Provider;
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
+﻿using Microsoft.Extensions.Logging;
+using NCS.DSS.ActionPlan.Cosmos.Provider;
 
 namespace NCS.DSS.ActionPlan.GetActionPlanHttpTrigger.Service
 {
     public class GetActionPlanHttpTriggerService : IGetActionPlanHttpTriggerService
     {
-        private readonly IDocumentDBProvider _documentDbProvider;
+        private readonly ICosmosDbProvider _cosmosDbProvider;
+        private readonly ILogger<GetActionPlanHttpTriggerService> _logger;
 
-        public GetActionPlanHttpTriggerService(IDocumentDBProvider documentDbProvider)
+        public GetActionPlanHttpTriggerService(ICosmosDbProvider cosmosDbProvider, ILogger<GetActionPlanHttpTriggerService> logger)
         {
-            _documentDbProvider = documentDbProvider;
+            _cosmosDbProvider = cosmosDbProvider;
+            _logger = logger;
         }
 
         public async Task<List<Models.ActionPlan>> GetActionPlansAsync(Guid customerId)
         {
-            var actionPlans = await _documentDbProvider.GetActionPlansForCustomerAsync(customerId);
+            _logger.LogInformation("Attempting to get Action Plans for Customer. Customer ID: {CustomerId}.", customerId);
+            var actionPlans = await _cosmosDbProvider.GetActionPlansForCustomerAsync(customerId);
 
+            if (actionPlans == null)
+            {
+                _logger.LogWarning("No Action Plan exist for Customer. Customer GUID: {CustomerId}", customerId);
+                return null;
+            }
+
+            _logger.LogInformation("{Count} Action Plan(s) successfully retrieved. Customer GUID: {CustomerId}", actionPlans.Count, customerId);
             return actionPlans;
         }
     }

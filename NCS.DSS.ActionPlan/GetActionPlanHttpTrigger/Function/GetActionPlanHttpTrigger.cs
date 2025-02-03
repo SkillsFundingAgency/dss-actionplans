@@ -7,11 +7,9 @@ using Microsoft.Extensions.Logging;
 using NCS.DSS.ActionPlan.Cosmos.Helper;
 using NCS.DSS.ActionPlan.GetActionPlanHttpTrigger.Service;
 using NCS.DSS.ActionPlan.Models;
-using System;
 using System.ComponentModel.DataAnnotations;
 using System.Net;
 using System.Text.Json;
-using System.Threading.Tasks;
 
 namespace NCS.DSS.ActionPlan.GetActionPlanHttpTrigger.Function
 {
@@ -47,6 +45,8 @@ namespace NCS.DSS.ActionPlan.GetActionPlanHttpTrigger.Function
         [Display(Name = "Get", Description = "Ability to return all action plans for the given customer.")]
         public async Task<IActionResult> Run([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "Customers/{customerId}/ActionPlans")] HttpRequest req, string customerId)
         {
+            _logger.LogInformation("Function {FunctionName} has been invoked", nameof(GetActionPlanHttpTrigger));
+
             var correlationId = _httpRequestHelper.GetDssCorrelationId(req);
             if (string.IsNullOrEmpty(correlationId))
                 _logger.LogInformation("Unable to locate 'DssCorrelationId' in request header");
@@ -57,57 +57,62 @@ namespace NCS.DSS.ActionPlan.GetActionPlanHttpTrigger.Function
                 correlationGuid = Guid.NewGuid();
             }
 
-            _logger.LogInformation($"DssCorrelationId: [{correlationGuid}]");
-
             var touchpointId = _httpRequestHelper.GetDssTouchpointId(req);
             if (string.IsNullOrEmpty(touchpointId))
             {
-                var response = new BadRequestObjectResult("");
-                _logger.LogWarning($"Response Status Code: [{response.StatusCode}]. Unable to locate 'TouchpointId' in request header");
-                return response;
+                _logger.LogWarning("Unable to locate 'TouchpointId' in request header. Correlation GUID: {CorrelationGuid}", correlationGuid);
+                return new BadRequestObjectResult(touchpointId);
             }
 
-            _logger.LogInformation($"Get Action Plan C# HTTP trigger function  processed a request. By Touchpoint: [{touchpointId}]");
+            _logger.LogInformation("Header validation successful. Associated Touchpoint ID: {TouchpointId}", touchpointId);
 
             if (!Guid.TryParse(customerId, out var customerGuid))
             {
-                var response = new BadRequestObjectResult(customerGuid);
-                _logger.LogWarning($"Response Status Code: [{response.StatusCode}]. Unable to parse 'customerId' to a Guid: [{customerId}]");
-                return response;
+                _logger.LogWarning("Unable to parse 'customerId' to a GUID. Customer GUID: {CustomerID}", customerId);
+                return new BadRequestObjectResult(customerGuid);
             }
 
-            _logger.LogInformation($"Attempting to see if customer exists [{customerGuid}]");
+            _logger.LogInformation("Attempting to check if customer exists. Customer GUID: {CustomerId}. Correlation GUID: {CorrelationGuid}", customerGuid, correlationGuid);
             var doesCustomerExist = await _resourceHelper.DoesCustomerExist(customerGuid);
 
             if (!doesCustomerExist)
             {
-                var response = new NoContentResult();
-                _logger.LogWarning($"Response Status Code: [{response.StatusCode}]. Customer does not exist [{customerGuid}]");
-                return response;
+                _logger.LogWarning("Customer does not exist. Customer GUID: {CustomerGuid}. Correlation GUID: {CorrelationGuid}", customerGuid, correlationGuid);
+                return new NoContentResult();
             }
+            _logger.LogInformation("Customer exists. Customer GUID: {CustomerGuid}. Correlation GUID: {CorrelationGuid}", customerGuid, correlationGuid);
 
-            _logger.LogInformation($"Attempting to get action plan for customer [{customerGuid}]");
+
+            _logger.LogInformation("Attempting to get Action Plans for Customer. Customer GUID: {CustomerId}. Correlation GUID: {CorrelationGuid}", customerGuid, correlationGuid);
             var actionPlans = await _actionPlanGetService.GetActionPlansAsync(customerGuid);
 
-
-            JsonResult jsonResponse;
+            
             if (actionPlans == null)
             {
-                var response = new NoContentResult();
-                _logger.LogWarning($"Response Status Code: [{response.StatusCode}]. Get failed, no action plan found for customer [{customerGuid}]");
-                return response;
+                _logger.LogWarning("Action Plan(s) does not exist for Customer. Customer GUID: {CustomerGuid}", customerGuid);
+                _logger.LogInformation("Function {FunctionName} has finished invoking", nameof(GetActionPlanHttpTrigger));
+                return new NoContentResult();
             }
-            else if (actionPlans.Count == 1)
-            {
-                jsonResponse = new JsonResult(_dynamicHelper.RenameProperty(actionPlans[0], "id", "ActionPlanId"), new JsonSerializerOptions()) { StatusCode = (int)HttpStatusCode.OK };
-            }
-            else
-            {
-                jsonResponse = new JsonResult(_dynamicHelper.RenameProperty(actionPlans, "id", "ActionPlanId"), new JsonSerializerOptions()) { StatusCode = (int)HttpStatusCode.OK };
-            }
-            _logger.LogInformation($"Response Status Code: [{jsonResponse.StatusCode}]. Get returned content");
-            return jsonResponse;
-        }
 
+            if (actionPlans.Count == 1)
+            {
+                _logger.LogInformation("1 Action Plan successfully retrieved. Action Plan GUID: {ActionPlanGuid}", actionPlans.First().ActionPlanId);
+                _logger.LogInformation("Function {FunctionName} has finished invoking", nameof(GetActionPlanHttpTrigger));
+                return new JsonResult(_dynamicHelper.RenameProperty(actionPlans[0], "id", "ActionPlanId"), 
+                    new JsonSerializerOptions()) 
+                    { 
+                        StatusCode = (int)HttpStatusCode.OK 
+                    };
+            }
+
+            _logger.LogInformation("{Count} Action Plans successfully retrieved. Customer GUID: {CustomerGuid}", actionPlans.Count, customerGuid);
+            _logger.LogInformation("Function {FunctionName} has finished invoking", nameof(GetActionPlanHttpTrigger));
+
+            return new JsonResult(_dynamicHelper.RenameProperty(actionPlans, "id", "ActionPlanId"),
+                new JsonSerializerOptions())
+                {
+                    StatusCode = (int)HttpStatusCode.OK
+                };
+        }
     }
 }

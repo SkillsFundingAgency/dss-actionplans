@@ -8,12 +8,9 @@ using NCS.DSS.ActionPlan.Cosmos.Helper;
 using NCS.DSS.ActionPlan.Models;
 using NCS.DSS.ActionPlan.PostActionPlanHttpTrigger.Service;
 using NCS.DSS.ActionPlan.Validation;
-using System;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
 using System.Net;
 using System.Text.Json;
-using System.Threading.Tasks;
 
 namespace NCS.DSS.ActionPlan.PostActionPlanHttpTrigger.Function
 {
@@ -58,6 +55,7 @@ namespace NCS.DSS.ActionPlan.PostActionPlanHttpTrigger.Function
                                               "<br><b>DateActionPlanAcknowledged:</b> DateActionPlanAcknowledged >= DateActionPlanCreated")]
         public async Task<IActionResult> Run([HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "Customers/{customerId}/Interactions/{interactionId}/ActionPlans")] HttpRequest req, string customerId, string interactionId)
         {
+            _logger.LogInformation("Function {FunctionName} has been invoked", nameof(PostActionPlanHttpTrigger));
 
             var correlationId = _httpRequestHelper.GetDssCorrelationId(req);
             if (string.IsNullOrEmpty(correlationId))
@@ -69,129 +67,134 @@ namespace NCS.DSS.ActionPlan.PostActionPlanHttpTrigger.Function
                 correlationGuid = Guid.NewGuid();
             }
 
-            _logger.LogInformation($"DssCorrelationId: [{correlationGuid}]");
-
-
             var touchpointId = _httpRequestHelper.GetDssTouchpointId(req);
             if (string.IsNullOrEmpty(touchpointId))
             {
-                var response = new BadRequestObjectResult("");
-                _logger.LogWarning($"Response Status Code: [{response.StatusCode}]. Unable to locate 'TouchpointId' in request header");
-                return response;
+                _logger.LogWarning("Unable to locate 'TouchpointId' in request header. Correlation GUID: {CorrelationGuid}", correlationGuid);
+                return new BadRequestObjectResult(touchpointId);
             }
 
-            var ApimURL = _httpRequestHelper.GetDssApimUrl(req);
-            if (string.IsNullOrEmpty(ApimURL))
+            var apimUrl = _httpRequestHelper.GetDssApimUrl(req);
+            if (string.IsNullOrEmpty(apimUrl))
             {
-                var response = new BadRequestObjectResult("");
-                _logger.LogWarning($"Response Status Code: [{response.StatusCode}]. Unable to locate 'apimurl' in request header");
-                return response;
+                _logger.LogWarning("Unable to locate 'apimURL' in request header. Correlation GUID: {CorrelationGuid}", correlationGuid);
+                return new BadRequestObjectResult("nable to locate 'apimurl' in request header");
             }
 
             var subcontractorId = _httpRequestHelper.GetDssSubcontractorId(req);
             if (string.IsNullOrEmpty(subcontractorId))
-                _logger.LogInformation($"Unable to locate 'SubcontractorId' in request header");
+            {
+                _logger.LogInformation("Unable to locate 'SubcontractorId' in request header. Correlation GUID: {CorrelationGuid}", correlationGuid);
+            }
 
-            _logger.LogInformation($"Post Action Plan C# HTTP trigger function  processed a request. By Touchpoint: [{touchpointId}]");
+            _logger.LogInformation("Header validation successful. Associated Touchpoint ID: {TouchpointId}", touchpointId);
 
             if (!Guid.TryParse(customerId, out var customerGuid))
             {
-                var response = new BadRequestObjectResult(customerGuid);
-                _logger.LogWarning($"Response Status Code: [{response.StatusCode}]. Unable to parse 'customerId' to a Guid: [{customerId}]");
-                return response;
+                _logger.LogWarning("Unable to parse 'customerId' to a GUID. Customer GUID: {CustomerID}", customerId);
+                return new BadRequestObjectResult(customerGuid);
             }
 
             if (!Guid.TryParse(interactionId, out var interactionGuid))
             {
-                var response = new BadRequestObjectResult(interactionGuid);
-                _logger.LogWarning($"Response Status Code: [{response.StatusCode}]. Unable to parse 'interactionId' to a Guid: [{interactionId}]");
-                return response;
+                _logger.LogWarning("Unable to parse 'interactionId' to a GUID. Interaction ID: {InteractionId}", interactionId);
+                return new BadRequestObjectResult(interactionGuid);
             }
 
             Models.ActionPlan actionPlanRequest;
-
             try
-            {
-                _logger.LogInformation($"Attempt to get resource from body of the request");
+            {                
+                _logger.LogInformation("Attempting to get resource from body of the request. Correlation GUID: {CorrelationGuid}", correlationGuid);
                 actionPlanRequest = await _httpRequestHelper.GetResourceFromRequest<Models.ActionPlan>(req);
             }
             catch (Exception ex)
             {
-                var response = new UnprocessableEntityObjectResult(_dynamicHelper.ExcludeProperty(ex, ["TargetSite"]));
-                _logger.LogError($"Response Status Code: [{response.StatusCode}]. Unable to retrieve body from req", ex);
-                return response;
+                _logger.LogError(ex, "Unable to read request body. Correlation GUID: {CorrelationGuid}. Exception: {ExceptionMessage}", correlationGuid, ex.Message);
+                return new UnprocessableEntityObjectResult(_dynamicHelper.ExcludeProperty(ex, ["TargetSite"]));               
             }
 
             if (actionPlanRequest == null)
             {
-                var response = new UnprocessableEntityObjectResult(req);
-                _logger.LogWarning($"Response Status Code: [{response.StatusCode}]. Action plan request is null");
-                return response;
+                _logger.LogWarning("{actionPlanRequest} object is NULL. Correlation GUID: {CorrelationGuid}", nameof(actionPlanRequest), correlationGuid);
+                return new UnprocessableEntityObjectResult(req);
             }
 
-            _logger.LogInformation($"Attempt to set id's for action plan");
-            actionPlanRequest.SetIds(customerGuid, interactionGuid, touchpointId, subcontractorId);
+            _logger.LogInformation("Retrieved resource from request body. Correlation GUID: {CorrelationGuid}", correlationGuid);
 
-            _logger.LogInformation($"Attempting to see if customer exists [{customerGuid}]");
+            _logger.LogInformation("Attempting to set IDs for Action Plan. Correlation GUID: {CorrelationGuid}", correlationGuid);
+            actionPlanRequest.SetIds(customerGuid, interactionGuid, touchpointId, subcontractorId);
+            _logger.LogInformation("IDs successfully set for Action Plan. Correlation GUID: {CorrelationGuid}", correlationGuid);
+
+            _logger.LogInformation("Attempting to check if customer exists. Customer GUID: {CustomerId}. Correlation GUID: {CorrelationGuid}", customerGuid, correlationGuid);
             var doesCustomerExist = await _resourceHelper.DoesCustomerExist(customerGuid);
 
             if (!doesCustomerExist)
             {
-                var response = new NoContentResult();
-                _logger.LogWarning($"Response Status Code: [{response.StatusCode}]. Customer does not exist [{customerGuid}]");
-                return response;
+                _logger.LogWarning("Customer does not exist. Customer GUID: {CustomerGuid}. Correlation GUID: {CorrelationGuid}", customerGuid, correlationGuid);
+                return new NoContentResult();
             }
+            _logger.LogInformation("Customer exists. Customer GUID: {CustomerGuid}. Correlation GUID: {CorrelationGuid}", customerGuid, correlationGuid);
 
-            _logger.LogInformation($"Attempting to see if this is a read only customer [{customerGuid}]");
+            _logger.LogInformation("Attempting to check if customer is read-only. Customer GUID: {CustomerId}. Correlation GUID: {CorrelationGuid}", customerGuid, correlationGuid);
             var isCustomerReadOnly = _resourceHelper.IsCustomerReadOnly();
 
             if (isCustomerReadOnly)
             {
-                var response = new ObjectResult(customerGuid) { StatusCode = (int)HttpStatusCode.Forbidden };
-                _logger.LogWarning($"Response Status Code: [{response.StatusCode}]. Customer is read only [{customerGuid}]");
+                var response = new ObjectResult(customerGuid)
+                {
+                    StatusCode = (int)HttpStatusCode.Forbidden
+                };
+                _logger.LogWarning("Customer is read-only. Customer GUID: {CustomerId}. Correlation GUID: {CorrelationGuid}", customerGuid, correlationGuid);
                 return response;
             }
 
-            _logger.LogInformation($"Attempting to get Interaction [{interactionGuid}] for customer [{customerGuid}]");
-            var doesInteractionExist = _resourceHelper.DoesInteractionExistAndBelongToCustomer(interactionGuid, customerGuid);
-
+            _logger.LogInformation("Attempting to get Interaction for Customer. Customer GUID: {CustomerId}. Interaction GUID: {InteractionGuid}. Correlation GUID: {CorrelationGuid}", customerGuid, interactionGuid, correlationGuid);
+            var doesInteractionExist = await _resourceHelper.DoesInteractionExistAndBelongToCustomer(interactionGuid, customerGuid);
             if (!doesInteractionExist)
             {
-                var response = new NoContentResult();
-                _logger.LogWarning($"Response Status Code: [{response.StatusCode}]. Interaction does not exist [{interactionGuid}]");
-                return response;
+                _logger.LogWarning("Interaction does not exist. Customer GUID: {CustomerId}. Interaction GUID: {InteractionGuid}. Correlation GUID: {CorrelationGuid}", customerGuid, interactionGuid, correlationGuid);
+                return new NoContentResult();
             }
+            _logger.LogInformation("Interaction exists. Customer GUID: {CustomerId}. Interaction GUID: {InteractionGuid}. Correlation GUID: {CorrelationGuid}", customerGuid, interactionGuid, correlationGuid);
 
-            _logger.LogInformation($"Attempting to get GetDateAndTimeOfSession for Session [{actionPlanRequest.SessionId}]");
+            _logger.LogInformation("Attempting to get Date and Time of Session. SessionID: {SessionID}", actionPlanRequest.SessionId);
             var dateAndTimeOfSession = await _resourceHelper.GetDateAndTimeOfSession(actionPlanRequest.SessionId.GetValueOrDefault());
-
-            _logger.LogInformation($"Attempt to validate Action Plan resource");
+                        
+            _logger.LogInformation("Attempting to validate {ActionPlanRequest} object", nameof(actionPlanRequest));
             var errors = _validate.ValidateResource(actionPlanRequest, dateAndTimeOfSession);
-
             if (errors != null && errors.Any())
             {
+                var er = errors.Select(e => e.ErrorMessage).ToList();
                 var response = new UnprocessableEntityObjectResult(errors);
-                _logger.LogWarning($"Response Status Code: [{response.StatusCode}]. Validation errors: [{errors.FirstOrDefault().ErrorMessage}]");
+                _logger.LogWarning("Falied to validate {ActionPlanRequest}", nameof(actionPlanRequest));
                 return response;
             }
-
-            _logger.LogInformation($"Attempting to get Create Action Plan for customer [{customerGuid}]");
+            _logger.LogInformation("Successfully validated {ActionPlanRequest}", nameof(actionPlanRequest));
+                        
+            _logger.LogInformation("Attempting to POST Action Plan in Cosmos DB. Action Plan GUID: {ActionPlanGuid}", actionPlanRequest.ActionPlanId);
             var actionPlan = await _actionPlanPostService.CreateAsync(actionPlanRequest);
 
             if (actionPlan != null)
             {
-                var response = new JsonResult(_dynamicHelper.RenameAndExcludeProperty(actionPlan, "id", "ActionPlanId", "CreatedBy"), new JsonSerializerOptions() { }) { StatusCode = (int)HttpStatusCode.Created };
-                _logger.LogInformation($"Response Status Code: [{response.StatusCode}]. attempting to send to service bus [{actionPlan.ActionPlanId}]");
-                await _actionPlanPostService.SendToServiceBusQueueAsync(actionPlan, ApimURL);
-                return response;
-            }
-            else
-            {
-                var response = new BadRequestObjectResult(customerGuid);
-                _logger.LogWarning($"Response Status Code: [{response.StatusCode}]. Failed to create the Action Plan");
-                return response;
+                _logger.LogInformation("Successfully POSTed Action Plan in Cosmos DB. Action Plan GUID: {ActionPlanGuid}", actionPlan.ActionPlanId);
+
+                _logger.LogInformation("Attempting to send message to Service Bus Namespace. Action Plan GUID: {ActionPlanGuid}", actionPlan.ActionPlanId);
+                await _actionPlanPostService.SendToServiceBusQueueAsync(actionPlan, apimUrl);
+                _logger.LogInformation("Successfully sent message to Service Bus. Action Plan GUID: {ActionPlanGuid}", actionPlan.ActionPlanId);
             }
 
+            if (actionPlan == null)
+            {
+                _logger.LogWarning("POST request unsuccessful. Action Plan GUID: {ActionPlanGuid}", actionPlanRequest.ActionPlanId);
+                _logger.LogInformation("Function {FunctionName} has finished invoking", nameof(PostActionPlanHttpTrigger));
+                return new BadRequestObjectResult(customerGuid);
+            }
+
+            _logger.LogInformation("Function {FunctionName} has finished invoking", nameof(PostActionPlanHttpTrigger));
+            return new JsonResult(_dynamicHelper.RenameAndExcludeProperty(actionPlan, "id", "ActionPlanId", "CreatedBy"), new JsonSerializerOptions() { }) 
+            { 
+                StatusCode = (int)HttpStatusCode.Created 
+            };
         }
     }
 }

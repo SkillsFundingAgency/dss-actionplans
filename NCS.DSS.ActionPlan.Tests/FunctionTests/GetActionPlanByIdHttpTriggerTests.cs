@@ -27,7 +27,7 @@ namespace NCS.DSS.ActionPlan.Tests.FunctionTests
         private HttpRequest _request;
         private Mock<IResourceHelper> _resourceHelper;
         private Mock<IGetActionPlanByIdHttpTriggerService> _getActionPlanByIdHttpTriggerService;
-        private Mock<ILogger<GetActionPlanByIdLogger>> _loggerHelper;
+        private Mock<ILogger<GetActionPlanByIdLogger>> _logger;
         private Mock<IHttpRequestHelper> _httpRequestHelper;
         private Models.ActionPlan _actionPlan;
         private GetActionPlanByIdLogger _function;
@@ -40,11 +40,11 @@ namespace NCS.DSS.ActionPlan.Tests.FunctionTests
             _request = (new DefaultHttpContext()).Request;
             _log = new Mock<ILogger>();
             _resourceHelper = new Mock<IResourceHelper>();
-            _loggerHelper = new Mock<ILogger<GetActionPlanByIdLogger>>();
+            _logger = new Mock<ILogger<GetActionPlanByIdLogger>>();
             _httpRequestHelper = new Mock<IHttpRequestHelper>();
             _getActionPlanByIdHttpTriggerService = new Mock<IGetActionPlanByIdHttpTriggerService>();
             _dynamicHelper = new ConvertToDynamic();
-            _function = new GetActionPlanByIdLogger(_resourceHelper.Object, _getActionPlanByIdHttpTriggerService.Object, _loggerHelper.Object, _httpRequestHelper.Object, _dynamicHelper);
+            _function = new GetActionPlanByIdLogger(_resourceHelper.Object, _getActionPlanByIdHttpTriggerService.Object, _logger.Object, _httpRequestHelper.Object, _dynamicHelper);
         }
 
         public async Task GetActionPlanByIdHttpTrigger_ReturnsStatusCodeBadRequest_WhenDssCorrelationIdIsInvalid()
@@ -138,7 +138,7 @@ namespace NCS.DSS.ActionPlan.Tests.FunctionTests
             _httpRequestHelper.Setup(x => x.GetDssCorrelationId(_request)).Returns(ValidDssCorrelationId);
             _httpRequestHelper.Setup(x => x.GetDssTouchpointId(_request)).Returns("0000000001");
             _resourceHelper.Setup(x => x.DoesCustomerExist(It.IsAny<Guid>())).Returns(Task.FromResult(true));
-            _resourceHelper.Setup(x => x.DoesInteractionExistAndBelongToCustomer(It.IsAny<Guid>(), It.IsAny<Guid>())).Returns(false);
+            _resourceHelper.Setup(x => x.DoesInteractionExistAndBelongToCustomer(It.IsAny<Guid>(), It.IsAny<Guid>())).ReturnsAsync(false);
 
             // Act
             var result = await RunFunction(ValidCustomerId, ValidInteractionId, ValidActionPlanId);
@@ -154,7 +154,7 @@ namespace NCS.DSS.ActionPlan.Tests.FunctionTests
             _httpRequestHelper.Setup(x => x.GetDssCorrelationId(_request)).Returns(ValidDssCorrelationId);
             _httpRequestHelper.Setup(x => x.GetDssTouchpointId(_request)).Returns("0000000001");
             _resourceHelper.Setup(x => x.DoesCustomerExist(It.IsAny<Guid>())).Returns(Task.FromResult(true));
-            _resourceHelper.Setup(x => x.DoesInteractionExistAndBelongToCustomer(It.IsAny<Guid>(), It.IsAny<Guid>())).Returns(true);
+            _resourceHelper.Setup(x => x.DoesInteractionExistAndBelongToCustomer(It.IsAny<Guid>(), It.IsAny<Guid>())).ReturnsAsync(true);
             _getActionPlanByIdHttpTriggerService.Setup(x => x.GetActionPlanForCustomerAsync(It.IsAny<Guid>(), It.IsAny<Guid>())).Returns(Task.FromResult<Models.ActionPlan>(null));
 
             // Act
@@ -171,7 +171,7 @@ namespace NCS.DSS.ActionPlan.Tests.FunctionTests
             _httpRequestHelper.Setup(x => x.GetDssCorrelationId(_request)).Returns(ValidDssCorrelationId);
             _httpRequestHelper.Setup(x => x.GetDssTouchpointId(_request)).Returns("0000000001");
             _resourceHelper.Setup(x => x.DoesCustomerExist(It.IsAny<Guid>())).Returns(Task.FromResult(true));
-            _resourceHelper.Setup(x => x.DoesInteractionExistAndBelongToCustomer(It.IsAny<Guid>(), It.IsAny<Guid>())).Returns(true);
+            _resourceHelper.Setup(x => x.DoesInteractionExistAndBelongToCustomer(It.IsAny<Guid>(), It.IsAny<Guid>())).ReturnsAsync(true);
             _getActionPlanByIdHttpTriggerService.Setup(x => x.GetActionPlanForCustomerAsync(It.IsAny<Guid>(), It.IsAny<Guid>())).Returns(Task.FromResult(_actionPlan));
 
             // Act

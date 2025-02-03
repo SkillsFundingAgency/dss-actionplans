@@ -25,7 +25,7 @@ namespace NCS.DSS.ActionPlan.Tests.FunctionTests
         private HttpRequest _request;
         private Mock<IResourceHelper> _resourceHelper;
         private Mock<IGetActionPlanHttpTriggerService> _getActionPlanHttpTriggerService;
-        private Mock<ILogger<GetActionPlanLogger.GetActionPlanHttpTrigger>> _loggerHelper;
+        private Mock<ILogger<GetActionPlanLogger.GetActionPlanHttpTrigger>> _logger;
         private Mock<IHttpRequestHelper> _httpRequestHelper;
         private IConvertToDynamic _dynamicHelper;
         private GetActionPlanLogger.GetActionPlanHttpTrigger _function;
@@ -36,12 +36,12 @@ namespace NCS.DSS.ActionPlan.Tests.FunctionTests
             _request = (new DefaultHttpContext()).Request;
 
             _resourceHelper = new Mock<IResourceHelper>();
-            _loggerHelper = new Mock<ILogger<GetActionPlanLogger.GetActionPlanHttpTrigger>>();
+            _logger = new Mock<ILogger<GetActionPlanLogger.GetActionPlanHttpTrigger>>();
             _httpRequestHelper = new Mock<IHttpRequestHelper>();
             _resourceHelper = new Mock<IResourceHelper>();
             _dynamicHelper = new ConvertToDynamic();
             _getActionPlanHttpTriggerService = new Mock<IGetActionPlanHttpTriggerService>();
-            _function = new GetActionPlanLogger.GetActionPlanHttpTrigger(_resourceHelper.Object, _getActionPlanHttpTriggerService.Object, _loggerHelper.Object, _httpRequestHelper.Object, _dynamicHelper);
+            _function = new GetActionPlanLogger.GetActionPlanHttpTrigger(_resourceHelper.Object, _getActionPlanHttpTriggerService.Object, _logger.Object, _httpRequestHelper.Object, _dynamicHelper);
         }
 
         [Test]

@@ -1,7 +1,4 @@
-﻿using System;
-using System.Threading.Tasks;
-
-namespace NCS.DSS.ActionPlan.GetActionPlanByIdHttpTrigger.Service
+﻿namespace NCS.DSS.ActionPlan.GetActionPlanByIdHttpTrigger.Service
 {
     public interface IGetActionPlanByIdHttpTriggerService
     {

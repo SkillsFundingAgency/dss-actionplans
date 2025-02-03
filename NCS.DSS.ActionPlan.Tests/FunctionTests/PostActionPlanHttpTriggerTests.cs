@@ -29,7 +29,7 @@ namespace NCS.DSS.ActionPlan.Tests.FunctionTests
         private Mock<IResourceHelper> _resourceHelper;
         private IValidate _validate;
         private Mock<IPostActionPlanHttpTriggerService> _postActionPlanHttpTriggerService;
-        private Mock<ILogger<PostActionPlanHttpLogger.PostActionPlanHttpTrigger>> _loggerHelper;
+        private Mock<ILogger<PostActionPlanHttpLogger.PostActionPlanHttpTrigger>> _logger;
         private Mock<IHttpRequestHelper> _httpRequestHelper;
         private Models.ActionPlan _actionPlan;
         private PostActionPlanHttpLogger.PostActionPlanHttpTrigger _function;
@@ -40,7 +40,7 @@ namespace NCS.DSS.ActionPlan.Tests.FunctionTests
             _actionPlan = new Models.ActionPlan();
             _request = null;
             _resourceHelper = new Mock<IResourceHelper>();
-            _loggerHelper = new Mock<ILogger<PostActionPlanHttpLogger.PostActionPlanHttpTrigger>>();
+            _logger = new Mock<ILogger<PostActionPlanHttpLogger.PostActionPlanHttpTrigger>>();
             _httpRequestHelper = new Mock<IHttpRequestHelper>();
             _validate = new Validate();
             _postActionPlanHttpTriggerService = new Mock<IPostActionPlanHttpTriggerService>();
@@ -49,7 +49,7 @@ namespace NCS.DSS.ActionPlan.Tests.FunctionTests
                 _resourceHelper.Object,
                 _validate,
                 _postActionPlanHttpTriggerService.Object,
-                _loggerHelper.Object,
+                _logger.Object,
                 _httpRequestHelper.Object,
                 _dynamicHelper
                 );
@@ -122,7 +122,7 @@ namespace NCS.DSS.ActionPlan.Tests.FunctionTests
                 _resourceHelper.Object,
                 validateMock.Object,
                 _postActionPlanHttpTriggerService.Object,
-                _loggerHelper.Object,
+                _logger.Object,
                 _httpRequestHelper.Object,
                 _dynamicHelper
                 );
@@ -173,7 +173,7 @@ namespace NCS.DSS.ActionPlan.Tests.FunctionTests
             _httpRequestHelper.Setup(x => x.GetDssApimUrl(_request)).Returns("http://localhost:");
             _httpRequestHelper.Setup(x => x.GetResourceFromRequest<Models.ActionPlan>(_request)).Returns(Task.FromResult<Models.ActionPlan>(_actionPlan));
             _resourceHelper.Setup(x => x.DoesCustomerExist(It.IsAny<Guid>())).Returns(Task.FromResult(true));
-            _resourceHelper.Setup(x => x.DoesInteractionExistAndBelongToCustomer(It.IsAny<Guid>(), It.IsAny<Guid>())).Returns(false);
+            _resourceHelper.Setup(x => x.DoesInteractionExistAndBelongToCustomer(It.IsAny<Guid>(), It.IsAny<Guid>())).ReturnsAsync(false);
 
             // Act
             var result = await RunFunction(ValidCustomerId, ValidInteractionId);
@@ -191,8 +191,8 @@ namespace NCS.DSS.ActionPlan.Tests.FunctionTests
             _httpRequestHelper.Setup(x => x.GetDssApimUrl(_request)).Returns("http://localhost:");
             _httpRequestHelper.Setup(x => x.GetResourceFromRequest<Models.ActionPlan>(_request)).Returns(Task.FromResult<Models.ActionPlan>(_actionPlan));
             _resourceHelper.Setup(x => x.DoesCustomerExist(It.IsAny<Guid>())).Returns(Task.FromResult(true));
-            _resourceHelper.Setup(x => x.DoesInteractionExistAndBelongToCustomer(It.IsAny<Guid>(), It.IsAny<Guid>())).Returns(true);
-            _resourceHelper.Setup(x => x.DoesSessionExistAndBelongToCustomer(It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<Guid>())).Returns(true);
+            _resourceHelper.Setup(x => x.DoesInteractionExistAndBelongToCustomer(It.IsAny<Guid>(), It.IsAny<Guid>())).ReturnsAsync(true);
+            _resourceHelper.Setup(x => x.DoesSessionExistAndBelongToCustomer(It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<Guid>())).ReturnsAsync(true);
             _postActionPlanHttpTriggerService.Setup(x => x.CreateAsync(It.IsAny<Models.ActionPlan>())).Returns(Task.FromResult<Models.ActionPlan>(null));
 
             // Act
@@ -211,8 +211,8 @@ namespace NCS.DSS.ActionPlan.Tests.FunctionTests
             _httpRequestHelper.Setup(x => x.GetDssApimUrl(_request)).Returns("http://localhost:");
             _httpRequestHelper.Setup(x => x.GetResourceFromRequest<Models.ActionPlan>(_request)).Returns(Task.FromResult<Models.ActionPlan>(_actionPlan));
             _resourceHelper.Setup(x => x.DoesCustomerExist(It.IsAny<Guid>())).Returns(Task.FromResult(true));
-            _resourceHelper.Setup(x => x.DoesInteractionExistAndBelongToCustomer(It.IsAny<Guid>(), It.IsAny<Guid>())).Returns(true);
-            _resourceHelper.Setup(x => x.DoesSessionExistAndBelongToCustomer(It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<Guid>())).Returns(true);
+            _resourceHelper.Setup(x => x.DoesInteractionExistAndBelongToCustomer(It.IsAny<Guid>(), It.IsAny<Guid>())).ReturnsAsync(true);
+            _resourceHelper.Setup(x => x.DoesSessionExistAndBelongToCustomer(It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<Guid>())).ReturnsAsync(true);
             _postActionPlanHttpTriggerService.Setup(x => x.CreateAsync(It.IsAny<Models.ActionPlan>())).Returns(Task.FromResult<Models.ActionPlan>(_actionPlan));
 
             // Act

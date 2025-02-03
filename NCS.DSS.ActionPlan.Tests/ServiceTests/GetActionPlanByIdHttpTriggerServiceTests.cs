@@ -1,4 +1,5 @@
-﻿using Moq;
+﻿using Microsoft.Extensions.Logging;
+using Moq;
 using NCS.DSS.ActionPlan.Cosmos.Provider;
 using NCS.DSS.ActionPlan.GetActionPlanByIdHttpTrigger.Service;
 using NUnit.Framework;
@@ -11,7 +12,8 @@ namespace NCS.DSS.ActionPlan.Tests.ServiceTests
     public class GetActionPlanByIdHttpTriggerServiceTests
     {
         private IGetActionPlanByIdHttpTriggerService _actionPlanHttpTriggerService;
-        private Mock<IDocumentDBProvider> _documentDbProvider;
+        private Mock<ICosmosDbProvider> _cosmosDbProvider;
+        private Mock<ILogger<GetActionPlanByIdHttpTriggerService>> _mockLogger;
         private Models.ActionPlan _actionPlan;
         private readonly Guid _actionPlanId = Guid.Parse("7E467BDB-213F-407A-B86A-1954053D3C24");
         private readonly Guid _customerId = Guid.Parse("58b43e3f-4a50-4900-9c82-a14682ee90fa");
@@ -20,8 +22,9 @@ namespace NCS.DSS.ActionPlan.Tests.ServiceTests
         [SetUp]
         public void Setup()
         {
-            _documentDbProvider = new Mock<IDocumentDBProvider>();
-            _actionPlanHttpTriggerService = new GetActionPlanByIdHttpTriggerService(_documentDbProvider.Object);
+            _cosmosDbProvider = new Mock<ICosmosDbProvider>();
+            _mockLogger = new Mock<ILogger<GetActionPlanByIdHttpTriggerService>>(); 
+            _actionPlanHttpTriggerService = new GetActionPlanByIdHttpTriggerService(_cosmosDbProvider.Object, _mockLogger.Object);
             _actionPlan = new Models.ActionPlan();
         }
 
@@ -29,7 +32,7 @@ namespace NCS.DSS.ActionPlan.Tests.ServiceTests
         public async Task GetActionPlanHttpTriggerServiceTests_GetActionPlanForCustomerAsync_ReturnsNullWhenResourceCannotBeFound()
         {
             // Arrange
-            _documentDbProvider.Setup(x => x.GetActionPlanForCustomerAsync(It.IsAny<Guid>(), It.IsAny<Guid>())).Returns(Task.FromResult<Models.ActionPlan>(null));
+            _cosmosDbProvider.Setup(x => x.GetActionPlanForCustomerAsync(It.IsAny<Guid>(), It.IsAny<Guid>())).Returns(Task.FromResult<Models.ActionPlan>(null));
 
             // Act
             var result = await _actionPlanHttpTriggerService.GetActionPlanForCustomerAsync(_customerId, _actionPlanId);
@@ -42,7 +45,7 @@ namespace NCS.DSS.ActionPlan.Tests.ServiceTests
         public async Task GetActionPlanHttpTriggerServiceTests_GetActionPlanForCustomerAsync_ReturnsResource()
         {
             // Arrange
-            _documentDbProvider.Setup(x => x.GetActionPlanForCustomerAsync(It.IsAny<Guid>(), It.IsAny<Guid>())).Returns(Task.FromResult(_actionPlan));
+            _cosmosDbProvider.Setup(x => x.GetActionPlanForCustomerAsync(It.IsAny<Guid>(), It.IsAny<Guid>())).Returns(Task.FromResult(_actionPlan));
 
             // Act
             var result = await _actionPlanHttpTriggerService.GetActionPlanForCustomerAsync(_customerId, _actionPlanId);
