@@ -52,8 +52,11 @@ namespace NCS.DSS.ActionPlan
 
                     services.AddSingleton(s =>
                     {
+                        var settings = s.GetRequiredService<IOptions<ActionPlanConfigurationSettings>>().Value;
+                        var options = new CosmosClientOptions() { ConnectionMode = ConnectionMode.Gateway };
+
                         var credential = new DefaultAzureCredential();
-                        return new CosmosClient(configuration["CosmosDbEndpoint"], credential);
+                        return new CosmosClient(configuration["cosmosDbEndpoint"], credential, options);
                     });
 
                     services.AddSingleton(s =>
