@@ -2,6 +2,7 @@ using Azure.Messaging.ServiceBus;
 using DFC.HTTP.Standard;
 using DFC.JSON.Standard;
 using DFC.Swagger.Standard;
+using Azure.Identity;
 using Microsoft.Azure.Cosmos;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Extensions.DependencyInjection;
@@ -51,10 +52,8 @@ namespace NCS.DSS.ActionPlan
 
                     services.AddSingleton(s =>
                     {
-                        var settings = s.GetRequiredService<IOptions<ActionPlanConfigurationSettings>>().Value;
-                        var options = new CosmosClientOptions() { ConnectionMode = ConnectionMode.Gateway };
-
-                        return new CosmosClient(settings.ActionPlanConnectionString, options);
+                        var credential = new DefaultAzureCredential();
+                        return new CosmosClient(configuration["CosmosDbEndpoint"], credential);
                     });
 
                     services.AddSingleton(s =>
