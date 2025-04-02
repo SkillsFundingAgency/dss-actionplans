@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using NCS.DSS.ActionPlan.Models;
+﻿using NCS.DSS.ActionPlan.Models;
 using NCS.DSS.ActionPlan.ReferenceData;
 using System.ComponentModel.DataAnnotations;
 
@@ -18,14 +17,21 @@ namespace NCS.DSS.ActionPlan.Validation
             return results;
         }
 
-        public List<ValidationResult> HandleGetResourceFromRequestException(Exception ex)
+        public ValidationResult HandleGetResourceFromRequestException(Exception ex)
         {
-            var results = new List<ValidationResult>();
+            if (ex.Message.Contains("SessionId"))
+                return new ValidationResult("Please supply a valid GUID value for SessionId.", new[] { "SessionId" });
+
+            if (ex.Message.Contains("DateActionPlanCreated"))
+                return new ValidationResult("Please supply a valid DateTime value for DateActionPlanCreated.", new[] { "DateActionPlanCreared" });
 
             if (ex.Message.Contains("CustomerCharterShownToCustomer"))
-                results.Add(new ValidationResult("Please supply a valid boolean value for CustomerCharterShownToCustomer.", new[] { "CustomerCharterShownToCustomer" }));
+                return new ValidationResult("Please supply a valid boolean value for CustomerCharterShownToCustomer.", new[] { "CustomerCharterShownToCustomer" });
 
-            return results;
+            if (ex.Message.Contains("CustomerSatisfaction"))
+                return new ValidationResult("Please supply a valid integer value for CustomerSatisfaction.", new[] { "CustomerSatisfaction" });
+
+            return null;
         }
 
         private void ValidateActionPlanRules(IActionPlan actionPlanResource, List<ValidationResult> results, DateTime? dateAndTimeSessionCreated)

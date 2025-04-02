@@ -109,13 +109,11 @@ namespace NCS.DSS.ActionPlan.PostActionPlanHttpTrigger.Function
             }
             catch (Exception ex)
             {
-                var handledErrors = _validate.HandleGetResourceFromRequestException(ex);
-                if (handledErrors != null && handledErrors.Any())
+                var handledError = _validate.HandleGetResourceFromRequestException(ex);
+                if (handledError != null)
                 {
-                    var h = handledErrors.Select(e => e.ErrorMessage).ToList();
-                    _logger.LogWarning("Failed to retrieve resource from request. Message: {handledErrors}", handledErrors);
-                    return new UnprocessableEntityObjectResult(handledErrors);
-
+                    _logger.LogWarning("Failed to retrieve resource from request. Message: {handledError}", handledError);
+                    return new UnprocessableEntityObjectResult(handledError);
                 }
                 else
                 {
