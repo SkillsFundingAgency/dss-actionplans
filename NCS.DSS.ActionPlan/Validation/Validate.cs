@@ -1,4 +1,5 @@
-﻿using NCS.DSS.ActionPlan.Models;
+﻿using Microsoft.AspNetCore.Mvc;
+using NCS.DSS.ActionPlan.Models;
 using NCS.DSS.ActionPlan.ReferenceData;
 using System.ComponentModel.DataAnnotations;
 
@@ -13,6 +14,16 @@ namespace NCS.DSS.ActionPlan.Validation
 
             Validator.TryValidateObject(resource, context, results, true);
             ValidateActionPlanRules(resource, results, dateAndTimeSessionCreated);
+
+            return results;
+        }
+
+        public List<ValidationResult> HandleGetResourceFromRequestException(Exception ex)
+        {
+            var results = new List<ValidationResult>();
+
+            if (ex.Message.Contains("CustomerCharterShownToCustomer"))
+                results.Add(new ValidationResult("Please supply a valid boolean value for CustomerCharterShownToCustomer.", new[] { "CustomerCharterShownToCustomer" }));
 
             return results;
         }

@@ -109,8 +109,19 @@ namespace NCS.DSS.ActionPlan.PostActionPlanHttpTrigger.Function
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Unable to read request body. Correlation GUID: {CorrelationGuid}. Exception: {ExceptionMessage}", correlationGuid, ex.Message);
-                return new UnprocessableEntityObjectResult(_dynamicHelper.ExcludeProperty(ex, ["TargetSite"]));               
+                var handledErrors = _validate.HandleGetResourceFromRequestException(ex);
+                if (handledErrors != null && handledErrors.Any())
+                {
+                    var h = handledErrors.Select(e => e.ErrorMessage).ToList();
+                    _logger.LogWarning("Failed to retrieve resource from request. Message: {handledErrors}", handledErrors);
+                    return new UnprocessableEntityObjectResult(handledErrors);
+
+                }
+                else
+                {
+                    _logger.LogError(ex, "Unable to read request body. Correlation GUID: {CorrelationGuid}. Exception: {ExceptionMessage}", correlationGuid, ex.Message);
+                    return new UnprocessableEntityObjectResult(_dynamicHelper.ExcludeProperty(ex, ["TargetSite"]));
+                }             
             }
 
             if (actionPlanRequest == null)
