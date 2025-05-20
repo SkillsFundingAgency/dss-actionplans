@@ -1,19 +1,36 @@
-﻿using Microsoft.Azure.ServiceBus;
+﻿using Azure.Messaging.ServiceBus;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
+using NCS.DSS.ActionPlan.Models;
 using Newtonsoft.Json;
-using System;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace NCS.DSS.ActionPlan.ServiceBus
 {
-    public static class ServiceBusClient
+    public class ActionPlanServiceBusClient : IActionPlanServiceBusClient
     {
-        public static readonly string QueueName = Environment.GetEnvironmentVariable("QueueName");
-        public static readonly string ServiceBusConnectionString = Environment.GetEnvironmentVariable("ServiceBusConnectionString");
+        private readonly ServiceBusClient _serviceBusClient;
+        private readonly ILogger<ActionPlanServiceBusClient> _logger;
+        private readonly string _queueName;
 
-        public static async Task SendPostMessageAsync(Models.ActionPlan actionPlan, string reqUrl)
+        public ActionPlanServiceBusClient(ServiceBusClient serviceBusClient,
+            IOptions<ActionPlanConfigurationSettings> configOptions,
+            ILogger<ActionPlanServiceBusClient> logger)
         {
-            var queueClient = new QueueClient(ServiceBusConnectionString, QueueName);
+            var config = configOptions.Value;
+            if (string.IsNullOrEmpty(config.QueueName))
+            {
+                throw new ArgumentNullException(nameof(config.QueueName), "QueueName cannot be null or empty.");
+            }
+
+            _serviceBusClient = serviceBusClient;
+            _queueName = config.QueueName;
+            _logger = logger;
+        }
+
+        public async Task SendPostMessageAsync(Models.ActionPlan actionPlan, string reqUrl)
+        {
+            var serviceBusSender = _serviceBusClient.CreateSender(_queueName);
 
             var messageModel = new MessageModel()
             {
@@ -25,18 +42,22 @@ namespace NCS.DSS.ActionPlan.ServiceBus
                 TouchpointId = actionPlan.LastModifiedTouchpointId
             };
 
-            var msg = new Message(Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(messageModel)))
+            var msg = new ServiceBusMessage(Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(messageModel)))
             {
                 ContentType = "application/json",
                 MessageId = actionPlan.CustomerId + " " + DateTime.UtcNow
             };
 
-            await queueClient.SendAsync(msg);
+            _logger.LogInformation("Attempting to send POST message to service bus. Action Plan ID: {Action Plan Id}", actionPlan.ActionPlanId);
+
+            await serviceBusSender.SendMessageAsync(msg);
+
+            _logger.LogInformation("Successfully sent POST message to the service bus. Action Plan ID: {Action Plan Id}", actionPlan.ActionPlanId);
         }
 
-        public static async Task SendPatchMessageAsync(Models.ActionPlan actionPlan, Guid customerId, string reqUrl)
+        public async Task SendPatchMessageAsync(Models.ActionPlan actionPlan, Guid customerId, string reqUrl)
         {
-            var queueClient = new QueueClient(ServiceBusConnectionString, QueueName);
+            var serviceBusSender = _serviceBusClient.CreateSender(_queueName);
 
             var messageModel = new MessageModel
             {
@@ -48,26 +69,18 @@ namespace NCS.DSS.ActionPlan.ServiceBus
                 TouchpointId = actionPlan.LastModifiedTouchpointId
             };
 
-            var msg = new Message(Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(messageModel)))
+            var msg = new ServiceBusMessage(Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(messageModel)))
             {
                 ContentType = "application/json",
                 MessageId = customerId + " " + DateTime.UtcNow
             };
 
-            await queueClient.SendAsync(msg);
+            _logger.LogInformation("Attempting to send PATCH message to service bus. Action Plan ID: {Action Plan Id}", actionPlan.ActionPlanId);
+
+            await serviceBusSender.SendMessageAsync(msg);
+
+            _logger.LogInformation("Successfully sent PATCH message to the service bus. Action Plan ID: {Action Plan Id}", actionPlan.ActionPlanId);
         }
-
     }
-
-    public class MessageModel
-    {
-        public string TitleMessage { get; set; }
-        public Guid? CustomerGuid { get; set; }
-        public DateTime? LastModifiedDate { get; set; }
-        public string URL { get; set; }
-        public bool IsNewCustomer { get; set; }
-        public string TouchpointId { get; set; }
-    }
-
 }
 

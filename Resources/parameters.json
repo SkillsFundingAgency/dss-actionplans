@@ -3,9 +3,9 @@
     "contentVersion": "1.0.0.0",
     "parameters": {
         "appInsightsInstrumentationKey": {
-            "value": "__appInsightsInstrumentationKey__" 
+            "value": "__appInsightsInstrumentationKey__"
         },
-		"cosmosDbCollectionId": {
+        "cosmosDbCollectionId": {
             "value": "__ApiResourceName__"
         },
         "cosmosDbDatabaseId": {
@@ -29,12 +29,6 @@
         "serviceBusQueueName": {
             "value": "__serviceBusQueueName__"
         },
-        "sharedAppServicePlanName": {
-            "value": "__SharedAppServicePlanName__"
-        },
-        "sharedAppServicePlanResourceGroup": {
-            "value": "__SharedAppServicePlanResourceGroup__"
-        },
         "storageAccountName": {
             "value": "__storageAccountName__"
         },
@@ -43,6 +37,9 @@
         },
         "templateBaseUrl": {
             "value": "__NestedArmTemplateBaseUrl__"
+        },
+        "keyVaultName": {
+            "value": "__SharedKeyVaultName__"
         }
     }
 }

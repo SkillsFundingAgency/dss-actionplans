@@ -8,12 +8,9 @@ using NCS.DSS.ActionPlan.Cosmos.Helper;
 using NCS.DSS.ActionPlan.Models;
 using NCS.DSS.ActionPlan.PatchActionPlanHttpTrigger.Service;
 using NCS.DSS.ActionPlan.Validation;
-using System;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
 using System.Net;
 using System.Text.Json;
-using System.Threading.Tasks;
 
 namespace NCS.DSS.ActionPlan.PatchActionPlanHttpTrigger.Function
 {
@@ -56,7 +53,7 @@ namespace NCS.DSS.ActionPlan.PatchActionPlanHttpTrigger.Function
                                                "<br><b>DateActionPlanAcknowledged:</b> DateActionPlanAcknowledged >= DateActionPlanCreated")]
         public async Task<IActionResult> Run([HttpTrigger(AuthorizationLevel.Anonymous, "patch", Route = "Customers/{customerId}/Interactions/{interactionId}/ActionPlans/{actionPlanId}")] HttpRequest req, string customerId, string interactionId, string actionPlanId)
         {
-
+            _logger.LogInformation("Function {FunctionName} has been invoked", nameof(PatchActionPlanHttpTrigger));
 
             var correlationId = _httpRequestHelper.GetDssCorrelationId(req);
             if (string.IsNullOrEmpty(correlationId))
@@ -68,87 +65,81 @@ namespace NCS.DSS.ActionPlan.PatchActionPlanHttpTrigger.Function
                 correlationGuid = Guid.NewGuid();
             }
 
-            _logger.LogInformation($"DssCorrelationId: [{correlationGuid}]");
-
-
             var touchpointId = _httpRequestHelper.GetDssTouchpointId(req);
             if (string.IsNullOrEmpty(touchpointId))
             {
-                var response = new BadRequestObjectResult("");
-                _logger.LogWarning($"Response Status Code: [{response.StatusCode}]. Unable to locate 'TouchpointId' in request header");
-                return response;
+                _logger.LogWarning("Unable to locate 'TouchpointId' in request header. Correlation GUID: {CorrelationGuid}", correlationGuid);
+                return new BadRequestObjectResult(touchpointId);
             }
 
             var apimUrl = _httpRequestHelper.GetDssApimUrl(req);
             if (string.IsNullOrEmpty(apimUrl))
             {
-                var response = new BadRequestObjectResult("");
-                _logger.LogWarning($"Response Status Code: [{response.StatusCode}]. Unable to locate 'apimurl' in request header");
-                return response;
+                _logger.LogWarning("Unable to locate 'apimURL' in request header. Correlation GUID: {CorrelationGuid}", correlationGuid);
+                return new BadRequestObjectResult("nable to locate 'apimurl' in request header");
             }
 
             var subcontractorId = _httpRequestHelper.GetDssSubcontractorId(req);
             if (string.IsNullOrEmpty(subcontractorId))
-                _logger.LogInformation($"Unable to locate 'SubcontractorId' in request header");
+            {
+                _logger.LogInformation("Unable to locate 'SubcontractorId' in request header. Correlation GUID: {CorrelationGuid}", correlationGuid);
+            }
 
-            _logger.LogInformation($"Patch Action Plan C# HTTP trigger function  processed a request. By Touchpoint: [{touchpointId}]");
+            _logger.LogInformation("Header validation successful. Associated Touchpoint ID: {TouchpointId}", touchpointId);
 
             if (!Guid.TryParse(customerId, out var customerGuid))
             {
-                var response = new BadRequestObjectResult(customerGuid);
-                _logger.LogWarning($"Response Status Code: [{response.StatusCode}]. Unable to parse 'customerId' to a Guid: [{customerId}]");
-                return response;
+                _logger.LogWarning("Unable to parse 'customerId' to a GUID. Customer GUID: {CustomerID}", customerId);
+                return new BadRequestObjectResult(customerGuid);
             }
 
             if (!Guid.TryParse(interactionId, out var interactionGuid))
             {
-                var response = new BadRequestObjectResult(interactionGuid);
-                _logger.LogWarning($"Response Status Code: [{response.StatusCode}]. Unable to parse 'interactionId' to a Guid: [{interactionId}]");
-                return response;
+                _logger.LogWarning("Unable to parse 'interactionId' to a GUID. Interaction ID: {InteractionId}", interactionId);
+                return new BadRequestObjectResult(interactionGuid);
             }
 
             if (!Guid.TryParse(actionPlanId, out var actionPlanGuid))
             {
-                var response = new BadRequestObjectResult(actionPlanGuid);
-                _logger.LogWarning($"Response Status Code: [{response.StatusCode}]. Unable to parse 'actionPlanId' to a Guid: [{actionPlanId}]");
-                return response;
+                _logger.LogWarning("Unable to parse 'actionPlanId' to a GUID. Action Plan ID: {ActionplanId}", actionPlanId);
+                return new BadRequestObjectResult(actionPlanGuid);
             }
 
             ActionPlanPatch actionPlanPatchRequest;
-
             try
             {
-                _logger.LogInformation($"Attempt to get resource from body of the request");
+                _logger.LogInformation("Attempting to get resource from body of the request. Correlation GUID: {CorrelationGuid}", correlationGuid);
                 actionPlanPatchRequest = await _httpRequestHelper.GetResourceFromRequest<ActionPlanPatch>(req);
             }
             catch (Exception ex)
-            {
-                var response = new UnprocessableEntityObjectResult(_dynamicHelper.ExcludeProperty(ex, ["TargetSite"]));
-                _logger.LogError($"Response Status Code: [{response.StatusCode}]. Unable to retrieve body from req. ", ex.Message);
-                return response;
+            {           
+                _logger.LogError(ex, "Unable to read request body. Correlation GUID: {CorrelationGuid}. Exception: {ExceptionMessage}", correlationGuid, ex.Message);
+                return new UnprocessableEntityObjectResult(_dynamicHelper.ExcludeProperty(ex, ["TargetSite"]));
             }
 
             if (actionPlanPatchRequest == null)
             {
-                var response = new UnprocessableEntityObjectResult(req);
-                _logger.LogWarning($"Response Status Code: [{response.StatusCode}]. Action plan patch request is null");
-                return response;
+                _logger.LogWarning("{actionPlanPatchRequest} object is NULL. Correlation GUID: {CorrelationGuid}", nameof(actionPlanPatchRequest), correlationGuid);
+                return new UnprocessableEntityObjectResult(req);
             }
 
-            _logger.LogInformation($"Attempt to set id's for action plan patch");
+            _logger.LogInformation("Retrieved resource from request body. Correlation GUID: {CorrelationGuid}", correlationGuid);
+                        
+            _logger.LogInformation("Attempting to set IDs for Action Plan PATCH. Correlation GUID: {CorrelationGuid}", correlationGuid);
             actionPlanPatchRequest.SetIds(touchpointId, subcontractorId);
+            _logger.LogInformation("IDs successfully set for Action Plan PATCH. Correlation GUID: {CorrelationGuid}", correlationGuid);
 
-            _logger.LogInformation($"Attempting to see if customer exists [{customerGuid}]");
+            _logger.LogInformation("Attempting to check if customer exists. Customer GUID: {CustomerId}. Correlation GUID: {CorrelationGuid}", customerGuid, correlationGuid);
             var doesCustomerExist = await _resourceHelper.DoesCustomerExist(customerGuid);
 
             if (!doesCustomerExist)
             {
-                var response = new NoContentResult();
-                _logger.LogWarning($"Response Status Code: [{response.StatusCode}]. Customer does not exist [{customerGuid}]");
-                return response;
+                _logger.LogWarning("Customer does not exist. Customer GUID: {CustomerGuid}. Correlation GUID: {CorrelationGuid}", customerGuid, correlationGuid);
+                return new NoContentResult();
             }
+            _logger.LogInformation("Customer exists. Customer GUID: {CustomerGuid}. Correlation GUID: {CorrelationGuid}", customerGuid, correlationGuid);
 
-            _logger.LogInformation($"Attempting to see if this is a read only customer [{customerGuid}]");
+            _logger.LogInformation("Attempting to check if customer is read-only. Customer GUID: {CustomerId}. Correlation GUID: {CorrelationGuid}", customerGuid, correlationGuid);
             var isCustomerReadOnly = _resourceHelper.IsCustomerReadOnly();
 
             if (isCustomerReadOnly)
@@ -156,90 +147,94 @@ namespace NCS.DSS.ActionPlan.PatchActionPlanHttpTrigger.Function
                 var response = new ObjectResult(customerGuid)
                 {
                     StatusCode = (int)HttpStatusCode.Forbidden
-                };
-                _logger.LogWarning($"Response Status Code: [{response.StatusCode}]. Customer is read only [{customerGuid}]");
+                };                
+                _logger.LogWarning("Customer is read-only. Customer GUID: {CustomerId}. Correlation GUID: {CorrelationGuid}", customerGuid, correlationGuid);
                 return response;
             }
-
-            _logger.LogInformation($"Attempting to get Interaction [{interactionGuid}] for customer [{customerGuid}]");
-            var doesInteractionExist = _resourceHelper.DoesInteractionExistAndBelongToCustomer(interactionGuid, customerGuid);
-
+                        
+            _logger.LogInformation("Attempting to get Interaction for Customer. Customer GUID: {CustomerId}. Interaction GUID: {InteractionGuid}. Correlation GUID: {CorrelationGuid}", customerGuid, interactionGuid, correlationGuid);
+            var doesInteractionExist = await _resourceHelper.DoesInteractionExistAndBelongToCustomer(interactionGuid, customerGuid);
             if (!doesInteractionExist)
             {
-                var response = new NoContentResult();
-                _logger.LogWarning($"Response Status Code: [{response.StatusCode}]. Interaction does not exist [{interactionGuid}]");
-                return response;
+                _logger.LogWarning("Interaction does not exist. Customer GUID: {CustomerId}. Interaction GUID: {InteractionGuid}. Correlation GUID: {CorrelationGuid}", customerGuid, interactionGuid, correlationGuid);
+                return new NoContentResult();
             }
+            _logger.LogInformation("Interaction exists. Customer GUID: {CustomerId}. Interaction GUID: {InteractionGuid}. Correlation GUID: {CorrelationGuid}", customerGuid, interactionGuid, correlationGuid);
 
-            _logger.LogInformation($"Attempting to get action plan [{actionPlanGuid}] for customer [{customerGuid}]");
+
+            _logger.LogInformation("Attempting to get Action Plan for Customer. Customer GUID: {CustomerId}. Action Plan GUID: {ActionPlanGuid}. Correlation GUID: {CorrelationGuid}", customerGuid, actionPlanGuid, correlationGuid);
             var actionPlanForCustomer = await _actionPlanPatchService.GetActionPlanForCustomerAsync(customerGuid, actionPlanGuid);
-
             if (actionPlanForCustomer == null)
-            {
-                var response = new NoContentResult();
-                _logger.LogWarning($"Response Status Code: [{response.StatusCode}]. ActionPlan does not exist [{actionPlanGuid}]");
-                return response;
+            {                                
+                _logger.LogWarning("Action Plan does not exist. Customer GUID: {CustomerId}. Action Plan GUID: {ActionPlanGuid}. Correlation GUID: {CorrelationGuid}", customerGuid, actionPlanGuid, correlationGuid);
+                return new NoContentResult();
             }
 
+            _logger.LogInformation("Attempting to PATCH Action Plan resource.");
             var patchedActionPlan = _actionPlanPatchService.PatchResource(actionPlanForCustomer, actionPlanPatchRequest);
-
             if (patchedActionPlan == null)
             {
-                var response = new NoContentResult();
-                _logger.LogWarning($"Response Status Code: [{response.StatusCode}]. ActionPlan does not exist [{actionPlanGuid}]");
-                return response;
+                _logger.LogWarning("Failed to PATCH Action Plan resource.");
+                return new NoContentResult();
             }
 
             Models.ActionPlan actionPlanValidationObject;
 
+            _logger.LogInformation("Attempting to deserialize the PATCH Action Plan resource.");
             try
             {
                 actionPlanValidationObject = JsonSerializer.Deserialize<Models.ActionPlan>(patchedActionPlan);
             }
             catch (JsonException ex)
             {
-                _logger.LogError("Unable to retrieve body from req", ex.Message);
+                _logger.LogError(ex, "Failure deserializing the PATCH Action Plan resource. Correlation GUID: {CorrelationGuid}. Exception: {ExceptionMessage}", correlationGuid, ex.Message);
                 throw;
             }
 
             if (actionPlanValidationObject == null)
-            {
-                var response = new UnprocessableEntityObjectResult(req);
-                _logger.LogWarning($"Response Status Code: [{response.StatusCode}]. Action Plan Validation Object is null");
-                return response;
+            {   
+                _logger.LogWarning("Action Plan validation object is NULL. Correlation GUID: {CorrelationGuid}", correlationGuid);
+                return new UnprocessableEntityObjectResult(req);
             }
 
-            _logger.LogInformation($"Attempting to get GetDateAndTimeOfSession for Session [{actionPlanValidationObject.SessionId}]");
+            _logger.LogInformation("Attempting to get Date and Time of Session. SessionID: {SessionID}", actionPlanValidationObject.SessionId);            
             var dateAndTimeOfSession = await _resourceHelper.GetDateAndTimeOfSession(actionPlanValidationObject.SessionId.GetValueOrDefault());
 
-            _logger.LogInformation($"Attempt to validate resource");
+            _logger.LogInformation("Attempting to validate {ActionPlanValidationObject} object", nameof(actionPlanValidationObject));
             var errors = _validate.ValidateResource(actionPlanValidationObject, dateAndTimeOfSession);
-
             if (errors != null && errors.Any())
             {
                 var er = errors.Select(e => e.ErrorMessage).ToList();
                 var response = new UnprocessableEntityObjectResult(errors);
-                _logger.LogWarning($"Response Status Code: [{response.StatusCode}].  Validation errors: [{errors.FirstOrDefault().ErrorMessage}]");
+                _logger.LogWarning("Falied to validate {ActionPlanValidationObject}", nameof(actionPlanValidationObject));
                 return response;
             }
-
-            _logger.LogInformation($"Attempting to update action plan [{actionPlanGuid}]");
+            _logger.LogInformation("Successfully validated {ActionPlanValidationObject}", nameof(actionPlanValidationObject));
+                        
+            _logger.LogInformation("Attempting to PATCH Action Plan in Cosmos DB. Action Plan GUID: {ActionPlanGuid}", actionPlanGuid);
             var updatedActionPlan = await _actionPlanPatchService.UpdateCosmosAsync(patchedActionPlan, actionPlanGuid);
 
             if (updatedActionPlan != null)
             {
-                var response = new JsonResult(_dynamicHelper.ExcludeProperty(updatedActionPlan, "CreatedBy"), new JsonSerializerOptions()) { StatusCode = (int)HttpStatusCode.OK };
-                _logger.LogInformation($"Response Status Code: [{response.StatusCode}].Patch succeeded, attempting to send to service bus [{actionPlanGuid}]");
+                _logger.LogInformation("Successfully PATCHed Action Plan in Cosmos DB. Action Plan GUID: {ActionPlanGuid}", actionPlanGuid);
+                
+                _logger.LogInformation("Attempting to send message to Service Bus Namespace. Action Plan GUID: {ActionPlanGuid}", actionPlanGuid);
                 await _actionPlanPatchService.SendToServiceBusQueueAsync(updatedActionPlan, customerGuid, apimUrl);
-                return response;
-            }
-            else
-            {
-                var response = new BadRequestObjectResult(actionPlanGuid);
-                _logger.LogWarning($"Response Status Code: [{response.StatusCode}]. Failed to patch a resource");
-                return response;
+                _logger.LogInformation("Successfully sent message to Service Bus. Action Plan GUID: {ActionPlanGuid}", actionPlanGuid);
             }
 
+            if (updatedActionPlan == null)
+            {
+                _logger.LogWarning("PATCH request unsuccessful. Action Plan GUID: {ActionPlanGuid}", actionPlanGuid);
+                _logger.LogInformation("Function {FunctionName} has finished invoking", nameof(PatchActionPlanHttpTrigger));
+                return new BadRequestObjectResult(actionPlanGuid);
+            }
+
+            _logger.LogInformation("Function {FunctionName} has finished invoking", nameof(PatchActionPlanHttpTrigger));
+            return new JsonResult(_dynamicHelper.ExcludeProperty(updatedActionPlan, "CreatedBy"), new JsonSerializerOptions()) 
+            { 
+                StatusCode = (int)HttpStatusCode.OK 
+            };
         }
     }
 }
