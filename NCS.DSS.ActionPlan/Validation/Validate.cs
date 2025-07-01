@@ -17,6 +17,23 @@ namespace NCS.DSS.ActionPlan.Validation
             return results;
         }
 
+        public ValidationResult HandleGetResourceFromRequestException(Exception ex)
+        {
+            if (ex.Message.Contains("SessionId"))
+                return new ValidationResult("Please supply a valid GUID value for SessionId.", new[] { "SessionId" });
+
+            if (ex.Message.Contains("DateActionPlanCreated"))
+                return new ValidationResult("Please supply a valid DateTime value for DateActionPlanCreated.", new[] { "DateActionPlanCreared" });
+
+            if (ex.Message.Contains("CustomerCharterShownToCustomer"))
+                return new ValidationResult("Please supply a valid boolean value for CustomerCharterShownToCustomer.", new[] { "CustomerCharterShownToCustomer" });
+
+            if (ex.Message.Contains("CustomerSatisfaction"))
+                return new ValidationResult("Please supply a valid integer value for CustomerSatisfaction.", new[] { "CustomerSatisfaction" });
+
+            return null;
+        }
+
         private void ValidateActionPlanRules(IActionPlan actionPlanResource, List<ValidationResult> results, DateTime? dateAndTimeSessionCreated)
         {
             if (actionPlanResource == null)
