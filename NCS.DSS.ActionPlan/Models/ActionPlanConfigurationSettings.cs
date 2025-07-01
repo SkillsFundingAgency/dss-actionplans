@@ -2,6 +2,7 @@ namespace NCS.DSS.ActionPlan.Models
 {
     public class ActionPlanConfigurationSettings
     {
+        public required string CosmosDbEndpoint { get; set; }
         public required string ActionPlanConnectionString { get; set; }
         public required string CollectionId { get; set; }
         public required string CustomerCollectionId { get; set; }
