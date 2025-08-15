@@ -78,7 +78,7 @@ namespace NCS.DSS.ActionPlan.PostActionPlanHttpTrigger.Function
             if (string.IsNullOrEmpty(apimUrl))
             {
                 _logger.LogWarning("Unable to locate 'apimURL' in request header. Correlation GUID: {CorrelationGuid}", correlationGuid);
-                return new BadRequestObjectResult("nable to locate 'apimurl' in request header");
+                return new BadRequestObjectResult("Unable to locate 'apimUrl' in request header");
             }
 
             var subcontractorId = _httpRequestHelper.GetDssSubcontractorId(req);
@@ -109,13 +109,22 @@ namespace NCS.DSS.ActionPlan.PostActionPlanHttpTrigger.Function
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Unable to read request body. Correlation GUID: {CorrelationGuid}. Exception: {ExceptionMessage}", correlationGuid, ex.Message);
-                return new UnprocessableEntityObjectResult(_dynamicHelper.ExcludeProperty(ex, ["TargetSite"]));               
+                var handledError = _validate.HandleGetResourceFromRequestException(ex);
+                if (handledError != null)
+                {
+                    _logger.LogWarning("Failed to retrieve resource from request. Message: {handledError}", handledError);
+                    return new UnprocessableEntityObjectResult(handledError);
+                }
+                else
+                {
+                    _logger.LogError(ex, "Unable to read request body. Correlation GUID: {CorrelationGuid}. Exception: {ExceptionMessage}", correlationGuid, ex.Message);
+                    return new UnprocessableEntityObjectResult(_dynamicHelper.ExcludeProperty(ex, ["TargetSite"]));
+                }             
             }
 
             if (actionPlanRequest == null)
             {
-                _logger.LogWarning("{actionPlanRequest} object is NULL. Correlation GUID: {CorrelationGuid}", nameof(actionPlanRequest), correlationGuid);
+                _logger.LogWarning("{ActionPlanRequest} object is NULL. Correlation GUID: {CorrelationGuid}", nameof(actionPlanRequest), correlationGuid);
                 return new UnprocessableEntityObjectResult(req);
             }
 
@@ -166,7 +175,7 @@ namespace NCS.DSS.ActionPlan.PostActionPlanHttpTrigger.Function
             {
                 var er = errors.Select(e => e.ErrorMessage).ToList();
                 var response = new UnprocessableEntityObjectResult(errors);
-                _logger.LogWarning("Falied to validate {ActionPlanRequest}", nameof(actionPlanRequest));
+                _logger.LogWarning("Failed to validate {ActionPlanRequest}", nameof(actionPlanRequest));
                 return response;
             }
             _logger.LogInformation("Successfully validated {ActionPlanRequest}", nameof(actionPlanRequest));

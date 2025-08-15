@@ -76,7 +76,7 @@ namespace NCS.DSS.ActionPlan.PatchActionPlanHttpTrigger.Function
             if (string.IsNullOrEmpty(apimUrl))
             {
                 _logger.LogWarning("Unable to locate 'apimURL' in request header. Correlation GUID: {CorrelationGuid}", correlationGuid);
-                return new BadRequestObjectResult("nable to locate 'apimurl' in request header");
+                return new BadRequestObjectResult("Unable to locate 'apimUrl' in request header");
             }
 
             var subcontractorId = _httpRequestHelper.GetDssSubcontractorId(req);
@@ -112,14 +112,23 @@ namespace NCS.DSS.ActionPlan.PatchActionPlanHttpTrigger.Function
                 actionPlanPatchRequest = await _httpRequestHelper.GetResourceFromRequest<ActionPlanPatch>(req);
             }
             catch (Exception ex)
-            {           
-                _logger.LogError(ex, "Unable to read request body. Correlation GUID: {CorrelationGuid}. Exception: {ExceptionMessage}", correlationGuid, ex.Message);
-                return new UnprocessableEntityObjectResult(_dynamicHelper.ExcludeProperty(ex, ["TargetSite"]));
+            {
+                var handledError = _validate.HandleGetResourceFromRequestException(ex);
+                if (handledError != null)
+                {
+                    _logger.LogWarning("Failed to retrieve resource from request. Message: {handledError}", handledError);
+                    return new UnprocessableEntityObjectResult(handledError);
+                }
+                else
+                {
+                    _logger.LogError(ex, "Unable to read request body. Correlation GUID: {CorrelationGuid}. Exception: {ExceptionMessage}", correlationGuid, ex.Message);
+                    return new UnprocessableEntityObjectResult(_dynamicHelper.ExcludeProperty(ex, ["TargetSite"]));
+                }
             }
 
             if (actionPlanPatchRequest == null)
             {
-                _logger.LogWarning("{actionPlanPatchRequest} object is NULL. Correlation GUID: {CorrelationGuid}", nameof(actionPlanPatchRequest), correlationGuid);
+                _logger.LogWarning("{ActionPlanPatchRequest} object is NULL. Correlation GUID: {CorrelationGuid}", nameof(actionPlanPatchRequest), correlationGuid);
                 return new UnprocessableEntityObjectResult(req);
             }
 
@@ -206,7 +215,7 @@ namespace NCS.DSS.ActionPlan.PatchActionPlanHttpTrigger.Function
             {
                 var er = errors.Select(e => e.ErrorMessage).ToList();
                 var response = new UnprocessableEntityObjectResult(errors);
-                _logger.LogWarning("Falied to validate {ActionPlanValidationObject}", nameof(actionPlanValidationObject));
+                _logger.LogWarning("Failed to validate {ActionPlanValidationObject}", nameof(actionPlanValidationObject));
                 return response;
             }
             _logger.LogInformation("Successfully validated {ActionPlanValidationObject}", nameof(actionPlanValidationObject));
@@ -216,7 +225,7 @@ namespace NCS.DSS.ActionPlan.PatchActionPlanHttpTrigger.Function
 
             if (updatedActionPlan != null)
             {
-                _logger.LogInformation("Successfully PATCHed Action Plan in Cosmos DB. Action Plan GUID: {ActionPlanGuid}", actionPlanGuid);
+                _logger.LogInformation("Successfully PATCH an Action Plan in Cosmos DB. Action Plan GUID: {ActionPlanGuid}", actionPlanGuid);
                 
                 _logger.LogInformation("Attempting to send message to Service Bus Namespace. Action Plan GUID: {ActionPlanGuid}", actionPlanGuid);
                 await _actionPlanPatchService.SendToServiceBusQueueAsync(updatedActionPlan, customerGuid, apimUrl);
