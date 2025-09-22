@@ -35,7 +35,7 @@ namespace NCS.DSS.ActionPlan.PostActionPlanHttpTrigger.Service
 
             if (response?.StatusCode == HttpStatusCode.Created)
             {
-                _logger.LogInformation("Completed creating action plan in Cosmos DB with ID: {ActionPlanId}", actionPlan.ActionPlanId);
+                _logger.LogTrace("Completed creating action plan in Cosmos DB with ID: {ActionPlanId}", actionPlan.ActionPlanId);
                 return response.Resource;
             }
 
@@ -47,9 +47,9 @@ namespace NCS.DSS.ActionPlan.PostActionPlanHttpTrigger.Service
         {
             try
             {
-                _logger.LogInformation("Sending action plan with ID: {ActionPlanId} to Service Bus.", actionPlan.ActionPlanId);
+                _logger.LogTrace("Sending action plan with ID: {ActionPlanId} to Service Bus.", actionPlan.ActionPlanId);
                 await _actionPlanServiceBusClient.SendPostMessageAsync(actionPlan, reqUrl);
-                _logger.LogInformation("Successfully sent action plan with ID: {ActionPlanId} to Service Bus.", actionPlan.ActionPlanId);
+                _logger.LogTrace("Successfully sent action plan with ID: {ActionPlanId} to Service Bus.", actionPlan.ActionPlanId);
             }
             catch (Exception ex)
             {
