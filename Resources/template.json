@@ -20,9 +20,6 @@
     "functionAppNames": {
       "type": "array"
     },
-    "serviceBusConnectionString": {
-      "type": "string"
-    },
     "serviceBusQueueName": {
       "type": "string"
     },
@@ -59,7 +56,7 @@
         "InteractionDatabaseId": "interactions",
         "SessionCollectionId": "sessions",
         "SessionDatabaseId": "sessions",
-        "ServiceBusConnectionString": "[parameters('serviceBusConnectionString')]",
+        "ServiceBusConnectionString": "[format('@Microsoft.KeyVault(VaultName={0};SecretName=ServiceBusConnectionString)', parameters('keyVaultName'))]",
         "QueueName": "[parameters('serviceBusQueueName')]",
         "CosmosDbEndpoint": "[parameters('CosmosDbEndpoint')]"
       },

@@ -20,9 +20,6 @@
         "functionAppNames": {
             "value": "__NotTokenised__"
         },
-        "serviceBusConnectionString": {
-            "value": "__serviceBusConnectionString__"
-        },
         "serviceBusQueueName": {
             "value": "__serviceBusQueueName__"
         },
