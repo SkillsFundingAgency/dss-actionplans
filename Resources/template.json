@@ -14,17 +14,11 @@
     "CosmosDbEndpoint": {
       "type": "string"
     },
-    "cosmosDbKey": {
-      "type": "string"
-    },
     "environmentName": {
       "type": "string"
     },
     "functionAppNames": {
       "type": "array"
-    },
-    "serviceBusConnectionString": {
-      "type": "string"
     },
     "serviceBusQueueName": {
       "type": "string"
@@ -54,7 +48,6 @@
         "MSDEPLOY_RENAME_LOCKED_FILES": "1",
         "AzureWebJobStorage": "[format('@Microsoft.KeyVault(VaultName={0};SecretName=SharedStorageAccountConnectionString)', parameters('keyVaultName'))]",
         "APPINSIGHTS_INSTRUMENTATIONKEY": "[parameters('appInsightsInstrumentationKey')]",
-        "ActionPlanConnectionString": "[format('AccountEndpoint={0};AccountKey={1};', parameters('CosmosDbEndpoint'), parameters('cosmosDbKey'))]",
         "CollectionId": "[parameters('cosmosDbCollectionId')]",
         "DatabaseId": "[parameters('cosmosDbDatabaseId')]",
         "CustomerCollectionId": "customers",
@@ -63,7 +56,7 @@
         "InteractionDatabaseId": "interactions",
         "SessionCollectionId": "sessions",
         "SessionDatabaseId": "sessions",
-        "ServiceBusConnectionString": "[parameters('serviceBusConnectionString')]",
+        "ServiceBusConnectionString": "[format('@Microsoft.KeyVault(VaultName={0};SecretName=ServiceBusConnectionString)', parameters('keyVaultName'))]",
         "QueueName": "[parameters('serviceBusQueueName')]",
         "CosmosDbEndpoint": "[parameters('CosmosDbEndpoint')]"
       },

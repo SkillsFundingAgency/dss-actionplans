@@ -27,7 +27,7 @@ namespace NCS.DSS.ActionPlan.PatchActionPlanHttpTrigger.Service
 
         public string PatchResource(string actionPlanJson, ActionPlanPatch actionPlanPatch)
         {
-            _logger.LogInformation("Started patching action plan");
+            _logger.LogTrace("Started patching action plan");
             if (string.IsNullOrEmpty(actionPlanJson))
             {
                 _logger.LogInformation("Can't patch action plan because input action plan json is null");
@@ -40,13 +40,13 @@ namespace NCS.DSS.ActionPlan.PatchActionPlanHttpTrigger.Service
                 return null;
             }
 
-            _logger.LogInformation("Setting default values for action plan PATCH object.");
+            _logger.LogTrace("Setting default values for action plan PATCH object.");
             actionPlanPatch.SetDefaultValues();
-            _logger.LogInformation("Default values for action plan PATCH object are successfully set.");
+            _logger.LogTrace("Default values for action plan PATCH object are successfully set.");
 
             var updatedActionPlan = _actionPlanPatchService.Patch(actionPlanJson, actionPlanPatch);
 
-            _logger.LogInformation("Completed patching action plan");
+            _logger.LogTrace("Completed patching action plan");
 
             return updatedActionPlan;
         }
@@ -58,13 +58,13 @@ namespace NCS.DSS.ActionPlan.PatchActionPlanHttpTrigger.Service
                 _logger.LogInformation("The actionPlanJson object provided is either null or empty.");
                 return null;
             }
-            _logger.LogInformation("Started updating action plan in Cosmos DB with ID: {ActionPlanId}", actionPlanId);
+            _logger.LogTrace("Started updating action plan in Cosmos DB with ID: {ActionPlanId}", actionPlanId);
 
             var response = await _cosmosDbProvider.UpdateActionPlanAsync(actionPlanJson, actionPlanId);
 
             if (response?.StatusCode == HttpStatusCode.OK)
             {
-                _logger.LogInformation("Completed updating action plan in Cosmos DB with ID: {ActionPlanId}", actionPlanId);
+                _logger.LogTrace("Completed updating action plan in Cosmos DB with ID: {ActionPlanId}", actionPlanId);
                 return response.Resource;
             }
 
@@ -83,11 +83,11 @@ namespace NCS.DSS.ActionPlan.PatchActionPlanHttpTrigger.Service
         {
             try
             {
-                _logger.LogInformation("Sending action plan with ID: {ActionPlanId} to Service Bus for customer ID: {CustomerId}.", actionPlan.ActionPlanId, customerId);
+                _logger.LogTrace("Sending action plan with ID: {ActionPlanId} to Service Bus for customer ID: {CustomerId}.", actionPlan.ActionPlanId, customerId);
 
                 await _actionPlanServiceBusClient.SendPatchMessageAsync(actionPlan, customerId, reqUrl);
 
-                _logger.LogInformation("Successfully sent action plan with ID: {ActionPlanId} to Service Bus for customer ID: {CustomerId}.", actionPlan.ActionPlanId, customerId);
+                _logger.LogTrace("Successfully sent action plan with ID: {ActionPlanId} to Service Bus for customer ID: {CustomerId}.", actionPlan.ActionPlanId, customerId);
             }
             catch (Exception ex)
             {

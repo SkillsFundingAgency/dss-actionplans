@@ -48,11 +48,11 @@ namespace NCS.DSS.ActionPlan.ServiceBus
                 MessageId = actionPlan.CustomerId + " " + DateTime.UtcNow
             };
 
-            _logger.LogInformation("Attempting to send POST message to service bus. Action Plan ID: {Action Plan Id}", actionPlan.ActionPlanId);
+            _logger.LogTrace("Attempting to send POST message to service bus. Action Plan ID: {Action Plan Id}", actionPlan.ActionPlanId);
 
             await serviceBusSender.SendMessageAsync(msg);
 
-            _logger.LogInformation("Successfully sent POST message to the service bus. Action Plan ID: {Action Plan Id}", actionPlan.ActionPlanId);
+            _logger.LogTrace("Successfully sent POST message to the service bus. Action Plan ID: {Action Plan Id}", actionPlan.ActionPlanId);
         }
 
         public async Task SendPatchMessageAsync(Models.ActionPlan actionPlan, Guid customerId, string reqUrl)
@@ -75,11 +75,11 @@ namespace NCS.DSS.ActionPlan.ServiceBus
                 MessageId = customerId + " " + DateTime.UtcNow
             };
 
-            _logger.LogInformation("Attempting to send PATCH message to service bus. Action Plan ID: {Action Plan Id}", actionPlan.ActionPlanId);
+            _logger.LogTrace("Attempting to send PATCH message to service bus. Action Plan ID: {Action Plan Id}", actionPlan.ActionPlanId);
 
             await serviceBusSender.SendMessageAsync(msg);
 
-            _logger.LogInformation("Successfully sent PATCH message to the service bus. Action Plan ID: {Action Plan Id}", actionPlan.ActionPlanId);
+            _logger.LogTrace("Successfully sent PATCH message to the service bus. Action Plan ID: {Action Plan Id}", actionPlan.ActionPlanId);
         }
     }
 }

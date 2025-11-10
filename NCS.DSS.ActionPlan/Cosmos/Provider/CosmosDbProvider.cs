@@ -36,7 +36,7 @@ namespace NCS.DSS.ActionPlan.Cosmos.Provider
         {
             try
             {
-                _logger.LogInformation("Checking for customer resource. Customer ID: {CustomerId}", customerId);
+                _logger.LogTrace("Checking for customer resource. Customer ID: {CustomerId}", customerId);
 
                 var response = await _customerContainer.ReadItemAsync<Customer>(
                     customerId.ToString(),
@@ -44,7 +44,7 @@ namespace NCS.DSS.ActionPlan.Cosmos.Provider
 
                 if (response.Resource != null)
                 {
-                    _logger.LogInformation("Customer exists. Customer ID: {CustomerId}", customerId);
+                    _logger.LogTrace("Customer exists. Customer ID: {CustomerId}", customerId);
                     _customerJson = JsonConvert.SerializeObject(response.Resource);
                     return true;
                 }

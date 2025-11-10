@@ -16,7 +16,7 @@ namespace NCS.DSS.ActionPlan.GetActionPlanByIdHttpTrigger.Service
 
         public async Task<Models.ActionPlan> GetActionPlanForCustomerAsync(Guid customerId, Guid actionPlanId)
         {
-            _logger.LogInformation("Attempting to get Action Plan for Customer. Customer ID: {CustomerId}.", customerId);
+            _logger.LogTrace("Attempting to get Action Plan for Customer. Customer ID: {CustomerId}.", customerId);
             var actionPlan = await _cosmosDbProvider.GetActionPlanForCustomerAsync(customerId, actionPlanId);
 
             if (actionPlan == null)
@@ -25,7 +25,7 @@ namespace NCS.DSS.ActionPlan.GetActionPlanByIdHttpTrigger.Service
                 return null;
             }
 
-            _logger.LogInformation("Action Plan successfully retrieved. Action Plan GUID: {ActionPlanId} Customer GUID: {CustomerId}", actionPlan.ActionPlanId, customerId);
+            _logger.LogTrace("Action Plan successfully retrieved. Action Plan GUID: {ActionPlanId} Customer GUID: {CustomerId}", actionPlan.ActionPlanId, customerId);
             return actionPlan;
         }
     }
