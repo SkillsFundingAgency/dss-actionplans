@@ -120,7 +120,7 @@ namespace NCS.DSS.ActionPlan.PatchActionPlanHttpTrigger.Function
                 else
                 {
                     _logger.LogError(ex, "Unable to read request body. Correlation GUID: {CorrelationGuid}. Exception: {ExceptionMessage}", correlationGuid, ex.Message);
-                    return new UnprocessableEntityObjectResult(_dynamicHelper.ExcludeProperty(ex, ["TargetSite"]));
+                    return new UnprocessableEntityObjectResult(_dynamicHelper.ExcludeProperty(ex, ["TargetSite", "StackTrace"]));
                 }
             }
 
