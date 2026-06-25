@@ -23,7 +23,7 @@ namespace NCS.DSS.ActionPlan.Validation
                 return new ValidationResult("Please supply a valid GUID value for SessionId.", new[] { "SessionId" });
 
             if (ex.Message.Contains("DateActionPlanCreated"))
-                return new ValidationResult("Please supply a valid DateTime value for DateActionPlanCreated.", new[] { "DateActionPlanCreared" });
+                return new ValidationResult("Please supply a valid DateTime value for DateActionPlanCreated.", new[] { "DateActionPlanCreated" });
 
             if (ex.Message.Contains("CustomerCharterShownToCustomer"))
                 return new ValidationResult("Please supply a valid boolean value for CustomerCharterShownToCustomer.", new[] { "CustomerCharterShownToCustomer" });
